@@ -15,82 +15,82 @@ type PageRoutesItemType = {
 
 export const page_routes: PageRoutesType[] = [
   {
-    title: "Dashboards",
+    title: "VA Claims",
     items: [
       {
-        title: "AI Chat Dashboard",
+        title: "Claims Dashboard",
         href: "/dashboard",
-        icon: "Brain"
+        icon: "FileCheck"
       },
       {
-        title: "E-commerce",
+        title: "Claim Types",
         href: "#",
-        icon: "ShoppingBag",
+        icon: "ListCheck",
         items: [
-          { title: "Dashboard", href: "/dashboard/ecommerce" },
-          { title: "Product List", href: "/dashboard/pages/products" },
-          { title: "Product Detail", href: "/dashboard/pages/products/1" },
-          { title: "Add Product", href: "/dashboard/pages/products/create" },
-          { title: "Order List", href: "/dashboard/pages/orders" },
-          { title: "Order Detail", href: "/dashboard/pages/orders/detail" }
+          { title: "Disability Claims", href: "/dashboard/ecommerce" },
+          { title: "Conditions List", href: "/dashboard/pages/products" },
+          { title: "Condition Details", href: "/dashboard/pages/products/1" },
+          { title: "Add Condition", href: "/dashboard/pages/products/create" },
+          { title: "Claims List", href: "/dashboard/pages/orders" },
+          { title: "Claim Detail", href: "/dashboard/pages/orders/detail" }
         ]
       },
       {
-        title: "Website Analytics",
+        title: "Claims Analytics",
         href: "/dashboard/website-analytics",
-        icon: "Gauge"
+        icon: "BarChart"
       },
       {
-        title: "Project Management",
+        title: "Document Management",
         href: "/dashboard/project-management",
         icon: "FolderDot"
       },
       {
-        title: "File Manager",
+        title: "Medical Evidence",
         href: "/dashboard/file-manager",
         icon: "Folder"
       },
-      { title: "Crypto", href: "/dashboard/crypto", icon: "WalletMinimal" },
-      { title: "Hospital Management", href: "/dashboard/hospital-management", icon: "Activity" }
+      { title: "Compensation Rates", href: "/dashboard/crypto", icon: "DollarSign" },
+      { title: "Treatment Tracker", href: "/dashboard/hospital-management", icon: "Activity" }
     ]
   },
   {
-    title: "Apps",
+    title: "Resources",
     items: [
       {
-        title: "Kanban",
+        title: "Claim Tracker",
         href: "/dashboard/apps/kanban",
         icon: "SquareKanban",
         isComing: true
       },
-      { title: "Notes", href: "/dashboard/apps/notes", icon: "StickyNote" },
-      { title: "Chats", href: "/dashboard/apps/chat", icon: "MessageSquare" },
-      { title: "Mail", href: "/dashboard/apps/mail", icon: "Mail", isComing: true },
+      { title: "Service Notes", href: "/dashboard/apps/notes", icon: "StickyNote" },
+      { title: "Support Chat", href: "/dashboard/apps/chat", icon: "MessageSquare" },
+      { title: "VA Notifications", href: "/dashboard/apps/mail", icon: "Mail", isComing: true },
       {
-        title: "Todo List App",
+        title: "Tasks Checklist",
         href: "/dashboard/apps/todo-list-app",
         icon: "SquareCheck",
         isComing: true
       },
       {
-        title: "File Manager",
+        title: "Document Uploader",
         href: "/dashboard/apps/file-manager",
         icon: "ArchiveRestore",
         isComing: true
       },
-      { title: "Api Keys", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false }
+      { title: "eBenefits Access", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false }
     ]
   },
   {
-    title: "Pages",
+    title: "User Pages",
     items: [
       {
-        title: "Users",
+        title: "Veterans",
         href: "/dashboard/pages/users",
         icon: "Users",
         items: [
-          { title: "Users List", href: "/dashboard/pages/users" },
-          { title: "Profile", href: "/dashboard/pages/profile" }
+          { title: "Veterans List", href: "/dashboard/pages/users" },
+          { title: "Veteran Profile", href: "/dashboard/pages/profile" }
         ]
       },
       {
@@ -106,13 +106,13 @@ export const page_routes: PageRoutesType[] = [
         ]
       },
       {
-        title: "Pricing",
+        title: "Benefits",
         href: "#",
-        icon: "BadgeDollarSign",
+        icon: "Shield",
         items: [
-          { title: "Column Pricing", href: "/dashboard/pages/pricing/column" },
-          { title: "Table Pricing", href: "/dashboard/pages/pricing/table" },
-          { title: "Single Pricing", href: "/dashboard/pages/pricing/single" }
+          { title: "Disability Benefits", href: "/dashboard/pages/pricing/column" },
+          { title: "Compensation Table", href: "/dashboard/pages/pricing/table" },
+          { title: "Appeals Process", href: "/dashboard/pages/pricing/single" }
         ]
       },
       {
@@ -138,32 +138,32 @@ export const page_routes: PageRoutesType[] = [
         ]
       },
       {
-        title: "Landing Page",
-        href: "/template/cosmic-landing-page-template",
-        icon: "Proportions",
+        title: "VA.gov",
+        href: "https://www.va.gov",
+        icon: "ExternalLink",
         newTab: true
       }
     ]
   },
   {
-    title: "Others",
+    title: "Resources",
     items: [
       {
-        title: "Components",
+        title: "VA Forms",
         href: "/components",
-        icon: "Component",
+        icon: "FileText",
         newTab: true
       },
       {
-        title: "Blocks",
+        title: "Evidence Guides",
         href: "/blocks",
-        icon: "Component",
+        icon: "BookOpen",
         newTab: true
       },
       {
-        title: "Templates",
+        title: "Claim Templates",
         href: "/templates",
-        icon: "Proportions",
+        icon: "FileTemplate",
         newTab: true
       },
       {

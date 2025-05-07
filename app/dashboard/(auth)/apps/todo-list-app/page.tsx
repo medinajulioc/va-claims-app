@@ -3,9 +3,9 @@ import { generateMeta } from "@/lib/utils";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "Todo List App",
+    title: "VA Claims Task Checklist",
     description:
-      "Organize your tasks, add new tasks and view task details with the to-do list app template. Built with shadcn/ui, Next.js and Tailwind CSS.",
+      "Track your VA disability claim tasks, required documents, and upcoming deadlines. Stay organized throughout your claims process with this comprehensive checklist tool.",
     canonical: "/apps/todo-list-app"
   });
 }
@@ -32,14 +32,14 @@ export default function Page() {
               fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Todo List App
+          VA Claims Task Checklist
         </h1>
         <div className="lg:text-lg">
-          To-do list app coming soon. Organize your tasks, add new tasks and view task details.
+          Keep track of required forms, evidence collection, medical appointments, and deadlines for your VA disability claim. Never miss a critical step in your claims process.
         </div>
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
-          This page is currently under construction.
+          This feature is currently under construction.
         </div>
       </div>
     </div>

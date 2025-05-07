@@ -25,6 +25,7 @@ type CommandItemProps = {
     title: string;
     href: string;
     icon?: string;
+    items?: any[];
   };
 };
 
@@ -44,8 +45,13 @@ export default function Search() {
   }, []);
 
   const CommandItemComponent: React.FC<CommandItemProps> = ({ item }) => {
+    // Skip rendering if item has nested items
+    if (item.items?.length) {
+      return null;
+    }
+    
     // @ts-expect-error
-    const LucideIcon = icons[item.icon];
+    const LucideIcon = item.icon ? icons[item.icon] : null;
 
     return (
       <CommandItem
@@ -53,7 +59,7 @@ export default function Search() {
           setOpen(false);
           router.push(item.href);
         }}>
-        {item.icon && <LucideIcon className="me-2 h-4! w-4!" />}
+        {item.icon && LucideIcon && <LucideIcon className="me-2 h-4 w-4" />}
         <span>{item.title}</span>
       </CommandItem>
     );
@@ -88,11 +94,11 @@ export default function Search() {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {page_routes.map((route) => (
-            <React.Fragment key={route.title}>
+          {page_routes.map((route, routeIndex) => (
+            <React.Fragment key={`${route.title}-${routeIndex}`}>
               <CommandGroup heading={route.title}>
-                {route.items.map((item, key) => (
-                  <CommandItemComponent key={key} item={item} />
+                {route.items.map((item, itemIndex) => (
+                  <CommandItemComponent key={`${itemIndex}-${item.title}`} item={item} />
                 ))}
               </CommandGroup>
               <CommandSeparator />

@@ -3,9 +3,9 @@ import NotesApp from "@/app/dashboard/(auth)/apps/notes/note-app";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "Note App",
+    title: "Service Notes",
     description:
-      "Add, organize and manage notes with the note app template. Built with shadcn/ui, Next.js and Tailwind CSS.",
+      "Add, organize and manage your service-related medical notes and disability documentation. Track symptom history and medical appointments for your VA claims.",
     canonical: "/apps/notes"
   });
 }

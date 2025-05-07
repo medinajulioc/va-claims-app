@@ -3,9 +3,9 @@ import { AlertCircleIcon } from "lucide-react";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "Kanban",
+    title: "Claim Tracker",
     description:
-      "Create a layout where you can easily manage your projects and tasks with the Kanban template. Built with shadcn/ui, Next.js and Tailwind CSS.",
+      "Track the status of your VA disability claims through each stage of the process. Visualize your claim journey from submission to decision with our interactive board.",
     canonical: "/apps/kanban"
   });
 }
@@ -32,15 +32,14 @@ export default function Page() {
               fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Kanban
+          Claim Tracker
         </h1>
         <div className="lg:text-lg">
-          Easily manage your projects and tasks with Kanban board. Organize your workflow and
-          increase team productivity with drag-and-drop.
+          Visualize and track your VA disability claims at each stage of the process. Monitor claim progress from initial submission through evidence gathering, review, and final decision.
         </div>
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
-          This page is currently under construction.
+          This feature is currently under construction.
         </div>
       </div>
     </div>

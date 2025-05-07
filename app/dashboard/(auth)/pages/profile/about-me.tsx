@@ -12,18 +12,10 @@ export function AboutMe() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p>
-          Hi I&#39;m Anna Adam, It will be as simple as Occidental; in fact, it will be Occidental.
-          To an English person, it will seem like simplified English, as a skeptical Cambridge
-          friend of mine told me what Occidental is European languages are members of the same
-          family.
+          I'm John Doe, a proud veteran who served in the United States Army from 2008 to 2016. I completed two deployments to Afghanistan and served as a Combat Medic (68W). Since transitioning to civilian life, I've been navigating the VA claims process and helping fellow veterans understand their benefits.
         </p>
         <p>
-          You always want to make sure that your fonts work well together and try to limit the
-          number of fonts you use to three or less. Experiment and play around with the fonts that
-          you already have in the software you’re working with reputable font websites. This may be
-          the most commonly encountered tip I received from the designers I spoke with. They highly
-          encourage that you use different fonts in one design, but do not over-exaggerate and go
-          overboard.
+          My experience with the VA system has motivated me to share knowledge and resources with other veterans. I believe in making the claims process more transparent and accessible for all who served. I'm currently pursuing a degree in Healthcare Administration while advocating for improved veteran services in my community.
         </p>
       </CardContent>
     </Card>

@@ -17,15 +17,20 @@ export default async function BdocLayout({
     cookieStore.get("sidebar_state") === undefined;
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <Sidebar />
-      <SidebarInset>
-        <Header />
-        <div className="@container/main p-4 pb-0 xl:group-data-[theme-content-layout=centered]/layout:container xl:group-data-[theme-content-layout=centered]/layout:mx-auto xl:group-data-[theme-content-layout=centered]/layout:mt-8">
-          {children}
-        </div>
-        <Toaster position="top-center" />
-      </SidebarInset>
-    </SidebarProvider>
+    <>
+      <head>
+        <title>VA Claims Admin | Disability Documentation Management</title>
+      </head>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <Sidebar />
+        <SidebarInset>
+          <Header />
+          <div className="@container/main p-4 pb-0 xl:group-data-[theme-content-layout=centered]/layout:container xl:group-data-[theme-content-layout=centered]/layout:mx-auto xl:group-data-[theme-content-layout=centered]/layout:mt-8">
+            {children}
+          </div>
+          <Toaster position="top-center" />
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 } 

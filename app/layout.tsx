@@ -35,6 +35,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>VA Claims Research Tool | Disability Benefits Research for Veterans</title>
+      </head>
       <body
         suppressHydrationWarning
         className={cn("bg-background group/layout font-sans", fontVariables)}

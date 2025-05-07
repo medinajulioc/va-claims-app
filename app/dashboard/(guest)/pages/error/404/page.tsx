@@ -7,46 +7,26 @@ export async function generateMetadata() {
   return generateMeta({
     title: "404 Page",
     description:
-      "This is an example of a template for 404 error pages. Built with shadcn/ui, Tailwind CSS and Next.js.",
+      "The VA disability claim resource you're looking for cannot be found. Please check the URL or return to the dashboard.",
     canonical: "/pages/error/404"
   });
 }
 
 export default function Page() {
   return (
-    <div className="from-background to-secondary/10 flex min-h-screen flex-col items-center justify-center bg-gradient-to-b p-4">
-      <div className="w-full max-w-3xl space-y-4 lg:space-y-8">
-        <div className="bg-primary/5 border-primary/10 relative flex h-64 items-center justify-center overflow-hidden rounded-lg border sm:h-80">
-          <div className="absolute inset-0 grid grid-cols-10 grid-rows-10 opacity-10">
-            {Array.from({ length: 100 }).map((_, i) => (
-              <div
-                key={i}
-                className="border-primary/30 border-1"
-                style={{
-                  opacity: Math.random() * 0.5 + 0.5
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="relative z-10 text-center">
-            <div className="text-primary mb-4 text-8xl font-black tracking-tighter sm:text-9xl">
-              404
-            </div>
-            <div className="text-foreground text-xl font-medium sm:text-2xl">Page Not Found</div>
-          </div>
-
-          <div className="from-background/80 absolute right-0 bottom-0 left-0 h-1/3 bg-gradient-to-t to-transparent" />
-        </div>
-
-        <div className="flex justify-center">
-          <Button asChild variant="outline" size="lg" className="group">
-            <Link href="/">
-              Back to Home
-              <ArrowRight />
-            </Link>
-          </Button>
-        </div>
+    <div className="flex h-[90vh] flex-col items-center justify-center text-center">
+      <div className="mx-auto flex max-w-[600px] flex-col items-center space-y-2">
+        <h1 className="text-8xl font-bold">404</h1>
+        <h2 className="text-3xl font-semibold">Claim Resource Not Found</h2>
+        <p className="text-balance text-muted-foreground">
+          Sorry, the VA benefits information you're looking for cannot be found or may have moved.
+        </p>
+        <Button className="mt-4" asChild>
+          <Link className="flex items-center gap-2" href="/dashboard">
+            Return to dashboard
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
       </div>
     </div>
   );

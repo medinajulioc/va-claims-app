@@ -1,5 +1,4 @@
 import { create, StateCreator } from "zustand";
-import { calendarEvents } from "@/app/dashboard/(auth)/apps/calendar/data";
 import { EventInput } from "@fullcalendar/core";
 
 interface Store {
@@ -12,7 +11,7 @@ interface Store {
 }
 
 const calendarEventStore: StateCreator<Store> = (set) => ({
-  events: calendarEvents, // initial data
+  events: [], // Using an empty array instead of calendarEvents
   selectedEvent: null,
   openSheet: false,
   addEvent: (event) => set((state) => ({ events: [...state.events, event] })),
