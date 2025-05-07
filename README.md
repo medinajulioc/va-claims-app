@@ -1,6 +1,10 @@
 # VA Claims App
 
-This is a [Next.js 15](https://nextjs.org/) project using React 19, Shadcn UI, and Tailwind CSS.
+A modern application for veterans to manage and track their VA claims.
+
+## Overview
+
+This application is in early development. More details will be added as the project progresses.
 
 ## Getting Started
 
@@ -9,7 +13,7 @@ Follow these steps to get your project up and running locally:
 1. Clone the repository:
 
     ```sh
-    git clone https://github.com/your-username/va-claims-app.git
+    git clone https://github.com/medinajulioc/va-claims-app.git
     cd va-claims-app
     ```
 
@@ -49,4 +53,8 @@ Follow these steps to get your project up and running locally:
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the app.
 
-6. You can start editing the pages by modifying files in the `app` directory. The pages will automatically update as you make changes. 
+6. You can start editing the pages by modifying files in the `app` directory. The pages will automatically update as you make changes.
+
+## License
+
+TBD
