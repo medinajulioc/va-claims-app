@@ -250,7 +250,6 @@ export default function AppRender() {
           {chatSuggestions.map((suggestion: string, key: number) => (
             <Suggestion
               key={key}
-              className="truncate"
               onClick={() => {
                 setPrompt(suggestion);
                 streamResponse();
@@ -262,4 +261,4 @@ export default function AppRender() {
       )}
     </div>
   );
-}
+} 

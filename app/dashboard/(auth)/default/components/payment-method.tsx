@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,8 +23,19 @@ import {
 } from "@/components/ui/select";
 
 export function PaymentMethodCard() {
+  // Use client-side only rendering to avoid hydration issues
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return <CardSkeleton />;
+  }
+
   return (
-    <Card>
+    <Card suppressHydrationWarning>
       <CardHeader>
         <CardTitle>Payment Method</CardTitle>
         <CardDescription>Add a new payment method to your account.</CardDescription>
@@ -132,6 +146,42 @@ export function PaymentMethodCard() {
       </CardContent>
       <CardFooter>
         <Button className="w-full">Continue</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
+// Skeleton component to display while client-side rendering
+function CardSkeleton() {
+  return (
+    <Card className="animate-pulse">
+      <CardHeader>
+        <div className="h-6 w-36 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+        <div className="h-4 w-48 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+      </CardHeader>
+      <CardContent className="grid gap-6">
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-20 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+          ))}
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-4 w-16 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-10 w-full rounded-md bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+        ))}
+        <div className="grid grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-4 w-16 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+              <div className="h-10 w-full rounded-md bg-gray-200 dark:bg-gray-700"></div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="h-10 w-full rounded-md bg-gray-200 dark:bg-gray-700"></div>
       </CardFooter>
     </Card>
   );

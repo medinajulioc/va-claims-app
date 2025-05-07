@@ -18,7 +18,12 @@ export const page_routes: PageRoutesType[] = [
     title: "Dashboards",
     items: [
       {
-        title: "Default",
+        title: "AI Chat Dashboard",
+        href: "/dashboard",
+        icon: "Brain"
+      },
+      {
+        title: "Default Dashboard",
         href: "/dashboard/default",
         icon: "ChartPie"
       },
@@ -67,7 +72,7 @@ export const page_routes: PageRoutesType[] = [
         icon: "SquareKanban",
         isComing: true
       },
-      { title: "AI Chat", href: "/dashboard/apps/ai-chat", icon: "Brain" },
+      { title: "AI Chat (Legacy)", href: "/dashboard/apps/ai-chat", icon: "Brain", isNew: false },
       { title: "Notes", href: "/dashboard/apps/notes", icon: "StickyNote" },
       { title: "Chats", href: "/dashboard/apps/chat", icon: "MessageSquare" },
       { title: "Mail", href: "/dashboard/apps/mail", icon: "Mail", isComing: true },

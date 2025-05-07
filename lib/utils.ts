@@ -23,15 +23,18 @@ export function generateMeta({
   description: string;
   canonical: string;
 }): Metadata {
+  // Default to localhost:3001 if BASE_URL is not defined
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
+  
   return {
     title: `${title} - Shadcn UI Kit`,
     description: description,
-    metadataBase: new URL(`${process.env.BASE_URL}`),
+    metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `/dashboard${canonical}`
     },
     openGraph: {
-      images: [`${process.env.ASSETS_URL}/seo.jpg`]
+      images: [`${process.env.ASSETS_URL || ''}/seo.jpg`]
     }
   };
 }
