@@ -23,11 +23,6 @@ export const page_routes: PageRoutesType[] = [
         icon: "Brain"
       },
       {
-        title: "Default Dashboard",
-        href: "/dashboard/default",
-        icon: "ChartPie"
-      },
-      {
         title: "E-commerce",
         href: "#",
         icon: "ShoppingBag",
@@ -40,8 +35,6 @@ export const page_routes: PageRoutesType[] = [
           { title: "Order Detail", href: "/dashboard/pages/orders/detail" }
         ]
       },
-      { title: "Sales", href: "/dashboard/sales", icon: "BadgeDollarSign" },
-      { title: "CRM", href: "/dashboard/crm", icon: "ChartBarDecreasing" },
       {
         title: "Website Analytics",
         href: "/dashboard/website-analytics",
@@ -58,9 +51,7 @@ export const page_routes: PageRoutesType[] = [
         icon: "Folder"
       },
       { title: "Crypto", href: "/dashboard/crypto", icon: "WalletMinimal" },
-      { title: "Academy/School", href: "/dashboard/academy", icon: "GraduationCap" },
-      { title: "Hospital Management", href: "/dashboard/hospital-management", icon: "Activity" },
-      { title: "Hotel Dashboard", href: "/dashboard/hotel", icon: "Building2", isComing: true }
+      { title: "Hospital Management", href: "/dashboard/hospital-management", icon: "Activity" }
     ]
   },
   {
@@ -72,7 +63,6 @@ export const page_routes: PageRoutesType[] = [
         icon: "SquareKanban",
         isComing: true
       },
-      { title: "AI Chat (Legacy)", href: "/dashboard/apps/ai-chat", icon: "Brain", isNew: false },
       { title: "Notes", href: "/dashboard/apps/notes", icon: "StickyNote" },
       { title: "Chats", href: "/dashboard/apps/chat", icon: "MessageSquare" },
       { title: "Mail", href: "/dashboard/apps/mail", icon: "Mail", isComing: true },
@@ -82,15 +72,13 @@ export const page_routes: PageRoutesType[] = [
         icon: "SquareCheck",
         isComing: true
       },
-      { title: "Calendar", href: "/dashboard/apps/calendar", icon: "Calendar" },
       {
         title: "File Manager",
         href: "/dashboard/apps/file-manager",
         icon: "ArchiveRestore",
         isComing: true
       },
-      { title: "Api Keys", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false },
-      { title: "POS App", href: "/dashboard/apps/pos", icon: "Cookie", isComing: true }
+      { title: "Api Keys", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false }
     ]
   },
   {
