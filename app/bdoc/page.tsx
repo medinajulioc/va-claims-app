@@ -1,83 +1,111 @@
+import { redirect } from 'next/navigation';
 import { generateMeta } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomDateRangePicker from "@/components/custom-date-range-picker";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Download, 
+  Users, 
+  DollarSign, 
+  TrendingUp, 
+  FileText, 
+  UserPlus, 
+  ShieldAlert, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  CheckCircle2, 
+  XCircle, 
+  Clock, 
+  Filter,
+  PieChart,
+  BarChart as BarChartIcon,
+  LineChart
+} from "lucide-react";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "VA Claims Dashboard",
+    title: "VA Claims Admin Dashboard",
     description:
-      "The VA Claims dashboard provides tools for managing and analyzing veterans' benefits documentation.",
+      "Administrative dashboard for managing VA claims, user accounts, and system analytics.",
     canonical: "/bdoc"
   });
 }
 
-export default function Page() {
+// Simple stat card components to replace charts
+function StatCard({ title, description, data, icon, className = "h-72" }) {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">VA Benefits Documentation</h1>
-        <div className="flex items-center space-x-2">
-          <CustomDateRangePicker />
-          <Button>
-            <Download />
-            <span className="hidden lg:inline">Download</span>
-          </Button>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          {icon}
         </div>
-      </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="claims">Claims</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="rounded-lg border bg-card p-4 shadow-sm">
-            <h2 className="text-lg font-semibold">Welcome to VA Benefits Documentation</h2>
-            <p className="mt-2 text-muted-foreground">
-              This dashboard helps veterans organize and manage their claims documentation. Use the
-              tabs above to navigate through different sections.
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border bg-card p-4 shadow-sm">
-              <h3 className="font-medium">Recent Claims</h3>
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-muted-foreground">No recent claims</p>
+      </CardHeader>
+      <CardContent>
+        <div className={`flex flex-col items-center justify-center ${className}`}>
+          <p className="text-muted-foreground mb-2">Demo data visualization</p>
+          <div className="text-center">
+            {data.map((item, index) => (
+              <div key={index} className="flex justify-between my-1">
+                <span>{item.name}:</span>
+                <span className="font-medium ml-2">
+                  {typeof item.value === 'number' ? 
+                    item.value.toLocaleString() : 
+                    item.value}
+                </span>
               </div>
-            </div>
-            <div className="rounded-lg border bg-card p-4 shadow-sm">
-              <h3 className="font-medium">Document Status</h3>
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-muted-foreground">No documents uploaded</p>
-              </div>
-            </div>
-            <div className="rounded-lg border bg-card p-4 shadow-sm">
-              <h3 className="font-medium">Upcoming Deadlines</h3>
-              <div className="mt-4 space-y-2">
-                <p className="text-sm text-muted-foreground">No upcoming deadlines</p>
-              </div>
-            </div>
+            ))}
           </div>
-        </TabsContent>
-        <TabsContent value="documents" className="space-y-4">
-          <div className="rounded-lg border bg-card p-4 shadow-sm">
-            <h2 className="text-lg font-semibold">Documents</h2>
-            <p className="mt-2 text-muted-foreground">
-              Upload and manage your VA benefits documentation here.
-            </p>
-          </div>
-        </TabsContent>
-        <TabsContent value="claims" className="space-y-4">
-          <div className="rounded-lg border bg-card p-4 shadow-sm">
-            <h2 className="text-lg font-semibold">Claims Management</h2>
-            <p className="mt-2 text-muted-foreground">
-              Track and manage your VA claims process from this section.
-            </p>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
+}
+
+function DonutStatCard({ title, description, data, className = "h-60" }) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          <PieChart className="h-5 w-5 text-muted-foreground" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className={`flex flex-col items-center justify-center ${className}`}>
+          <div className="mb-4">
+            <PieChart className="h-24 w-24 text-muted-foreground" />
+          </div>
+          <div className="grid grid-cols-3 w-full gap-2">
+            {data.map((item, index) => (
+              <div key={index} className="flex flex-col items-center">
+                <Badge variant={
+                  index === 0 ? "default" : 
+                  index === 1 ? "secondary" : 
+                  "destructive"
+                } className="mb-1 px-3">
+                  {item.value}%
+                </Badge>
+                <span className="text-xs text-muted-foreground">{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function Page() {
+  redirect('/bdoc/overview');
 } 

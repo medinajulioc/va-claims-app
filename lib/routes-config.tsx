@@ -1,6 +1,7 @@
 type PageRoutesType = {
   title: string;
   items: PageRoutesItemType;
+  routeType?: 'user' | 'admin';
 };
 
 type PageRoutesItemType = {
@@ -52,7 +53,8 @@ export const page_routes: PageRoutesType[] = [
       },
       { title: "Compensation Rates", href: "/dashboard/crypto", icon: "DollarSign" },
       { title: "Treatment Tracker", href: "/dashboard/hospital-management", icon: "Activity" }
-    ]
+    ],
+    routeType: 'user'
   },
   {
     title: "Resources",
@@ -79,7 +81,8 @@ export const page_routes: PageRoutesType[] = [
         isComing: true
       },
       { title: "eBenefits Access", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false }
-    ]
+    ],
+    routeType: 'user'
   },
   {
     title: "User Pages",
@@ -143,7 +146,8 @@ export const page_routes: PageRoutesType[] = [
         icon: "ExternalLink",
         newTab: true
       }
-    ]
+    ],
+    routeType: 'user'
   },
   {
     title: "Resources",
@@ -172,6 +176,36 @@ export const page_routes: PageRoutesType[] = [
         icon: "ClipboardMinus",
         isComing: true
       }
-    ]
+    ],
+    routeType: 'user'
+  }
+];
+
+export const admin_routes: PageRoutesType[] = [
+  {
+    title: "Admin Dashboard",
+    items: [
+      {
+        title: "Admin Overview",
+        href: "/bdoc/overview",
+        icon: "LayoutDashboard"
+      },
+      {
+        title: "User Management",
+        href: "/bdoc/users",
+        icon: "Users"
+      },
+      {
+        title: "Claims Administration",
+        href: "/bdoc/claims",
+        icon: "FileCheck"
+      },
+      {
+        title: "Analytics",
+        href: "/bdoc/analytics",
+        icon: "BarChart"
+      }
+    ],
+    routeType: 'admin'
   }
 ];

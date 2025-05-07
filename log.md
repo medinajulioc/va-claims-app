@@ -351,4 +351,197 @@ Added several key elements to the VAClaims landing page to improve conversion ra
    - Improved section spacing and hierarchy
    - Enhanced mobile experience with device-specific elements
 
-These enhancements follow established landing page conversion best practices including clear navigation, social proof, trust building, benefit-focused messaging, and strategic call-to-action placement. The implementation maintains the military aesthetic while creating a more effective conversion funnel. 
+These enhancements follow established landing page conversion best practices including clear navigation, social proof, trust building, benefit-focused messaging, and strategic call-to-action placement. The implementation maintains the military aesthetic while creating a more effective conversion funnel.
+
+## May 2024 - Added OCP (Operational Camouflage Pattern) Theme Preset
+
+### Implementation
+Added a new theme preset called "OCP" inspired by the U.S. Military's Operational Camouflage Pattern color palette:
+
+1. **Added Theme to Theme Selector**:
+   - Updated the `lib/themes.ts` file to include the new OCP theme
+   - Used the color palette from color-hex.com (https://www.color-hex.com/color-palette/45140)
+   - Implemented colors: #7b664a, #958a68, #77775f, #958b60, #9d9b80
+
+2. **Created Theme CSS Variables**:
+   - Added CSS custom properties for both light and dark modes in `app/themes.css`
+   - Converted hex values to OKLCH format for compatibility with the theming system
+   - Adjusted accent colors to maintain appropriate contrast ratios
+
+3. **Design Considerations**:
+   - Ensured the theme maintains good contrast for accessibility
+   - Preserved the earthy, military-inspired tones across the dashboard
+   - Carefully designed both light and dark mode variants
+
+The OCP theme provides a military-inspired option that maintains the application's usability while adding an appropriate aesthetic for the VA Claims application's target audience.
+
+## May 2024 - Set OCP Dark Theme as Default Application Theme
+
+### Implementation
+Updated the application to use the military-inspired OCP theme in dark mode as the default theme:
+
+1. **Modified Default Theme Settings**:
+   - Updated the `DEFAULT_THEME` constant in `lib/themes.ts` to use "ocp" as the preset
+   - Changed the `ThemeProvider` in `app/layout.tsx` to use "dark" as the default theme mode
+   - Fixed a bug in the cookie handling where incorrect default values were being assigned
+
+2. **Bug Fixes**:
+   - Corrected the theme cookie fallback values in `app/layout.tsx`
+   - Previously, all theme properties incorrectly used `DEFAULT_THEME.font` as the fallback value
+   - Updated each property to use its corresponding default value (e.g., `DEFAULT_THEME.preset` for preset)
+
+3. **Design Impact**:
+   - The application now starts with the OCP theme in dark mode by default
+   - All new users will see the military-inspired theme upon first visit
+   - User theme preferences are still saved in cookies and will override the default after selection
+
+This change creates a more cohesive user experience for the VA Claims application, immediately presenting users with a theme that aligns with the military context of the application.
+
+## May 2024 - Created Admin Dashboard for BDOC Route
+
+### Implementation
+Implemented a comprehensive admin dashboard for the /bdoc route with the following features:
+
+1. **Dashboard Overview**:
+   - Added key metrics cards for total users, revenue, active claims, and new sign-ups
+   - Implemented revenue overview chart using AreaChart component
+   - Created a recent claims table with status badges and a donut chart showing claim status distribution
+
+2. **User Management Section**:
+   - Built a user management interface with avatar displays, role information, and status badges
+   - Added action buttons for viewing details and editing permissions
+   - Implemented a monthly new user sign-ups chart using BarChart component
+
+3. **Claims Administration**:
+   - Created a claims administration interface with detailed table view
+   - Added status badges and action buttons for claim approval/rejection
+   - Implemented statistics cards for claims pending review, approved claims, and rejected claims
+
+4. **Analytics Section**:
+   - Implemented user growth and revenue trend charts
+   - Created system performance metrics including response time, uptime, and error rate statistics
+   - Added percentage indicators showing change from previous periods
+
+5. **Interactive Elements**:
+   - Integrated filter and export buttons throughout the interface
+   - Used Shadcn UI components including Card, Avatar, Table, Badge, and Chart components
+   - Implemented responsive grid layouts that adapt to different screen sizes
+
+The admin dashboard uses demo data for all metrics and visualizations. It maintains the existing layout structure from the bdoc route while completely revamping the content to focus on administrative functions rather than end-user documentation management.
+
+## June 2024 - Restructured BDOC Admin Dashboard with Dedicated Pages
+
+### Changes
+1. **New Page Structure**:
+   - Replaced the tabbed interface with dedicated pages for each major admin function
+   - Created individual routes for Overview, User Management, Claims Administration, and Analytics
+   - Set up the main /bdoc page to redirect to the Overview page
+
+2. **Navigation Integration**:
+   - Added Admin Dashboard section to the sidebar navigation
+   - Created navigation links to all new admin pages with appropriate icons
+
+3. **Page Content Improvements**:
+   - Created specialized interface for each admin function
+   - Added detailed metrics and data visualizations relevant to each section
+   - Implemented responsive layouts and cards for better usability
+
+4. **Technical Implementation**:
+   - Used Next.js file-based routing system for the new pages
+   - Implemented proper metadata generation for each page
+   - Maintained consistent UI elements and styling across all admin pages
+   - Ensured all components work correctly with demo data
+
+This approach provides a more intuitive and maintainable admin dashboard structure with dedicated pages for each function rather than tabs in a single view.
+
+## 2024-05-31: Customized chat interface for VA Claims Research Assistant
+
+- Updated preset messages in the chat interface to be relevant to veterans' disability claims
+- Customized the suggestion buttons with improved styling and layout
+- Changed placeholder text to be specific to VA claims research
+- Updated page title and description to better reflect the application's purpose
+- Enhanced the visual appeal of suggestion buttons with better spacing and border styling
+- Limited suggestions to 5 clear, concise options for better user experience
+
+## June 2024 - Fixed BDOC Admin Dashboard Errors
+
+### Issues
+The BDOC admin dashboard was encountering two critical errors:
+
+1. **HTML Structure Error**: The dashboard had a `<head>` tag nested inside the BdocLayout component, which caused hydration errors since in HTML, `<head>` cannot be a child of `<body>`.
+
+2. **Client Component Function Error**: Chart components (AreaChart, BarChart, DonutChart) were receiving function props (valueFormatter) directly, which is not allowed in Next.js client components unless marked with "use server".
+
+### Fix
+
+1. **Layout Fix**:
+   - Removed the `<head>` tag from the BdocLayout component
+   - Replaced it with Next.js metadata API for proper metadata handling
+   - Added an export const metadata object with title and description
+
+2. **Chart Component Fix**:
+   - Created simpler static alternatives to the chart components:
+     - StatCard: A simple card displaying data in a tabular format
+     - DonutStatCard: A simplified pie chart representation using badges
+   - Removed all direct function props (valueFormatter) from client components
+   - Added appropriate Lucide icons to maintain visual consistency
+
+These changes maintain the dashboard's appearance while resolving both the HTML structure error and the client component function error, allowing the admin dashboard to render correctly without hydration errors.
+
+## May 2024 - Separated Admin Dashboard (/bdoc) from User Dashboard (/dashboard)
+
+### Issue
+The admin dashboard (/bdoc) and user dashboard (/dashboard) were not properly separated in the application, causing confusion and potential security concerns. Both dashboards were accessible to all users and shared navigation components.
+
+### Implementation
+Implemented a complete separation between the admin dashboard and user dashboard:
+
+1. **Route Configuration Updates**:
+   - Modified `lib/routes-config.tsx` to split navigation into two separate arrays:
+     - `page_routes`: Contains only user dashboard routes
+     - `admin_routes`: Contains only admin dashboard routes
+   - Added a `routeType` property ('user' | 'admin') to identify routes
+
+2. **Sidebar Component Updates**:
+   - Updated `components/layout/sidebar.tsx` to dynamically display routes based on the current path:
+     - Use `admin_routes` when path starts with '/bdoc'
+     - Use `page_routes` when path starts with '/dashboard' or anything else
+   - Added conditional rendering for navigation elements specific to each dashboard
+   - Changed title to show "VA Claims Admin" or "VA Claims Dashboard" based on current section
+
+3. **Middleware Protection**:
+   - Enhanced `middleware.ts` to add basic route protection:
+     - Prevent navigating to `/dashboard` from `/bdoc` (redirects back to admin section)
+     - Prevent navigating to `/bdoc` from `/dashboard` (redirects back to user section)
+   - Added placeholder for future authentication logic for admin routes
+   - Updated matcher configuration to apply middleware to both route patterns
+
+This implementation ensures complete separation between the admin and user dashboards, preventing inadvertent access and laying the groundwork for proper authentication-based protection in the future. The admin dashboard (/bdoc) will be completely separate and private when deployed to production.
+
+### Result
+- User dashboard (/dashboard) and admin dashboard (/bdoc) now have completely separate navigation and routes
+- Attempting to access one area from the other will redirect appropriately
+- The sidebar shows only relevant routes based on the current section
+- Foundation is in place for adding proper authentication protection for the admin area 
+
+## May 2024 - Added Context7 MCP Server Configuration
+
+### Implementation
+Added the Context7 MCP server configuration to the Next.js configuration file to enable additional functionality:
+
+1. **Configuration Details**:
+   - Updated `next.config.ts` to include the MCP server configuration
+   - Added the Context7 server with command `npx` and args `["-y", "@upstash/context7-mcp@latest"]`
+
+The implementation adds support for the Context7 Memory, Context, and Planning (MCP) server, which can enhance the application's capabilities for managing context-aware operations and planning. This integration will allow the application to utilize Upstash's Context7 MCP system for improved contextual awareness in processing VA claims and documentation.
+
+```typescript
+mcpServers: {
+  context7: {
+    command: "npx",
+    args: ["-y", "@upstash/context7-mcp@latest"]
+  }
+}
+```
+
+This addition will enable more advanced contextual processing capabilities without requiring significant changes to the existing application structure. 

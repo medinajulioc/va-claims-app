@@ -1,5 +1,5 @@
 export const DEFAULT_THEME = {
-  preset: "default",
+  preset: "ocp",
   radius: "default",
   scale: "none",
   font: "default",
@@ -14,6 +14,11 @@ export const THEMES = [
     name: "Default",
     value: "default",
     colors: ["oklch(0.33 0 0)"]
+  },
+  {
+    name: "OCP",
+    value: "ocp",
+    colors: ["#7b664a", "#958a68", "#77775f", "#958b60", "#9d9b80"]
   },
   {
     name: "Desert Heat",

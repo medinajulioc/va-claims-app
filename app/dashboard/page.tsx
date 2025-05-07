@@ -5,9 +5,9 @@ import { Download } from "lucide-react";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "VA Claims Dashboard",
+    title: "VA Claims Research Assistant",
     description:
-      "A comprehensive research tool for veterans filing disability claims. Track, manage, and research VA disability claims with ease.",
+      "An intelligent research tool for veterans filing disability claims. Ask questions, get guidance, and find information to support your VA disability claim.",
     canonical: "/dashboard"
   });
 }
@@ -16,7 +16,7 @@ export default function Page() {
   return (
     <div className="space-y-4">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">VA Disability Claims</h1>
+        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">VA Claims Research Assistant</h1>
         <div className="flex items-center space-x-2">
           <Button>
             <Download />

@@ -18,11 +18,11 @@ import { PromptLoader } from "@/components/ui/custom/prompt/loader";
 import { PromptScrollButton } from "@/components/ui/custom/prompt/scroll-button";
 
 const chatSuggestions = [
-  "What's the latest tech trend?",
-  "How does this work?",
-  "Generate an image of a cat",
-  "Generate a REST API with Express.js",
-  "What's the best UX for onboarding?"
+  "How do I file a VA disability claim?",
+  "What evidence supports a PTSD claim?",
+  "Conditions qualifying for Agent Orange presumptive",
+  "How to appeal a VA denial decision",
+  "What happens during a C&P exam?"
 ];
 
 export default function AppRender() {
@@ -214,7 +214,7 @@ export default function AppRender() {
           </div>
         )}
 
-        <PromptInputTextarea placeholder="Ask me anything..." />
+        <PromptInputTextarea placeholder="Ask about VA claims or research..." />
 
         <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
           <PromptInputAction tooltip="Attach files">
@@ -246,10 +246,13 @@ export default function AppRender() {
       </Input>
 
       {!isFirstResponse && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap justify-center gap-3 pt-4 w-full max-w-4xl mx-auto">
           {chatSuggestions.map((suggestion: string, key: number) => (
             <Suggestion
               key={key}
+              variant="outline"
+              size="lg"
+              className="border-primary/30 hover:border-primary/80 text-sm sm:text-base"
               onClick={() => {
                 setPrompt(suggestion);
                 streamResponse();
