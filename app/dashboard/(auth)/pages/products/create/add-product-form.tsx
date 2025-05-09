@@ -298,7 +298,7 @@ export default function AddProductForm() {
                     <Checkbox id="terms" />
                     <label
                       htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                       Charge tax on this product
                     </label>
                   </div>

@@ -1,13 +1,20 @@
 import { generateMeta } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  DollarSign, 
-  FileText, 
-  UserPlus, 
-  ArrowUpRight, 
+import {
+  Users,
+  DollarSign,
+  FileText,
+  UserPlus,
+  ArrowUpRight,
   ArrowDownRight,
   PieChart,
   LineChart
@@ -29,7 +36,7 @@ function StatCard({ title, description, data, icon, className = "h-72" }) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-muted-foreground text-sm">{description}</p>
           </div>
           {icon}
         </div>
@@ -39,12 +46,10 @@ function StatCard({ title, description, data, icon, className = "h-72" }) {
           <p className="text-muted-foreground mb-2">Demo data visualization</p>
           <div className="text-center">
             {data.map((item, index) => (
-              <div key={index} className="flex justify-between my-1">
+              <div key={index} className="my-1 flex justify-between">
                 <span>{item.name}:</span>
-                <span className="font-medium ml-2">
-                  {typeof item.value === 'number' ? 
-                    item.value.toLocaleString() : 
-                    item.value}
+                <span className="ml-2 font-medium">
+                  {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
                 </span>
               </div>
             ))}
@@ -62,27 +67,25 @@ function DonutStatCard({ title, description, data, className = "h-60" }) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-muted-foreground text-sm">{description}</p>
           </div>
-          <PieChart className="h-5 w-5 text-muted-foreground" />
+          <PieChart className="text-muted-foreground h-5 w-5" />
         </div>
       </CardHeader>
       <CardContent>
         <div className={`flex flex-col items-center justify-center ${className}`}>
           <div className="mb-4">
-            <PieChart className="h-24 w-24 text-muted-foreground" />
+            <PieChart className="text-muted-foreground h-24 w-24" />
           </div>
-          <div className="grid grid-cols-3 w-full gap-2">
+          <div className="grid w-full grid-cols-3 gap-2">
             {data.map((item, index) => (
               <div key={index} className="flex flex-col items-center">
-                <Badge variant={
-                  index === 0 ? "default" : 
-                  index === 1 ? "secondary" : 
-                  "destructive"
-                } className="mb-1 px-3">
+                <Badge
+                  variant={index === 0 ? "default" : index === 1 ? "secondary" : "destructive"}
+                  className="mb-1 px-3">
                   {item.value}%
                 </Badge>
-                <span className="text-xs text-muted-foreground">{item.name}</span>
+                <span className="text-muted-foreground text-xs">{item.name}</span>
               </div>
             ))}
           </div>
@@ -149,19 +152,19 @@ export default function OverviewPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold tracking-tight lg:text-2xl">Dashboard Overview</h1>
-      
+
       {/* Key Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <span className="text-emerald-500 flex items-center mr-1">
-                <ArrowUpRight className="h-3 w-3 mr-1" /> 12%
+            <p className="text-muted-foreground mt-1 flex items-center text-xs">
+              <span className="mr-1 flex items-center text-emerald-500">
+                <ArrowUpRight className="mr-1 h-3 w-3" /> 12%
               </span>
               from last month
             </p>
@@ -170,13 +173,13 @@ export default function OverviewPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$48,325</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <span className="text-emerald-500 flex items-center mr-1">
-                <ArrowUpRight className="h-3 w-3 mr-1" /> 8.2%
+            <p className="text-muted-foreground mt-1 flex items-center text-xs">
+              <span className="mr-1 flex items-center text-emerald-500">
+                <ArrowUpRight className="mr-1 h-3 w-3" /> 8.2%
               </span>
               from last month
             </p>
@@ -185,13 +188,13 @@ export default function OverviewPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Active Claims</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">583</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <span className="text-emerald-500 flex items-center mr-1">
-                <ArrowUpRight className="h-3 w-3 mr-1" /> 4.3%
+            <p className="text-muted-foreground mt-1 flex items-center text-xs">
+              <span className="mr-1 flex items-center text-emerald-500">
+                <ArrowUpRight className="mr-1 h-3 w-3" /> 4.3%
               </span>
               from last month
             </p>
@@ -200,13 +203,13 @@ export default function OverviewPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">New Sign-ups</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
+            <UserPlus className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">219</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <span className="text-rose-500 flex items-center mr-1">
-                <ArrowDownRight className="h-3 w-3 mr-1" /> 5.1%
+            <p className="text-muted-foreground mt-1 flex items-center text-xs">
+              <span className="mr-1 flex items-center text-rose-500">
+                <ArrowDownRight className="mr-1 h-3 w-3" /> 5.1%
               </span>
               from last month
             </p>
@@ -215,11 +218,11 @@ export default function OverviewPage() {
       </div>
 
       {/* Revenue Chart */}
-      <StatCard 
-        title="Revenue Overview" 
+      <StatCard
+        title="Revenue Overview"
         description="Monthly revenue for the current year"
         data={revenueData}
-        icon={<LineChart className="h-5 w-5 text-muted-foreground" />}
+        icon={<LineChart className="text-muted-foreground h-5 w-5" />}
       />
 
       {/* Recent Claims and Status Chart */}
@@ -227,7 +230,9 @@ export default function OverviewPage() {
         <Card className="md:col-span-4">
           <CardHeader>
             <CardTitle>Recent Claims</CardTitle>
-            <p className="text-sm text-muted-foreground">The latest claims submitted to the system</p>
+            <p className="text-muted-foreground text-sm">
+              The latest claims submitted to the system
+            </p>
           </CardHeader>
           <CardContent>
             <Table>
@@ -246,11 +251,16 @@ export default function OverviewPage() {
                     <TableCell>{claim.claimant}</TableCell>
                     <TableCell>{claim.type}</TableCell>
                     <TableCell>
-                      <Badge variant={
-                        claim.status === "approved" ? "default" : 
-                        claim.status === "rejected" ? "destructive" : 
-                        claim.status === "processing" ? "outline" : "secondary"
-                      }>
+                      <Badge
+                        variant={
+                          claim.status === "approved"
+                            ? "default"
+                            : claim.status === "rejected"
+                              ? "destructive"
+                              : claim.status === "processing"
+                                ? "outline"
+                                : "secondary"
+                        }>
                         {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
                       </Badge>
                     </TableCell>
@@ -261,8 +271,8 @@ export default function OverviewPage() {
           </CardContent>
         </Card>
 
-        <DonutStatCard 
-          className="md:col-span-3 h-60"
+        <DonutStatCard
+          className="h-60 md:col-span-3"
           title="Claim Status Distribution"
           description="Current status of all claims"
           data={claimStatusData}
@@ -270,4 +280,4 @@ export default function OverviewPage() {
       </div>
     </div>
   );
-} 
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
+.next/
+out/
+build/
+dist/
+
+# Cache
+.vercel
+.swc/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+.env
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Tailwind
+tailwind.config.*
+postcss.config.*
+
+# Public assets
+public/ 

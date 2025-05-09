@@ -38,7 +38,7 @@ export default function Page() {
           File manager app coming soon. The file manager app is a template for managing assets such
           as images, videos, folders, etc.
         </div>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-center gap-2">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
           This page is currently under construction.
         </div>

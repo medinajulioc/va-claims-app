@@ -1,13 +1,7 @@
 import { generateMeta } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  TrendingUp,
-  LineChart,
-  BarChartIcon,
-  ArrowUpRight, 
-  ArrowDownRight
-} from "lucide-react";
+import { TrendingUp, LineChart, BarChartIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 export async function generateMetadata() {
   return generateMeta({
@@ -25,7 +19,7 @@ function StatCard({ title, description, data, icon, className = "h-72" }) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-muted-foreground text-sm">{description}</p>
           </div>
           {icon}
         </div>
@@ -35,12 +29,10 @@ function StatCard({ title, description, data, icon, className = "h-72" }) {
           <p className="text-muted-foreground mb-2">Demo data visualization</p>
           <div className="text-center">
             {data.map((item, index) => (
-              <div key={index} className="flex justify-between my-1">
+              <div key={index} className="my-1 flex justify-between">
                 <span>{item.name}:</span>
-                <span className="font-medium ml-2">
-                  {typeof item.value === 'number' ? 
-                    item.value.toLocaleString() : 
-                    item.value}
+                <span className="ml-2 font-medium">
+                  {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
                 </span>
               </div>
             ))}
@@ -89,97 +81,98 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold tracking-tight lg:text-2xl">Analytics Dashboard</h1>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
-        <StatCard 
-          title="User Growth" 
+        <StatCard
+          title="User Growth"
           description="Monthly new user registrations"
           data={userSignupsData}
-          icon={<BarChartIcon className="h-5 w-5 text-muted-foreground" />}
+          icon={<BarChartIcon className="text-muted-foreground h-5 w-5" />}
         />
-        
-        <StatCard 
-          title="Revenue Trends" 
+
+        <StatCard
+          title="Revenue Trends"
           description="Monthly revenue"
           data={revenueData}
-          icon={<LineChart className="h-5 w-5 text-muted-foreground" />}
+          icon={<LineChart className="text-muted-foreground h-5 w-5" />}
         />
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>User Engagement</CardTitle>
-            <p className="text-sm text-muted-foreground">Activity across platform features</p>
+            <p className="text-muted-foreground text-sm">Activity across platform features</p>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {engagementData.map((item, index) => (
                 <div key={index}>
-                  <div className="flex justify-between mb-1">
+                  <div className="mb-1 flex justify-between">
                     <span className="text-sm font-medium">{item.name}</span>
                     <Badge variant="outline">{item.value}</Badge>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2.5">
-                    <div 
-                      className="bg-blue-500 h-2.5 rounded-full" 
-                      style={{ width: `${(item.value / 2500) * 100}%` }}
-                    ></div>
+                  <div className="bg-muted h-2.5 w-full rounded-full">
+                    <div
+                      className="h-2.5 rounded-full bg-blue-500"
+                      style={{ width: `${(item.value / 2500) * 100}%` }}></div>
                   </div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Conversion Funnel</CardTitle>
-            <p className="text-sm text-muted-foreground">Visitor to user conversion</p>
+            <p className="text-muted-foreground text-sm">Visitor to user conversion</p>
           </CardHeader>
           <CardContent className="relative pt-8">
             {/* Simple funnel visualization */}
             <div className="space-y-2">
-              <div className="bg-blue-100 dark:bg-blue-950/30 h-14 flex items-center justify-center rounded-t-lg">
+              <div className="flex h-14 items-center justify-center rounded-t-lg bg-blue-100 dark:bg-blue-950/30">
                 <span className="font-medium">{conversionData[0].value} Visitors</span>
               </div>
-              <div className="bg-blue-200 dark:bg-blue-900/30 h-12 flex items-center justify-center mx-4">
+              <div className="mx-4 flex h-12 items-center justify-center bg-blue-200 dark:bg-blue-900/30">
                 <span className="font-medium">3,921 Interested</span>
               </div>
-              <div className="bg-blue-300 dark:bg-blue-800/30 h-10 flex items-center justify-center mx-8">
+              <div className="mx-8 flex h-10 items-center justify-center bg-blue-300 dark:bg-blue-800/30">
                 <span className="font-medium">2,156 Started</span>
               </div>
-              <div className="bg-blue-400 dark:bg-blue-700/30 h-8 flex items-center justify-center mx-12 rounded-b-lg">
+              <div className="mx-12 flex h-8 items-center justify-center rounded-b-lg bg-blue-400 dark:bg-blue-700/30">
                 <span className="font-medium">{conversionData[1].value} Signed Up</span>
               </div>
             </div>
-            
+
             <div className="mt-6 text-center">
-              <div className="inline-flex items-center bg-blue-50 dark:bg-blue-950/50 px-4 py-2 rounded-full">
-                <span className="font-medium mr-2">Conversion Rate:</span>
+              <div className="inline-flex items-center rounded-full bg-blue-50 px-4 py-2 dark:bg-blue-950/50">
+                <span className="mr-2 font-medium">Conversion Rate:</span>
                 <Badge>{conversionData[2].value}</Badge>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>System Performance</CardTitle>
-          <p className="text-sm text-muted-foreground">Server metrics and application performance</p>
+          <p className="text-muted-foreground text-sm">
+            Server metrics and application performance
+          </p>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Average Response Time</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">187ms</div>
-              <p className="text-xs text-muted-foreground flex items-center mt-1">
-                <span className="text-emerald-500 flex items-center mr-1">
-                  <ArrowDownRight className="h-3 w-3 mr-1" /> 12.4%
+              <p className="text-muted-foreground mt-1 flex items-center text-xs">
+                <span className="mr-1 flex items-center text-emerald-500">
+                  <ArrowDownRight className="mr-1 h-3 w-3" /> 12.4%
                 </span>
                 from last week
               </p>
@@ -188,25 +181,23 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Server Uptime</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">99.97%</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Last 30 days
-              </p>
+              <p className="text-muted-foreground mt-1 text-xs">Last 30 days</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0.03%</div>
-              <p className="text-xs text-muted-foreground flex items-center mt-1">
-                <span className="text-emerald-500 flex items-center mr-1">
-                  <ArrowDownRight className="h-3 w-3 mr-1" /> 0.01%
+              <p className="text-muted-foreground mt-1 flex items-center text-xs">
+                <span className="mr-1 flex items-center text-emerald-500">
+                  <ArrowDownRight className="mr-1 h-3 w-3" /> 0.01%
                 </span>
                 from last week
               </p>
@@ -214,61 +205,61 @@ export default function AnalyticsPage() {
           </Card>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Geographic Distribution</CardTitle>
-          <p className="text-sm text-muted-foreground">User distribution by location</p>
+          <p className="text-muted-foreground text-sm">User distribution by location</p>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-sm font-medium">California</span>
-                <span className="text-sm text-muted-foreground">186 users</span>
+                <span className="text-muted-foreground text-sm">186 users</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '78%' }}></div>
+              <div className="bg-muted h-2.5 w-full rounded-full">
+                <div className="h-2.5 rounded-full bg-blue-500" style={{ width: "78%" }}></div>
               </div>
             </div>
-            
+
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-sm font-medium">Texas</span>
-                <span className="text-sm text-muted-foreground">143 users</span>
+                <span className="text-muted-foreground text-sm">143 users</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '60%' }}></div>
+              <div className="bg-muted h-2.5 w-full rounded-full">
+                <div className="h-2.5 rounded-full bg-blue-500" style={{ width: "60%" }}></div>
               </div>
             </div>
-            
+
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-sm font-medium">Florida</span>
-                <span className="text-sm text-muted-foreground">112 users</span>
+                <span className="text-muted-foreground text-sm">112 users</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '47%' }}></div>
+              <div className="bg-muted h-2.5 w-full rounded-full">
+                <div className="h-2.5 rounded-full bg-blue-500" style={{ width: "47%" }}></div>
               </div>
             </div>
-            
+
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-sm font-medium">Virginia</span>
-                <span className="text-sm text-muted-foreground">98 users</span>
+                <span className="text-muted-foreground text-sm">98 users</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '41%' }}></div>
+              <div className="bg-muted h-2.5 w-full rounded-full">
+                <div className="h-2.5 rounded-full bg-blue-500" style={{ width: "41%" }}></div>
               </div>
             </div>
-            
+
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="mb-1 flex justify-between">
                 <span className="text-sm font-medium">Other States</span>
-                <span className="text-sm text-muted-foreground">708 users</span>
+                <span className="text-muted-foreground text-sm">708 users</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: '90%' }}></div>
+              <div className="bg-muted h-2.5 w-full rounded-full">
+                <div className="h-2.5 rounded-full bg-blue-500" style={{ width: "90%" }}></div>
               </div>
             </div>
           </div>
@@ -276,4 +267,4 @@ export default function AnalyticsPage() {
       </Card>
     </div>
   );
-} 
+}

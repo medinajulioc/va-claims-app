@@ -16,7 +16,9 @@ export default function Page() {
   return (
     <div className="space-y-4">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">VA Claims Research Assistant</h1>
+        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">
+          VA Claims Research Assistant
+        </h1>
         <div className="flex items-center space-x-2">
           <Button>
             <Download />
@@ -29,4 +31,4 @@ export default function Page() {
       </div>
     </div>
   );
-} 
+}

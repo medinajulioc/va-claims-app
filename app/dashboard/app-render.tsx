@@ -144,7 +144,7 @@ export default function AppRender() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-16rem)] w-full flex-col items-center justify-center space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+    <div className="bg-card flex h-[calc(100vh-16rem)] w-full flex-col items-center justify-center space-y-4 rounded-lg border p-4 shadow-sm">
       <ChatContainer
         className={cn("relative w-full flex-1 space-y-4 pe-2", { hidden: !isFirstResponse })}
         ref={containerRef}
@@ -201,11 +201,7 @@ export default function AppRender() {
         />
       </div>
 
-      <Input
-        value={prompt}
-        onValueChange={setPrompt}
-        onSubmit={streamResponse}
-        className="w-full">
+      <Input value={prompt} onValueChange={setPrompt} onSubmit={streamResponse} className="w-full">
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 pb-2">
             {files.map((file, index) => (
@@ -246,7 +242,7 @@ export default function AppRender() {
       </Input>
 
       {!isFirstResponse && (
-        <div className="flex flex-wrap justify-center gap-3 pt-4 w-full max-w-4xl mx-auto">
+        <div className="mx-auto flex w-full max-w-4xl flex-wrap justify-center gap-3 pt-4">
           {chatSuggestions.map((suggestion: string, key: number) => (
             <Suggestion
               key={key}
@@ -264,4 +260,4 @@ export default function AppRender() {
       )}
     </div>
   );
-} 
+}

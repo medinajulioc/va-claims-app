@@ -1,0 +1,49 @@
+# Task ID: 14
+# Title: Develop Admin Dashboard
+# Status: pending
+# Dependencies: 6, 9, 13
+# Priority: medium
+# Description: Create administrative dashboard for claim overview and management
+# Details:
+Design and implement admin dashboard with role-based access. Create claim overview with filtering and sorting. Build user management interface. Implement system statistics and metrics display. Create admin action logs and audit trails.
+
+# Test Strategy:
+Test admin dashboard with admin user role. Verify filtering and sorting of claims works correctly. Test user management functionality. Ensure proper permissions are enforced for admin actions.
+
+# Subtasks:
+## 1. Implement Role-Based Access Control for Admin Panel [pending]
+### Dependencies: None
+### Description: Create RBAC system for admin and moderator roles at /bdoc
+### Details:
+Implement role-based access control for the admin panel at /bdoc, create admin and moderator role definitions, develop permission checking middleware, implement role assignment functionality, and ensure proper access restrictions based on user roles.
+
+## 2. Create System Prompt Configuration Interface [pending]
+### Dependencies: 14.1
+### Description: Build UI for configuring and managing AI system prompts
+### Details:
+Design and implement system prompt configuration interface, create prompt editing capabilities with preview functionality, develop prompt version history, implement prompt deployment system with 1-minute update time, and ensure changes are properly applied to the chat system.
+
+## 3. Implement User Management Dashboard [pending]
+### Dependencies: 14.1
+### Description: Create interface for managing user accounts and roles
+### Details:
+Design and implement user management interface, create user listing with search and filtering, develop user role assignment capabilities, implement user account status management (active/suspended), create user detail view with activity history, and ensure proper logging of admin actions.
+
+## 4. Develop Forum Moderation Tools [pending]
+### Dependencies: 14.1
+### Description: Create moderation interface for community forum management
+### Details:
+Design and implement forum moderation interface, create post/thread editing and deletion tools, develop thread pinning functionality, implement content flagging system, create user restriction capabilities for forum access, and ensure all moderation actions are properly logged for accountability.
+
+## 5. Create AI Fine-Tuning Controls [pending]
+### Dependencies: 14.1, 14.2
+### Description: Implement interface for managing AI fine-tuning with uploaded documents
+### Details:
+Design and implement AI fine-tuning control interface, create document selection for fine-tuning, develop fine-tuning job management, implement model version control, create performance metrics for fine-tuned models, and ensure proper integration with the chat system.
+
+## 6. Implement Analytics Dashboard [pending]
+### Dependencies: 14.1
+### Description: Create analytics display for user activity, forum posts, and OCR accuracy
+### Details:
+Design and implement analytics dashboard with real-time data updates, create visualizations for key metrics (user activity, forum engagement, OCR accuracy), develop customizable reporting, implement data export functionality, and ensure proper data aggregation for performance optimization.
+

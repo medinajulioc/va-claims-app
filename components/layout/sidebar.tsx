@@ -42,10 +42,10 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const isTablet = useIsTablet();
-  
+
   // Determine if we're in the admin section
-  const isAdminPath = pathname?.startsWith('/bdoc');
-  
+  const isAdminPath = pathname?.startsWith("/bdoc");
+
   // Select the appropriate routes based on the path
   const routesToShow = isAdminPath ? admin_routes : page_routes;
 

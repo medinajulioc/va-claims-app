@@ -49,7 +49,7 @@ export default function Search() {
     if (item.items?.length) {
       return null;
     }
-    
+
     // @ts-expect-error
     const LucideIcon = item.icon ? icons[item.icon] : null;
 

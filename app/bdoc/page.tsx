@@ -1,25 +1,32 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 import { generateMeta } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomDateRangePicker from "@/components/custom-date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Download, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
-  FileText, 
-  UserPlus, 
-  ShieldAlert, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
+import {
+  Download,
+  Users,
+  DollarSign,
+  TrendingUp,
+  FileText,
+  UserPlus,
+  ShieldAlert,
+  ArrowUpRight,
+  ArrowDownRight,
+  CheckCircle2,
+  XCircle,
+  Clock,
   Filter,
   PieChart,
   BarChart as BarChartIcon,
@@ -53,12 +60,10 @@ function StatCard({ title, description, data, icon, className = "h-72" }) {
           <p className="text-muted-foreground mb-2">Demo data visualization</p>
           <div className="text-center">
             {data.map((item, index) => (
-              <div key={index} className="flex justify-between my-1">
+              <div key={index} className="my-1 flex justify-between">
                 <span>{item.name}:</span>
-                <span className="font-medium ml-2">
-                  {typeof item.value === 'number' ? 
-                    item.value.toLocaleString() : 
-                    item.value}
+                <span className="ml-2 font-medium">
+                  {typeof item.value === "number" ? item.value.toLocaleString() : item.value}
                 </span>
               </div>
             ))}
@@ -78,25 +83,23 @@ function DonutStatCard({ title, description, data, className = "h-60" }) {
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <PieChart className="h-5 w-5 text-muted-foreground" />
+          <PieChart className="text-muted-foreground h-5 w-5" />
         </div>
       </CardHeader>
       <CardContent>
         <div className={`flex flex-col items-center justify-center ${className}`}>
           <div className="mb-4">
-            <PieChart className="h-24 w-24 text-muted-foreground" />
+            <PieChart className="text-muted-foreground h-24 w-24" />
           </div>
-          <div className="grid grid-cols-3 w-full gap-2">
+          <div className="grid w-full grid-cols-3 gap-2">
             {data.map((item, index) => (
               <div key={index} className="flex flex-col items-center">
-                <Badge variant={
-                  index === 0 ? "default" : 
-                  index === 1 ? "secondary" : 
-                  "destructive"
-                } className="mb-1 px-3">
+                <Badge
+                  variant={index === 0 ? "default" : index === 1 ? "secondary" : "destructive"}
+                  className="mb-1 px-3">
                   {item.value}%
                 </Badge>
-                <span className="text-xs text-muted-foreground">{item.name}</span>
+                <span className="text-muted-foreground text-xs">{item.name}</span>
               </div>
             ))}
           </div>
@@ -107,5 +110,5 @@ function DonutStatCard({ title, description, data, className = "h-60" }) {
 }
 
 export default function Page() {
-  redirect('/bdoc/overview');
-} 
+  redirect("/bdoc/overview");
+}

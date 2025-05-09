@@ -24,7 +24,8 @@ export default async function RootLayout({
     scale: (cookieStore.get("theme_scale")?.value ?? DEFAULT_THEME.scale) as any,
     radius: (cookieStore.get("theme_radius")?.value ?? DEFAULT_THEME.radius) as any,
     font: (cookieStore.get("theme_font")?.value ?? DEFAULT_THEME.font) as any,
-    contentLayout: (cookieStore.get("theme_content_layout")?.value ?? DEFAULT_THEME.contentLayout) as any
+    contentLayout: (cookieStore.get("theme_content_layout")?.value ??
+      DEFAULT_THEME.contentLayout) as any
   };
 
   const bodyAttributes = Object.fromEntries(
@@ -42,11 +43,7 @@ export default async function RootLayout({
         suppressHydrationWarning
         className={cn("bg-background group/layout font-sans", fontVariables)}
         {...bodyAttributes}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ActiveThemeProvider initialTheme={themeSettings}>
             {children}
             <Toaster />

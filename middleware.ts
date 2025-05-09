@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   // Removed redirection to allow landing page to be visible
@@ -9,20 +9,22 @@ export function middleware(request: NextRequest) {
 
   // Prevent accessing admin dashboard from user dashboard and vice versa
   // This ensures complete separation between the two areas
-  if (request.nextUrl.pathname.startsWith('/dashboard') && 
-      request.headers.get('referer')?.includes('/bdoc')) {
+  if (
+    request.nextUrl.pathname.startsWith("/dashboard") &&
+    request.headers.get("referer")?.includes("/bdoc")
+  ) {
     // If coming from admin section, redirect to admin overview
-    return NextResponse.redirect(new URL('/bdoc/overview', request.url));
+    return NextResponse.redirect(new URL("/bdoc/overview", request.url));
   }
-  
-  if (request.nextUrl.pathname.startsWith('/bdoc')) {
+
+  if (request.nextUrl.pathname.startsWith("/bdoc")) {
     // In a real implementation, add actual authentication check here
     // For now, just ensure complete separation from user dashboard
-    if (request.headers.get('referer')?.includes('/dashboard')) {
+    if (request.headers.get("referer")?.includes("/dashboard")) {
       // If coming from user dashboard, redirect back to user dashboard
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-    
+
     // In production, you would add real auth check here
     // const isAuthenticated = checkAdminAuthentication(request);
     // if (!isAuthenticated) {
@@ -32,5 +34,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/bdoc/:path*'],
+  matcher: ["/", "/dashboard/:path*", "/bdoc/:path*"]
 };

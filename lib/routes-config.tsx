@@ -1,7 +1,7 @@
 type PageRoutesType = {
   title: string;
   items: PageRoutesItemType;
-  routeType?: 'user' | 'admin';
+  routeType?: "user" | "admin";
 };
 
 type PageRoutesItemType = {
@@ -47,14 +47,14 @@ export const page_routes: PageRoutesType[] = [
         icon: "FolderDot"
       },
       {
-        title: "Medical Evidence",
+        title: "File Manager",
         href: "/dashboard/file-manager",
         icon: "Folder"
       },
       { title: "Compensation Rates", href: "/dashboard/crypto", icon: "DollarSign" },
       { title: "Treatment Tracker", href: "/dashboard/hospital-management", icon: "Activity" }
     ],
-    routeType: 'user'
+    routeType: "user"
   },
   {
     title: "Resources",
@@ -82,7 +82,7 @@ export const page_routes: PageRoutesType[] = [
       },
       { title: "eBenefits Access", href: "/dashboard/apps/api-keys", icon: "Key", isComing: false }
     ],
-    routeType: 'user'
+    routeType: "user"
   },
   {
     title: "User Pages",
@@ -147,7 +147,7 @@ export const page_routes: PageRoutesType[] = [
         newTab: true
       }
     ],
-    routeType: 'user'
+    routeType: "user"
   },
   {
     title: "Resources",
@@ -177,7 +177,7 @@ export const page_routes: PageRoutesType[] = [
         isComing: true
       }
     ],
-    routeType: 'user'
+    routeType: "user"
   }
 ];
 
@@ -206,6 +206,6 @@ export const admin_routes: PageRoutesType[] = [
         icon: "BarChart"
       }
     ],
-    routeType: 'admin'
+    routeType: "admin"
   }
 ];
