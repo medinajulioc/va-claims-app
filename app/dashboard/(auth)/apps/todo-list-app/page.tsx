@@ -35,9 +35,10 @@ export default function Page() {
           VA Claims Task Checklist
         </h1>
         <div className="lg:text-lg">
-          Keep track of required forms, evidence collection, medical appointments, and deadlines for your VA disability claim. Never miss a critical step in your claims process.
+          Keep track of required forms, evidence collection, medical appointments, and deadlines for
+          your VA disability claim. Never miss a critical step in your claims process.
         </div>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-center gap-2">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
           This feature is currently under construction.
         </div>

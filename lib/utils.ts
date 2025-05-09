@@ -24,11 +24,11 @@ export function generateMeta({
   canonical: string;
 }): Metadata {
   // Default to localhost:3001 if BASE_URL is not defined
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
-  
+  const baseUrl = process.env.BASE_URL || "http://localhost:3001";
+
   // Handle different route prefixes
-  const routePrefix = canonical.startsWith('/bdoc') ? '/bdoc' : '/dashboard';
-  
+  const routePrefix = canonical.startsWith("/bdoc") ? "/bdoc" : "/dashboard";
+
   return {
     title: `${title} - Shadcn UI Kit`,
     description: description,
@@ -37,7 +37,7 @@ export function generateMeta({
       canonical: `${routePrefix}${canonical}`
     },
     openGraph: {
-      images: [`${process.env.ASSETS_URL || ''}/seo.jpg`]
+      images: [`${process.env.ASSETS_URL || ""}/seo.jpg`]
     }
   };
 }

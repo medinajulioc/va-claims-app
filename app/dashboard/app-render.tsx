@@ -18,11 +18,11 @@ import { PromptLoader } from "@/components/ui/custom/prompt/loader";
 import { PromptScrollButton } from "@/components/ui/custom/prompt/scroll-button";
 
 const chatSuggestions = [
-  "What's the latest tech trend?",
-  "How does this work?",
-  "Generate an image of a cat",
-  "Generate a REST API with Express.js",
-  "What's the best UX for onboarding?"
+  "How do I file a VA disability claim?",
+  "What evidence supports a PTSD claim?",
+  "Conditions qualifying for Agent Orange presumptive",
+  "How to appeal a VA denial decision",
+  "What happens during a C&P exam?"
 ];
 
 export default function AppRender() {
@@ -144,7 +144,7 @@ export default function AppRender() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-16rem)] w-full flex-col items-center justify-center space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+    <div className="bg-card flex h-[calc(100vh-16rem)] w-full flex-col items-center justify-center space-y-4 rounded-lg border p-4 shadow-sm">
       <ChatContainer
         className={cn("relative w-full flex-1 space-y-4 pe-2", { hidden: !isFirstResponse })}
         ref={containerRef}
@@ -201,11 +201,7 @@ export default function AppRender() {
         />
       </div>
 
-      <Input
-        value={prompt}
-        onValueChange={setPrompt}
-        onSubmit={streamResponse}
-        className="w-full">
+      <Input value={prompt} onValueChange={setPrompt} onSubmit={streamResponse} className="w-full">
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 pb-2">
             {files.map((file, index) => (
@@ -214,7 +210,7 @@ export default function AppRender() {
           </div>
         )}
 
-        <PromptInputTextarea placeholder="Ask me anything..." />
+        <PromptInputTextarea placeholder="Ask about VA claims or research..." />
 
         <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
           <PromptInputAction tooltip="Attach files">
@@ -246,10 +242,13 @@ export default function AppRender() {
       </Input>
 
       {!isFirstResponse && (
-        <div className="flex flex-wrap gap-2">
+        <div className="mx-auto flex w-full max-w-4xl flex-wrap justify-center gap-3 pt-4">
           {chatSuggestions.map((suggestion: string, key: number) => (
             <Suggestion
               key={key}
+              variant="outline"
+              size="lg"
+              className="border-primary/30 hover:border-primary/80 text-sm sm:text-base"
               onClick={() => {
                 setPrompt(suggestion);
                 streamResponse();
@@ -261,4 +260,4 @@ export default function AppRender() {
       )}
     </div>
   );
-} 
+}

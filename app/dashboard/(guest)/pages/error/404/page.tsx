@@ -18,7 +18,7 @@ export default function Page() {
       <div className="mx-auto flex max-w-[600px] flex-col items-center space-y-2">
         <h1 className="text-8xl font-bold">404</h1>
         <h2 className="text-3xl font-semibold">Claim Resource Not Found</h2>
-        <p className="text-balance text-muted-foreground">
+        <p className="text-muted-foreground text-balance">
           Sorry, the VA benefits information you're looking for cannot be found or may have moved.
         </p>
         <Button className="mt-4" asChild>

@@ -35,9 +35,10 @@ export default function Page() {
           Claim Tracker
         </h1>
         <div className="lg:text-lg">
-          Visualize and track your VA disability claims at each stage of the process. Monitor claim progress from initial submission through evidence gathering, review, and final decision.
+          Visualize and track your VA disability claims at each stage of the process. Monitor claim
+          progress from initial submission through evidence gathering, review, and final decision.
         </div>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-center gap-2">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
           This feature is currently under construction.
         </div>

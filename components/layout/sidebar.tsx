@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect } from "react";
 import Link from "next/link";
-import { page_routes } from "@/lib/routes-config";
+import { page_routes, admin_routes } from "@/lib/routes-config";
 import { ChevronRight, ChevronsUpDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -43,6 +43,12 @@ export default function Sidebar() {
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
   const isTablet = useIsTablet();
 
+  // Determine if we're in the admin section
+  const isAdminPath = pathname?.startsWith("/bdoc");
+
+  // Select the appropriate routes based on the path
+  const routesToShow = isAdminPath ? admin_routes : page_routes;
+
   useEffect(() => {
     if (isMobile) setOpenMobile(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,18 +69,22 @@ export default function Sidebar() {
                 <SidebarMenuButton className="rounded-none group-data-[collapsible=icon]:px-0!">
                   <Logo />
                   <div className="truncate font-semibold group-data-[collapsible=icon]:hidden">
-                    Shadcn UI Kit
+                    {isAdminPath ? "VA Claims Admin" : "VA Claims Dashboard"}
                   </div>
                   <ChevronsUpDown className="ml-auto group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-(--radix-popper-anchor-width)">
-                <DropdownMenuItem>
-                  <span>Ecommerce</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Web Analiytics</span>
-                </DropdownMenuItem>
+                {!isAdminPath && (
+                  <DropdownMenuItem>
+                    <span>Ecommerce</span>
+                  </DropdownMenuItem>
+                )}
+                {!isAdminPath && (
+                  <DropdownMenuItem>
+                    <span>Web Analytics</span>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
@@ -82,7 +92,7 @@ export default function Sidebar() {
       </SidebarHeader>
       <SidebarContent className="overflow-hidden">
         <ScrollArea className="h-full">
-          {page_routes.map((route, key) => (
+          {routesToShow.map((route, key) => (
             <SidebarGroup key={key}>
               <SidebarGroupLabel className="text-xs tracking-wider uppercase">
                 {route.title}
@@ -187,21 +197,23 @@ export default function Sidebar() {
         </ScrollArea>
       </SidebarContent>
       <SidebarFooter>
-        <Card className="bg-muted gap-4 py-4 group-data-[collapsible=icon]:hidden">
-          <CardHeader className="px-3">
-            <CardTitle>Upgrade to Pro</CardTitle>
-            <CardDescription>
-              Get pro now to own all dashboards, templates and components for life.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-3">
-            <Button className="w-full" asChild>
-              <Link href="https://shadcnuikit.com/pricing" target="_blank">
-                Get Shadcn UI Kit
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        {!isAdminPath && (
+          <Card className="bg-muted gap-4 py-4 group-data-[collapsible=icon]:hidden">
+            <CardHeader className="px-3">
+              <CardTitle>Upgrade to Pro</CardTitle>
+              <CardDescription>
+                Get pro now to own all dashboards, templates and components for life.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-3">
+              <Button className="w-full" asChild>
+                <Link href="https://shadcnuikit.com/pricing" target="_blank">
+                  Get Shadcn UI Kit
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </SidebarFooter>
     </SidebarContainer>
   );

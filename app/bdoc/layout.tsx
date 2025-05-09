@@ -6,6 +6,11 @@ import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
 import { Toaster } from "@/components/ui/sonner";
 
+export const metadata = {
+  title: "VA Claims Admin | Disability Documentation Management",
+  description: "Administrative dashboard for managing VA claims and documentation"
+};
+
 export default async function BdocLayout({
   children
 }: Readonly<{
@@ -18,9 +23,6 @@ export default async function BdocLayout({
 
   return (
     <>
-      <head>
-        <title>VA Claims Admin | Disability Documentation Management</title>
-      </head>
       <SidebarProvider defaultOpen={defaultOpen}>
         <Sidebar />
         <SidebarInset>
@@ -33,4 +35,4 @@ export default async function BdocLayout({
       </SidebarProvider>
     </>
   );
-} 
+}

@@ -35,9 +35,10 @@ export default function Page() {
           VA Notifications
         </h1>
         <div className="lg:text-lg">
-          Never miss important updates about your VA disability claim. Receive timely notifications about claim status changes, required documents, and upcoming C&P exams.
+          Never miss important updates about your VA disability claim. Receive timely notifications
+          about claim status changes, required documents, and upcoming C&P exams.
         </div>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <div className="text-muted-foreground flex items-center justify-center gap-2">
           <AlertCircleIcon className="h-4 w-4 text-orange-400" />
           This feature is currently under construction.
         </div>
