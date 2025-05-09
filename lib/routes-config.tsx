@@ -204,6 +204,16 @@ export const admin_routes: PageRoutesType[] = [
         title: "Analytics",
         href: "/bdoc/analytics",
         icon: "BarChart"
+      },
+      {
+        title: "System Prompt Manager",
+        href: "/bdoc/system-prompt-manager",
+        icon: "MessageSquare"
+      },
+      {
+        title: "Fine Tuning",
+        href: "/bdoc/fine-tuning",
+        icon: "Zap"
       }
     ],
     routeType: "admin"

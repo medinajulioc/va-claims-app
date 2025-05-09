@@ -57,12 +57,6 @@ const nextConfig: NextConfig = {
         hostname: "bundui-images.netlify.app"
       }
     ]
-  },
-  mcpServers: {
-    context7: {
-      command: "npx",
-      args: ["-y", "@upstash/context7-mcp@latest"]
-    }
   }
 };
 

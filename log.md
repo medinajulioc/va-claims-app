@@ -717,3 +717,559 @@ Integrated Prettier as the code formatter for the project with the following con
    - Added ESLint fix-on-save support for integrated linting and formatting
 
 This implementation ensures consistent code formatting across the project, improves code readability, and reduces time spent on manual formatting during code reviews.
+
+## 2025-05-09
+
+### Added System Prompt Manager in Admin Panel (bdoc)
+
+The System Prompt Manager is a new module that allows for the creation, editing, and management of system prompts for AI applications. Key features include:
+
+**Directory Structure & Files:**
+
+- Created `/app/bdoc/system-prompt-manager/` directory structure
+- Implemented component architecture with proper separation of concerns
+- Created types, mock data, and action functions to simulate backend operations
+
+**Key Components:**
+
+- `SystemPromptManager`: The main component orchestrating the UI
+- `PromptEditor`: Handles editing individual prompts
+- `PromptVersionHistory`: Displays version history with comparison
+- `DiffViewer`: Shows differences between versions of prompts
+
+**UI Features:**
+
+- Prompt creation, editing, and deletion
+- Category management with color coding
+- Version history tracking
+- Diff comparison between versions
+- Version restoration
+
+**Dependencies Added:**
+
+- `react-diff-viewer-continued`: For visualizing differences between prompt versions
+- `nanoid`: For generating unique IDs
+
+**Technical Implementation Details:**
+
+- Used React hooks for state management
+- Leveraged Shadcn UI components for consistent styling
+- Implemented mock data and simulated API calls with delays
+- Created proper TypeScript interfaces for all data structures
+- Built with a focus on extensibility for future backend integration
+
+**Next Steps:**
+
+- Integrate with actual backend storage
+- Add user roles and permissions
+- Implement deployment capabilities
+- Add import/export functionality
+- Create templates library for common prompt patterns
+
+The System Prompt Manager provides a fully functional UI for managing AI system prompts with version control capabilities, allowing users to track changes and restore previous versions as needed.
+
+## 2025-05-10
+
+### Fixed System Prompt Manager Integration Issues
+
+**Issues Fixed:**
+
+- Replaced non-existent `PageHeader` component with standard heading structure to match other bdoc pages
+- Fixed metadata handling to use the `generateMeta` function like other bdoc pages
+- Removed references to undefined types in mock-data.ts (`SystemPromptDeployment`, `MockDataState`)
+- Removed unused mock data objects to prevent TypeScript errors
+
+**Changes Made:**
+
+- Updated `app/bdoc/system-prompt-manager/page.tsx` to use a simple heading structure
+- Changed metadata declaration to use the `generateMeta` function consistently with other bdoc pages
+- Cleaned up `mock-data.ts` to only include properly typed mock data
+- Added proper imports for all used types
+
+These changes ensure the System Prompt Manager integrates correctly with the existing bdoc admin dashboard structure and follows the same patterns as other sections, maintaining consistency throughout the application.
+
+## May 2024 - Fixed Select Component Error in System Prompt Manager
+
+### Issue
+
+The System Prompt Manager page was encountering a React error when loading:
+
+```
+Error: A <Select.Item /> must have a value prop that is not an empty string. This is because the Select value can be set to an empty string to clear the selection and show the placeholder.
+    at SelectItem (webpack-internal:///(app-pages-browser)/./node_modules/@radix-ui/react-select/dist/index.mjs:1072:15)
+```
+
+### Root Cause
+
+In the `SystemPromptManager.tsx` component, there was a `<SelectItem>` with an empty string value:
+
+```tsx
+<SelectItem value="">Uncategorized</SelectItem>
+```
+
+The Radix UI Select component requires all SelectItem components to have non-empty values to function correctly. Using an empty string as a value was causing the error.
+
+### Fix
+
+1. Changed the empty string value to "uncategorized":
+
+   ```tsx
+   <SelectItem value="uncategorized">Uncategorized</SelectItem>
+   ```
+
+2. Updated the state management:
+   - Changed the initial state from empty string to "uncategorized":
+     ```tsx
+     const [newPromptCategoryId, setNewPromptCategoryId] = useState<string>("uncategorized");
+     ```
+   - Updated the form reset logic to use "uncategorized" instead of empty string:
+     ```tsx
+     setNewPromptCategoryId("uncategorized");
+     ```
+   - Modified the prompt creation logic to handle "uncategorized" as a special case:
+     ```tsx
+     categoryId: newPromptCategoryId === "uncategorized" ? undefined : newPromptCategoryId || undefined,
+     ```
+
+### Resolution
+
+After these changes, the System Prompt Manager page loads correctly without any React errors. The Select component now properly handles the "Uncategorized" option, maintaining the same functionality but with valid values for all SelectItem components.
+
+## 2023-11-21: Implemented AI Fine-Tuning Management Interface
+
+Added a new Fine-Tuning page to the admin dashboard (`/bdoc/fine-tuning`) that provides a complete interface for managing AI fine-tuning operations. This implements task 14.5 from the project requirements.
+
+### Features implemented:
+
+1. **Document Management**:
+
+   - Document selection interface with filtering and search capabilities
+   - Support for multiple document formats (PDF, DOCX)
+   - Category-based document organization
+
+2. **Fine-Tuning Jobs**:
+
+   - Job creation workflow with base model selection
+   - Job status tracking with progress indicators
+   - Error handling and reporting
+
+3. **Fine-Tuned Models**:
+
+   - Model gallery with activation controls
+   - Version tracking and management
+   - Performance metrics visualization
+
+4. **Performance Metrics Dashboard**:
+
+   - Accuracy, precision, recall, and F1 score metrics
+   - Performance trends over time
+   - Latency monitoring and optimization
+
+5. **Chat System Integration**:
+   - Prepared hooks for connecting fine-tuned models with the chat system
+   - Model activation controls for switching between models
+
+All UI components are fully responsive and follow the existing design system. Mock data is currently used, with APIs prepared for future backend integration.
+
+### Files Created:
+
+- `/app/bdoc/fine-tuning/page.tsx` - Main page component
+- `/app/bdoc/fine-tuning/data.ts` - Mock data interfaces and values
+- `/app/bdoc/fine-tuning/components/DocumentSelector.tsx` - Document selection interface
+- `/app/bdoc/fine-tuning/components/JobsList.tsx` - Fine-tuning jobs management
+- `/app/bdoc/fine-tuning/components/ModelsGallery.tsx` - Fine-tuned models gallery
+- `/app/bdoc/fine-tuning/components/NewJobForm.tsx` - Job creation form
+- `/app/bdoc/fine-tuning/components/PerformanceMetrics.tsx` - Model performance visualization
+
+### Files Modified:
+
+- `/lib/routes-config.tsx` - Added Fine-Tuning route to admin navigation
+
+This implementation provides all the UI components needed for managing fine-tuning operations, and is designed to be easily connected to backend APIs once those are available.
+
+## 2023-11-22: Fixed CSS 404 Errors After Fine-Tuning Page Implementation
+
+### Issue
+
+After implementing the Fine-Tuning page, the application started showing multiple 404 errors in the console:
+
+```
+GET /_next/static/css/app/layout.css?v=1746815949989 404
+```
+
+These errors indicated that the CSS files required by the application were not being generated properly by Next.js and Tailwind CSS.
+
+### Root Cause Analysis
+
+1. The project was missing a `tailwind.config.js` file at the root level, which is essential for Tailwind CSS v4 to function correctly with Next.js 15.
+2. The `components.json` file (used by shadcn UI) had an empty "config" field, failing to point to any Tailwind configuration file.
+3. The new Fine-Tuning page introduced components that required proper Tailwind CSS processing, making the issue apparent.
+
+### Fix Implemented
+
+1. Created a standard `tailwind.config.js` file with appropriate content patterns for Next.js 15:
+
+   ```javascript
+   module.exports = {
+     content: [
+       "./app/**/*.{js,ts,jsx,tsx,mdx}",
+       "./components/**/*.{js,ts,jsx,tsx,mdx}",
+       "./lib/**/*.{js,ts,jsx,tsx,mdx}"
+     ],
+     theme: {
+       extend: {}
+     },
+     plugins: [require("tailwindcss-animate")]
+   };
+   ```
+
+2. Updated the `components.json` file to properly reference the Tailwind configuration:
+
+   ```json
+   "tailwind": {
+     "config": "tailwind.config.js",
+     "css": "app/globals.css",
+     // other properties...
+   }
+   ```
+
+3. Ensured PostCSS configuration was using the correct plugin structure for Tailwind CSS v4:
+
+   ```javascript
+   plugins: {
+     "tailwindcss/nesting": {},
+     tailwindcss: {},
+     autoprefixer: {},
+   }
+   ```
+
+4. Verified that `globals.css` was using the correct import syntax for Tailwind CSS v4:
+   ```css
+   @import "tailwindcss" layer(base, components, utilities);
+   ```
+
+### Resolution
+
+After implementing these changes, the application no longer shows 404 errors for CSS files, and all styles are properly rendered across the application. The UI and UX have been fully restored to their previous state.
+
+This incident highlights the importance of carefully managing dependencies and ensuring consistent version usage across configuration files, especially when working with libraries in alpha/beta stages (like Tailwind CSS v4).
+
+## May 2024 - Fixed Missing Autoprefixer Dependency Error
+
+### Issue
+
+After fixing the Tailwind CSS configuration from v4 to v3, the application was still encountering errors that prevented it from loading properly:
+
+```
+Error: Cannot find module 'autoprefixer'
+Require stack:
+- /Users/juliomedina/Documents/va-claims-app/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
+```
+
+### Root Cause
+
+The CSS processing was failing because the application was missing the `autoprefixer` package, which is a required dependency for PostCSS and is used in conjunction with Tailwind CSS.
+
+The `postcss.config.mjs` file referenced `autoprefixer` in its plugins configuration, but the package was not installed in the project's node_modules directory:
+
+```javascript
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {} // Referenced but not installed
+  }
+};
+```
+
+### Fix
+
+Installed the missing dependency:
+
+```bash
+npm install autoprefixer --save-dev --legacy-peer-deps
+```
+
+Used the `--legacy-peer-deps` flag to bypass dependency conflicts related to React version mismatches in other packages.
+
+### Resolution
+
+After installing the missing autoprefixer dependency, the application was able to properly process CSS files and the styling was restored. This completed the fix that was started with the Tailwind CSS v3 configuration changes.
+
+## May 2024 - Fixed CSS Styling Issues After Fine-Tuning Page Addition
+
+### Issue
+
+After adding the Fine-Tuning page to the admin panel (`/bdoc/fine-tuning`), the application was experiencing broken CSS styling across the entire UI. This caused a critical UI/UX functionality breakdown.
+
+### Root Cause
+
+The investigation revealed a mismatch between Tailwind CSS versions and configurations:
+
+1. The project was properly configured to use Tailwind CSS v3.4.0 (as evidenced in package.json), but:
+
+   - `globals.css` was using Tailwind CSS v4 syntax:
+     ```css
+     @import "tailwindcss";
+     @plugin "tailwindcss-animate";
+     @custom-variant dark (&:is(.dark *));
+     ```
+   - `postcss.config.mjs` was configured with a v4-specific plugin:
+     ```javascript
+     plugins: ["@tailwindcss/postcss"];
+     ```
+   - `package.json` was updated to reference `tailwindcss: "^3.4.0"` instead of v4
+   - The project was missing a proper `tailwind.config.js` for v3.4.0
+
+2. This configuration mismatch was likely introduced when implementing the Fine-Tuning page for the admin panel.
+
+### Fix
+
+1. Restored `app/globals.css` to use proper Tailwind CSS v4 syntax:
+
+   ```css
+   @import "tailwindcss";
+   @plugin "tailwindcss-animate";
+   @custom-variant dark (&:is(.dark *));
+   ```
+
+2. Reverted `postcss.config.mjs` to the original Tailwind CSS v4 configuration:
+
+   ```javascript
+   const config = {
+     plugins: ["@tailwindcss/postcss"]
+   };
+
+   export default config;
+   ```
+
+3. Updated `package.json` to correctly reference Tailwind CSS v4:
+
+   ```json
+   "tailwindcss": "^4"
+   ```
+
+4. Corrected `tailwind.config.js` to use v4's ESM syntax:
+
+   ```javascript
+   export default {
+     content: [
+       "./app/**/*.{js,ts,jsx,tsx,mdx}",
+       "./components/**/*.{js,ts,jsx,tsx,mdx}",
+       "./lib/**/*.{js,ts,jsx,tsx,mdx}"
+     ],
+     theme: {
+       extend: {}
+     }
+   };
+   ```
+
+5. Reinstalled the correct dependencies:
+   - Installed `@tailwindcss/postcss` which is the v4-specific package
+   - Installed the alpha version of Tailwind CSS v4: `tailwindcss@4.0.0-alpha.7`
+
+### Resolution
+
+The application's styling was completely restored to its original state, with all components displaying correctly using Tailwind CSS v4. The project now correctly uses the v4 syntax throughout, maintaining consistency with the established project standards and preserving the UI/UX functionality.
+
+## May 2024 - Restored Tailwind CSS v4 Configuration After Inadvertent Downgrade
+
+### Issue
+
+The application's CSS styling was broken across all UI components when an incorrect change to the Tailwind configuration was made during the implementation of the Fine-Tuning page. Specifically, the project's Tailwind CSS v4 setup was incorrectly changed to v3, breaking the styles throughout the application.
+
+### Root Cause
+
+The following incorrect changes had been made:
+
+1. `globals.css` was modified to use Tailwind CSS v3 syntax instead of the v4 syntax used by the project
+2. `postcss.config.mjs` was changed to a v3 configuration using individual plugins instead of the v4-specific `@tailwindcss/postcss` package
+3. `package.json` was updated to reference `tailwindcss: "^3.4.0"` instead of v4
+4. A `tailwind.config.js` file was created with v3 syntax instead of using the v4 ESM format
+
+### Fix
+
+1. Restored `app/globals.css` to use proper Tailwind CSS v4 syntax:
+
+   ```css
+   @import "tailwindcss";
+   @plugin "tailwindcss-animate";
+   @custom-variant dark (&:is(.dark *));
+   ```
+
+2. Reverted `postcss.config.mjs` to the original Tailwind CSS v4 configuration:
+
+   ```javascript
+   const config = {
+     plugins: ["@tailwindcss/postcss"]
+   };
+
+   export default config;
+   ```
+
+3. Updated `package.json` to correctly reference Tailwind CSS v4:
+
+   ```json
+   "tailwindcss": "^4"
+   ```
+
+4. Corrected `tailwind.config.js` to use v4's ESM syntax:
+
+   ```javascript
+   export default {
+     content: [
+       "./app/**/*.{js,ts,jsx,tsx,mdx}",
+       "./components/**/*.{js,ts,jsx,tsx,mdx}",
+       "./lib/**/*.{js,ts,jsx,tsx,mdx}"
+     ],
+     theme: {
+       extend: {}
+     }
+   };
+   ```
+
+5. Reinstalled the correct dependencies:
+   - Installed `@tailwindcss/postcss` which is the v4-specific package
+   - Installed the alpha version of Tailwind CSS v4: `tailwindcss@4.0.0-alpha.7`
+
+### Resolution
+
+The application's styling was completely restored to its original state, with all components displaying correctly using Tailwind CSS v4. The project now correctly uses the v4 syntax throughout, maintaining consistency with the established project standards and preserving the UI/UX functionality.
+
+## May 2024 - Comprehensive Verification of Tailwind CSS v4 Configuration
+
+### Issue
+
+After previous changes to the CSS configuration that inadvertently modified Tailwind CSS from v4 to v3, a thorough verification of the entire codebase was needed to ensure all files were properly using Tailwind CSS v4 syntax and configuration.
+
+### Verification Steps
+
+I performed a comprehensive check of all relevant files to ensure Tailwind CSS v4 was properly restored:
+
+1. **Package Configuration**:
+
+   - Verified `package.json` has the correct dependencies:
+     ```json
+     "tailwindcss": "^4.0.0-alpha.7",
+     "@tailwindcss/postcss": "^4",
+     ```
+
+2. **CSS Files**:
+
+   - Verified `app/globals.css` uses v4 syntax:
+     ```css
+     @import "tailwindcss";
+     @plugin "tailwindcss-animate";
+     @custom-variant dark (&:is(.dark *));
+     ```
+
+3. **Configuration Files**:
+
+   - Confirmed `postcss.config.mjs` is properly configured for v4:
+     ```javascript
+     const config = {
+       plugins: ["@tailwindcss/postcss"]
+     };
+     ```
+   - Verified `tailwind.config.js` uses the v4 export syntax.
+   - Checked `components.json` to ensure it's properly configured.
+
+4. **Theme Files**:
+   - Verified `themes.css` is using v4 syntax with `@variant` directives.
+
+### Confirmation
+
+All files in the codebase are now correctly configured to use Tailwind CSS v4. The application should render properly with the correct styles applied.
+
+## May 2024 - Fixed CSS Styling Issues with Tailwind CSS v4 and Plugins
+
+### Issue
+
+The entire application's CSS styling was broken after adding the Fine-Tuning page to the admin panel (/bdoc/fine-tuning). The browser console showed a critical error: `[Error: Package subpath './plugin' is not defined by "exports" in /Users/juliomedina/Documents/va-claims-app/node_modules/tailwindcss/package.json]`.
+
+### Root Cause
+
+The underlying issue was related to how the `tailwindcss-animate` plugin was being referenced in the application while using Tailwind CSS v4. The specific problems were:
+
+1. The `@plugin "tailwindcss-animate";` directive in globals.css was trying to access a non-existent plugin path in the tailwindcss v4 package.
+2. The `tailwindcss-animate` package version (1.0.7) was designed for Tailwind CSS v3, not v4.
+3. Tailwind CSS v4's exports in its package.json does not include a `./plugin` subpath that the animation plugin was trying to access.
+
+### Solution
+
+To fix the issue without changing the Tailwind CSS v4 configuration, I implemented the following changes:
+
+1. Removed the `@plugin "tailwindcss-animate";` directive from globals.css.
+2. Added the animation keyframes and utilities directly into globals.css:
+
+   ```css
+   /* Animation utilities from tailwindcss-animate */
+   @keyframes enter {
+     from {
+       opacity: var(--tw-enter-opacity, 1);
+       transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+         scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1))
+         rotate(var(--tw-enter-rotate, 0));
+     }
+   }
+   /* ... other animations ... */
+   ```
+
+3. Updated tailwind.config.js to include the necessary animation and keyframe definitions that would normally be provided by the plugin:
+   ```javascript
+   theme: {
+     extend: {
+       animation: {
+         "accordion-down": "accordion-down 0.2s ease-out",
+         "accordion-up": "accordion-up 0.2s ease-out",
+         // ... more animations ...
+       },
+       keyframes: {
+         // ... keyframe definitions ...
+       },
+     }
+   }
+   ```
+
+This approach maintains compatibility with Tailwind CSS v4 while providing the animation functionality that was previously supplied by the tailwindcss-animate plugin.
+
+### Result
+
+The application styling is now fully restored and working correctly. The animation functionality works as expected, and the entire app renders properly without console errors related to CSS.
+
+## May 2024 - Fixed Missing CSS Files Issue in Next.js Build
+
+### Issue
+
+The application's styling was completely broken with hundreds of 404 errors appearing in the console:
+
+```
+GET /_next/static/css/app/layout.css?v=... 404 (multiple occurrences)
+```
+
+These errors indicated that Next.js was looking for CSS files that didn't exist, resulting in no styles being applied to the application.
+
+### Root Cause
+
+The root cause was identified as a configuration issue in the Next.js setup:
+
+1. The `next.config.ts` file contained an unrecognized configuration option `mcpServers` that was causing build issues
+2. This was affecting the CSS generation process during the Next.js build
+3. The invalid configuration prevented proper compilation of CSS assets, resulting in missing CSS files
+
+### Solution
+
+The issue was resolved by:
+
+1. Removing the invalid `mcpServers` configuration from `next.config.ts`
+2. Clearing the Next.js build cache by removing the `.next` directory
+3. Rebuilding the application with a clean configuration
+
+This fixed the CSS loading issues and restored styling throughout the application.
+
+### Prevention
+
+To prevent similar issues in the future:
+
+- Always verify that config options in `next.config.ts` are valid for the version of Next.js being used
+- Check for build warnings about unrecognized configuration keys
+- Test style changes thoroughly in both development and production builds

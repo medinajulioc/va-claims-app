@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Initialize Next.js 14 Project with TypeScript
-# Status: pending
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: Set up the base Next.js 14 project with App Router, TypeScript configuration, and project structure
