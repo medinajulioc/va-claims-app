@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import { ClientFormDescription } from "@/components/ui/client-form-description";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -97,10 +97,10 @@ export default function Page() {
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
-                  <FormDescription>
+                  <ClientFormDescription>
                     This is your public display name. It can be your real name or a pseudonym. You
                     can only change this once every 30 days.
-                  </FormDescription>
+                  </ClientFormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -123,10 +123,10 @@ export default function Page() {
                       <SelectItem value="m@support.com">m@support.com</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>
+                  <ClientFormDescription>
                     You can manage verified email addresses in your{" "}
                     <Link href="/examples/forms">email settings</Link>.
-                  </FormDescription>
+                  </ClientFormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -144,9 +144,9 @@ export default function Page() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
+                  <ClientFormDescription>
                     You can <span>@mention</span> other users and organizations to link to them.
-                  </FormDescription>
+                  </ClientFormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -160,9 +160,9 @@ export default function Page() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={cn(index !== 0 && "sr-only")}>URLs</FormLabel>
-                      <FormDescription className={cn(index !== 0 && "sr-only")}>
+                      <ClientFormDescription className={cn(index !== 0 && "sr-only")}>
                         Add links to your website, blog, or social media profiles.
-                      </FormDescription>
+                      </ClientFormDescription>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

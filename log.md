@@ -1273,3 +1273,62 @@ To prevent similar issues in the future:
 - Always verify that config options in `next.config.ts` are valid for the version of Next.js being used
 - Check for build warnings about unrecognized configuration keys
 - Test style changes thoroughly in both development and production builds
+
+## [Date: YYYY-MM-DD] Added main profile route at /dashboard/profile with demo data
+
+- Created `app/dashboard/profile/page.tsx` as the new main profile page for the app, using the Shadcn UI Kit layout and demo data.
+- Copied all required subcomponents (`ProfileCard`, `CompleteYourProfileCard`, `CardSkills`, `LatestActivity`, `AboutMe`, `Connections`) into `app/dashboard/profile/`.
+- All components use only mock/demo data and are not connected to any backend or user context yet.
+- No changes to backend, data fetching, or authentication logic.
+- This page is now the canonical profile for the entire app at `/dashboard/profile`.
+
+## June 2024 - Fixed Duplicate Header in Settings Pages
+
+### Issue
+
+The settings page at `/dashboard/pages/settings` was displaying two identical header bars at the top of the page. This duplication occurred because:
+
+1. The main dashboard layout (`app/dashboard/layout.tsx`) included the Header component
+2. The auth layout (`app/dashboard/(auth)/layout.tsx`) also included the same Header component
+3. When accessing routes like `/dashboard/pages/settings`, both layouts were being applied sequentially
+
+### Fix
+
+Modified the auth layout file (`app/dashboard/(auth)/layout.tsx`) to:
+
+1. Remove the Header component import
+2. Remove the Header component from the JSX
+
+This change ensures that only one header is rendered while maintaining all other UI functionality. The fix is minimal and targeted, affecting only the duplicate UI element without changing any other aspects of the application structure.
+
+### Result
+
+The settings page now displays a clean, single header with the search bar, notifications, theme options, and user menu, providing a more professional user experience.
+
+## June 2024 - Fixed React Hydration Error in Settings Page Form
+
+### Issue
+
+The settings page at `/dashboard/pages/settings` was experiencing React hydration errors caused by browser extensions like LastPass. The error occurred because the extension was modifying the DOM on the client side after the server had already rendered HTML, creating a mismatch between server and client rendering.
+
+Specific error:
+
+```
+Error: Hydration failed because the server rendered HTML didn't match the client.
+```
+
+The mismatch was happening in the `FormDescription` component where the server rendered a `<p>` element, but the client had a `<div data-lastpass-icon-root="">` injected by the LastPass extension.
+
+### Fix
+
+1. Created a client-only wrapper component `ClientFormDescription` in `components/ui/client-form-description.tsx` that:
+
+   - Uses `useState` and `useEffect` to ensure rendering only happens on the client
+   - Prevents server/client hydration mismatches by returning null on first render
+   - Renders the actual FormDescription component only after client-side hydration
+
+2. Updated the settings page (`app/dashboard/(auth)/pages/settings/page.tsx`) to:
+   - Import the new `ClientFormDescription` component
+   - Replace all instances of `FormDescription` with `ClientFormDescription`
+
+This solution maintains all functionality while preventing hydration errors caused by browser extensions that modify the DOM.

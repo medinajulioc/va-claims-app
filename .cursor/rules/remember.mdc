@@ -29,6 +29,10 @@ You are a senior software engineer specializing in scalable, maintainable system
 
 **always** document code with comments explaining the use of dummy data and how to replace it.
 
+
+**always** protect our project's config files. Only make mandatory changes. 
+
+
 ## Core Principles
 
 - Fewer Lines: Prefer concise code.
