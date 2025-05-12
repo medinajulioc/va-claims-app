@@ -1319,90 +1319,33 @@ The notification system is designed to be easily integrated with a backend API i
 - The mock data in `lib/mock/notifications.ts` can be replaced with API calls
 - The notification components use React state that can be replaced with API calls
 
-## VA Disability Calculator Implementation
-
-Date: 2023-08-09
-
-### Summary
-
-Implemented a VA Disability Calculator feature that allows users to estimate their VA disability compensation based on their disabilities, dependents, and special monthly compensation eligibility.
-
-### Components Created
-
-- Created a new route at `/dashboard/va-disability-calculator`
-- Added Calculator icon to the sidebar navigation
-- Implemented form components:
-  - DisabilityInput: Allows adding multiple disabilities with percentage and affected area
-  - DependentsInput: Form for spouse, children, and dependent parents
-  - SMCInput: Special Monthly Compensation selection
-  - CalculationSummary: Displays the calculated results
-
-### Features
-
-- Implemented the VA "Whole Person Theory" formula for calculating combined disability ratings
-- Added official 2025 VA compensation rates
-- Created responsive UI that matches the app's existing theme
-- Added animations using Framer Motion for a better user experience
-- Included an informational section explaining the calculation methodology
-
-### Technical Details
-
-- Used React Hook Form for form state management
-- Leveraged existing UI components from the app
-- Implemented client-side calculations for immediate feedback
-- Added type safety with TypeScript interfaces
-
-### Next Steps
-
-- Connect to backend API for saving calculation results
-- Add user-specific saved calculations
-- Implement print/export functionality for calculation results
-- Add historical rates for comparison
-
-## July 2024 - Fixed Syntax Error in VA Disability Calculator
-
-### Issue
-
-The VA Disability Calculator page was encountering a syntax error due to the use of commas in numeric literals:
-
-```
-Error: Legacy decimal escape is not permitted in strict mode
-```
-
-The error occurred because numbers like `1,096.69` were using commas as thousand separators, which is not valid JavaScript syntax.
-
-### Fix
-
-- Removed all commas from numeric literals in the compensation rate data
-- Changed values like `1,096.69` to `1096.69` throughout the file
-- Maintained the decimal precision for accurate calculations
-
-### Impact
-
-The VA Disability Calculator now functions correctly without syntax errors. All compensation calculations work as intended with the proper numeric values.
-
-## May 2024 - Enhanced VA Disability Calculator with Reset Button and FAQ Section
+## June 2024 - Restored and Enhanced FAQ Section for VA Disability Calculator
 
 ### Implementation
 
-Enhanced the VA Disability Calculator with additional user-friendly features:
+Restored and enhanced the FAQ section for the VA Disability Calculator page with several improvements:
 
-1. **Reset Button**:
-   - Added a reset button next to the calculate button
-   - Implemented reset functionality to clear all form fields and results
-   - Used the secondary button style to visually distinguish from the calculate button
-   - Improved user experience by allowing quick form reset without manual clearing
+1. **Created Dedicated FAQ Component**:
 
-2. **Comprehensive FAQ Section**:
-   - Added a new card section below the About card with frequently asked questions
-   - Included detailed explanations about:
-     - How VA Math works (the "Whole Person Theory")
-     - Special Monthly Compensation (SMC) and its various levels
-     - Why combined ratings often don't increase as expected
-     - Bilateral factors and how they affect calculations
-     - How often VA compensation rates change
-     - Whether VA disability ratings can decrease
-   - Formatted with clear headings and concise explanations
-   - Used consistent styling with the rest of the calculator interface
+   - Implemented a new `FAQAccordion.tsx` component with a clean, accessible accordion interface
+   - Used Shadcn UI components for consistent styling with the rest of the application
+   - Added the component to the main VA Disability Calculator page
 
-These enhancements make the VA Disability Calculator more user-friendly and informative, helping veterans better understand their disability ratings and compensation calculations.
+2. **SEO Optimization**:
+
+   - Added comprehensive FAQ schema markup to the structured data for better search engine visibility
+   - Created detailed, informative answers to common questions about VA disability calculations
+   - Used semantic HTML structure for better accessibility and SEO performance
+
+3. **Content Improvements**:
+
+   - Added six detailed FAQ items covering the most common questions about VA disability compensation
+   - Included information about the VA's calculation methods, SMC, dependent benefits, and more
+   - Provided actionable guidance for veterans seeking to increase their disability ratings
+
+4. **User Experience Enhancements**:
+   - Implemented collapsible accordion interface for better content organization
+   - Maintained consistent styling with the rest of the calculator interface
+   - Ensured mobile-friendly layout for all FAQ content
+
+This restoration addresses the missing FAQ section while significantly improving its content quality and SEO value compared to the previous implementation.
