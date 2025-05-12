@@ -1,4 +1,4 @@
-import { Mic, Paperclip, PlusCircleIcon, SendIcon, SmileIcon } from "lucide-react";
+import { Mic, PlusCircleIcon, SendIcon, SmileIcon, Paperclip } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ChatFileUpload } from "./chat-file-upload";
+import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
 
 export function ChatFooter() {
   return (
@@ -29,7 +31,15 @@ export function ChatFooter() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Emoji</DropdownMenuItem>
-                <DropdownMenuItem>Add File</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <div className="w-full px-2 py-1.5">
+                    <FileUploadDialog
+                      customTrigger={
+                        <div className="flex w-full cursor-pointer items-center">Upload Files</div>
+                      }
+                    />
+                  </div>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Send Voice</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -44,14 +54,7 @@ export function ChatFooter() {
                 </TooltipTrigger>
                 <TooltipContent side="top">Emoji</TooltipContent>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Paperclip />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Select File</TooltipContent>
-              </Tooltip>
+              <ChatFileUpload />
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">

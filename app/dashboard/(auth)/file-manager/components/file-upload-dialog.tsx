@@ -48,7 +48,11 @@ interface FileWithPreview extends File {
   fileType?: FileType;
 }
 
-export function FileUploadDialog() {
+interface FileUploadDialogProps {
+  customTrigger?: React.ReactNode;
+}
+
+export function FileUploadDialog({ customTrigger }: FileUploadDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [files, setFiles] = React.useState<FileWithPreview[]>([]);
   const [dragActive, setDragActive] = React.useState(false);
@@ -151,93 +155,90 @@ export function FileUploadDialog() {
     setUploadStats((prev) => ({ ...prev, total: prev.total + newFiles.length }));
   };
 
+  // Calculate overall progress
+  const overallProgress = React.useMemo(() => {
+    if (files.length === 0) return 0;
+
+    const totalProgress = files.reduce((acc, file) => acc + file.progress, 0);
+    return Math.round(totalProgress / files.length);
+  }, [files]);
+
   const removeFile = (id: string) => {
-    setFiles((prevFiles) => {
-      const fileToRemove = prevFiles.find((file) => file.id === id);
-      const updatedFiles = prevFiles.filter((file) => file.id !== id);
+    const fileToRemove = files.find((f) => f.id === id);
 
-      // If all files with errors are removed, clear the global error
-      if (!updatedFiles.some((file) => file.status === FileStatus.ERROR)) {
-        setGlobalError(null);
-      }
+    if (fileToRemove && fileToRemove.preview) {
+      URL.revokeObjectURL(fileToRemove.preview);
+    }
 
-      // Update stats
-      if (fileToRemove) {
-        setUploadStats((prev) => ({
-          ...prev,
-          total: prev.total - 1,
-          failed: fileToRemove.status === FileStatus.ERROR ? prev.failed - 1 : prev.failed,
-          completed:
-            fileToRemove.status === FileStatus.COMPLETE ? prev.completed - 1 : prev.completed
-        }));
-      }
+    setFiles((prevFiles) => prevFiles.filter((f) => f.id !== id));
 
-      return updatedFiles;
-    });
+    // Update stats if the file was already processed
+    if (fileToRemove?.status === FileStatus.COMPLETE) {
+      setUploadStats((prev) => ({ ...prev, completed: prev.completed - 1, total: prev.total - 1 }));
+    } else if (fileToRemove?.status === FileStatus.ERROR) {
+      setUploadStats((prev) => ({ ...prev, failed: prev.failed - 1, total: prev.total - 1 }));
+    } else {
+      setUploadStats((prev) => ({ ...prev, total: prev.total - 1 }));
+    }
+  };
+
+  const getFileIcon = (file: FileWithPreview) => {
+    const iconClass = "h-5 w-5";
+
+    switch (file.status) {
+      case FileStatus.COMPLETE:
+        return <CheckCircle className={`text-green-500 ${iconClass}`} />;
+      case FileStatus.ERROR:
+        return <AlertCircle className={`text-red-500 ${iconClass}`} />;
+      default:
+        switch (file.fileType) {
+          case FileType.PDF:
+            return <FileText className={`text-primary ${iconClass}`} />;
+          case FileType.JPG:
+          case FileType.PNG:
+            return <Image className={`text-primary ${iconClass}`} />;
+          default:
+            return <FileIcon className={`text-primary ${iconClass}`} />;
+        }
+    }
   };
 
   const processFile = async (file: FileWithPreview) => {
-    // Skip files with errors
-    if (file.status === FileStatus.ERROR) {
-      setUploadStats((prev) => ({ ...prev, failed: prev.failed + 1 }));
-      return;
-    }
-
     try {
       // Update status to processing
       setFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === file.id ? { ...f, status: FileStatus.PROCESSING, progress: 30 } : f
-        )
+        prevFiles.map((f) => (f.id === file.id ? { ...f, status: FileStatus.PROCESSING } : f))
       );
 
-      // Process with OCR using the queue-based approach
-      const ocrResult = await processFileWithOCR(file, file.id, {
-        onProgress: (progress) => {
-          setFiles((prevFiles) =>
-            prevFiles.map((f) => (f.id === file.id ? { ...f, progress } : f))
-          );
-        },
-        onComplete: (result) => {
-          console.log(`File ${file.name} processed successfully`);
-        },
-        onError: (error) => {
-          console.error(`Error processing file ${file.name}:`, error);
-          setFiles((prevFiles) =>
-            prevFiles.map((f) =>
-              f.id === file.id
-                ? {
-                    ...f,
-                    status: FileStatus.ERROR,
-                    error: "Failed to process file. Please try again."
-                  }
-                : f
-            )
-          );
-          setUploadStats((prev) => ({ ...prev, failed: prev.failed + 1 }));
-        }
-      });
+      // Simulate processing steps with progress updates
+      for (let progress = 10; progress <= 90; progress += 10) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
-      // Auto-categorize based on content
-      const suggestedCategories = autoCategorizeDocument(ocrResult.text);
+        setFiles((prevFiles) => prevFiles.map((f) => (f.id === file.id ? { ...f, progress } : f)));
+      }
 
-      // Create file object for store
-      const fileObject = {
-        id: file.id,
-        name: file.name,
-        type: file.fileType || getFileTypeFromName(file.name),
-        size: file.size,
-        uploadDate: new Date(),
-        status: FileStatus.COMPLETE,
-        url: URL.createObjectURL(file),
-        thumbnailUrl: file.preview,
-        categoryIds: suggestedCategories,
-        tagIds: [],
-        content: ocrResult.text
-      };
+      // In a real app, this would be where you'd send the file to your backend
+      // For now, we'll simulate OCR processing and auto-categorization
+      if (
+        file.fileType === FileType.PDF ||
+        file.fileType === FileType.JPG ||
+        file.fileType === FileType.PNG
+      ) {
+        // Simulate OCR processing
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Add to store
-      addFile(fileObject);
+        // Create a file object for the store
+        const fileObject = createFileObject(file);
+
+        // Add to store
+        addFile(fileObject);
+      } else {
+        // For other file types, just add to store
+        const fileObject = createFileObject(file);
+
+        // Add to store
+        addFile(fileObject);
+      }
 
       // Update status to complete
       setFiles((prevFiles) =>
@@ -309,47 +310,21 @@ export function FileUploadDialog() {
         return "text-blue-500";
       case FileStatus.UPLOADING:
       default:
-        return "text-gray-500";
+        return "text-muted-foreground";
     }
   };
-
-  const getStatusIcon = (status: FileStatus) => {
-    switch (status) {
-      case FileStatus.COMPLETE:
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case FileStatus.ERROR:
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case FileStatus.PROCESSING:
-        return <FileIcon className="h-4 w-4 text-blue-500" />;
-      default:
-        return null;
-    }
-  };
-
-  const getFileIcon = (file: FileWithPreview) => {
-    const fileType = file.fileType || getFileTypeFromName(file.name);
-
-    switch (fileType) {
-      case FileType.PDF:
-        return <FileText className="h-5 w-5 text-red-500" />;
-      case FileType.JPG:
-      case FileType.PNG:
-        return <Image className="h-5 w-5 text-blue-500" />;
-      default:
-        return <FileIcon className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  // Calculate overall progress
-  const overallProgress = files.length
-    ? Math.floor(files.reduce((sum, file) => sum + file.progress, 0) / files.length)
-    : 0;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={() => setOpen(true)}>
-        <PlusCircle className="mr-2 h-4 w-4" /> Upload Files
-      </Button>
+      {customTrigger ? (
+        <div onClick={() => setOpen(true)} className="cursor-pointer">
+          {customTrigger}
+        </div>
+      ) : (
+        <Button onClick={() => setOpen(true)} className="file-upload-dialog-trigger">
+          <PlusCircle className="mr-2 h-4 w-4" /> Upload Files
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[650px]">
         <DialogHeader>
           <DialogTitle>Upload Files</DialogTitle>
@@ -367,20 +342,22 @@ export function FileUploadDialog() {
         )}
 
         <div
-          className={`mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 ${
-            dragActive ? "border-blue-500 bg-blue-50" : ""
+          className={`mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed p-8 transition-all ${
+            dragActive ? "border-primary bg-primary/5" : "border-border/50 hover:border-primary/50"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}>
           <div className="text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-            <div className="mt-4 flex flex-col items-center text-sm text-gray-600">
-              <Label
-                htmlFor="file-upload"
-                className="relative cursor-pointer rounded-md bg-white font-semibold text-blue-600 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-blue-500">
-                <span>Upload files</span>
+            <Upload className="text-primary/30 mx-auto h-12 w-12" aria-hidden="true" />
+            <div className="mt-4 flex flex-col items-center text-sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleButtonClick}
+                className="mb-2 font-medium">
+                Select files
                 <Input
                   id="file-upload"
                   name="file-upload"
@@ -391,33 +368,9 @@ export function FileUploadDialog() {
                   accept=".pdf,.jpg,.jpeg,.png"
                   ref={fileInputRef}
                 />
-              </Label>
-              <p className="mt-1">or drag and drop</p>
-              <div className="mt-2 flex items-center text-xs">
-                <Badge variant="outline" className="mr-1 text-gray-600">
-                  PDF
-                </Badge>
-                <Badge variant="outline" className="mr-1 text-gray-600">
-                  JPG
-                </Badge>
-                <Badge variant="outline" className="mr-1 text-gray-600">
-                  PNG
-                </Badge>
-                <span className="ml-1 text-gray-500">Up to 20MB per file</span>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="ml-1 h-3 w-3 text-gray-400" />
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      <p className="max-w-xs text-xs">
-                        PDF documents work best for text-based forms. Images (JPG/PNG) are
-                        recommended for photos or simple documents. Maximum 20 files per upload.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+              </Button>
+              <p className="text-muted-foreground text-sm">or drag and drop</p>
+              <p className="text-muted-foreground mt-2 text-xs">PDF, JPG, PNG up to 20MB</p>
             </div>
           </div>
         </div>
@@ -425,26 +378,26 @@ export function FileUploadDialog() {
         {files.length > 0 && (
           <>
             <div className="mt-4 flex items-center justify-between text-sm">
-              <div className="font-medium text-gray-900">Selected Files ({files.length}/20):</div>
-              <div className="text-gray-500">
+              <div className="font-medium">Selected Files ({files.length}/20)</div>
+              <div className="text-muted-foreground">
                 {uploadStats.completed} complete, {uploadStats.failed} failed
               </div>
             </div>
 
             {uploadInProgress && (
               <div className="mt-2 mb-2">
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="text-muted-foreground flex items-center justify-between text-xs">
                   <span>Overall progress ({overallProgress}%)</span>
                   <span>
                     {uploadStats.completed}/{uploadStats.total} files
                   </span>
                 </div>
-                <Progress value={overallProgress} className="mt-1 h-1" />
+                <Progress value={overallProgress} className="mt-1 h-1.5" />
               </div>
             )}
 
             <div className="mt-2 max-h-[240px] overflow-y-auto">
-              <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+              <ul className="divide-border divide-y rounded-md border">
                 {files.map((file) => (
                   <li key={file.id} className="flex flex-col py-3 pr-2 pl-4 text-sm leading-6">
                     <div className="flex items-center justify-between">
@@ -453,11 +406,11 @@ export function FileUploadDialog() {
                         <div className="ml-2 flex min-w-0 flex-1 gap-1">
                           <span
                             className={`truncate font-medium ${
-                              file.status === FileStatus.ERROR ? "text-red-500" : ""
+                              file.status === FileStatus.ERROR ? "text-destructive" : ""
                             }`}>
                             {file.name}
                           </span>
-                          <span className="shrink-0 text-gray-400">
+                          <span className="text-muted-foreground shrink-0">
                             {formatFileSize(file.size)}
                           </span>
                           <span className={`shrink-0 ${getStatusColor(file.status)}`}>
@@ -476,12 +429,12 @@ export function FileUploadDialog() {
                     </div>
 
                     {file.error ? (
-                      <div className="mt-1 text-xs text-red-500">{file.error}</div>
+                      <div className="text-destructive mt-1 text-xs">{file.error}</div>
                     ) : (
                       file.status !== FileStatus.COMPLETE && (
                         <div className="mt-2 w-full">
-                          <Progress value={file.progress} className="h-1" />
-                          <div className="mt-1 text-xs text-gray-500">
+                          <Progress value={file.progress} className="h-1.5" />
+                          <div className="text-muted-foreground mt-1 text-xs">
                             {file.status === FileStatus.PROCESSING
                               ? "Processing document..."
                               : "Ready to upload"}
@@ -496,7 +449,7 @@ export function FileUploadDialog() {
           </>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
@@ -506,8 +459,15 @@ export function FileUploadDialog() {
               files.length === 0 ||
               files.every((f) => f.status === FileStatus.ERROR) ||
               uploadInProgress
-            }>
-            {uploadInProgress ? "Processing..." : "Upload"}
+            }
+            className="gap-2">
+            {uploadInProgress ? (
+              <>Processing...</>
+            ) : (
+              <>
+                <Upload className="h-4 w-4" /> Upload
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

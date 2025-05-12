@@ -16,6 +16,7 @@ import { Markdown } from "@/components/ui/custom/prompt/markdown";
 import { cn } from "@/lib/utils";
 import { PromptLoader } from "@/components/ui/custom/prompt/loader";
 import { PromptScrollButton } from "@/components/ui/custom/prompt/scroll-button";
+import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
 
 const chatSuggestions = [
   "How do I file a VA disability claim?",
@@ -214,19 +215,13 @@ export default function AppRender() {
 
         <PromptInputActions className="flex items-center justify-between gap-2 pt-2">
           <PromptInputAction tooltip="Attach files">
-            <label
-              htmlFor="file-upload"
-              className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl">
-              <input
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                className="hidden"
-                id="file-upload"
-                ref={uploadInputRef}
-              />
-              <Paperclip className="text-primary size-5" />
-            </label>
+            <FileUploadDialog
+              customTrigger={
+                <div className="hover:bg-secondary-foreground/10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-2xl">
+                  <Paperclip className="text-primary size-5" />
+                </div>
+              }
+            />
           </PromptInputAction>
 
           <PromptInputAction tooltip={isStreaming ? "Stop generation" : "Send message"}>
