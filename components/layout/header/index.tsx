@@ -9,7 +9,7 @@ import UserMenu from "@/components/layout/header/user-menu";
 import ThemeSwitch from "@/components/layout/header/theme-switch";
 import Notifications from "@/components/layout/header/notifications";
 import { Button } from "@/components/ui/button";
-import { ThemeCustomizerPanel } from "@/components/theme-customizer";
+import { ThemeCustomizerToggle } from "@/components/theme-customizer";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
@@ -26,7 +26,7 @@ export default function Header() {
         </Button>
         <Search />
         <Notifications />
-        <ThemeCustomizerPanel />
+        <ThemeCustomizerToggle defaultMode="panel" />
         <ThemeSwitch />
         <UserMenu />
       </header>

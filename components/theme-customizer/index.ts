@@ -8,3 +8,8 @@ export * from "./reset-theme";
 export * from "./sidebar-mode-selector";
 export * from "./scale-selector";
 export * from "./panel";
+export * from "./drawer";
+export * from "./color-picker";
+export * from "./theme-manager";
+export * from "./theme-exporter";
+export * from "./toggle";
