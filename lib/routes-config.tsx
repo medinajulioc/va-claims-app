@@ -52,6 +52,11 @@ export const page_routes: PageRoutesType[] = [
         icon: "Folder"
       },
       { title: "Compensation Rates", href: "/dashboard/crypto", icon: "DollarSign" },
+      {
+        title: "VA Disability Calculator",
+        href: "/dashboard/va-disability-calculator",
+        icon: "Calculator"
+      },
       { title: "Treatment Tracker", href: "/dashboard/hospital-management", icon: "Activity" }
     ],
     routeType: "user"

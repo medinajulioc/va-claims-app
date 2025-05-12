@@ -72,6 +72,7 @@
     "diff": "^7.0.0",
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.5.2",
+    "framer-motion": "^12.11.0",
     "input-otp": "^1.4.2",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.486.0",
