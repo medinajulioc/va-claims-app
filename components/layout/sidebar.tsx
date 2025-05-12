@@ -59,8 +59,11 @@ export default function Sidebar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTablet]);
 
+  // Use floating variant to match shadcnuikit.com/dashboard/default style
+  const sidebarVariant = "floating";
+
   return (
-    <SidebarContainer collapsible="icon" variant="floating" className="bg-background">
+    <SidebarContainer collapsible="icon" variant={sidebarVariant} className="bg-background">
       <SidebarHeader className="items-center justify-center pt-3 transition-all group-data-[collapsible=icon]:pt-2">
         <SidebarMenu>
           <SidebarMenuItem>

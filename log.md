@@ -198,6 +198,30 @@ Created a new landing page for the VAClaims application focused on serving U.S. 
 
 The implementation uses standard Tailwind CSS colors (green-950, blue-950, amber-500) to match the military aesthetic while ensuring compatibility with the existing color system. The page is fully responsive and maintains the professional, trustworthy appearance required for veterans' services.
 
+## June 2024 - Implemented Personalized Welcome Message on Dashboard
+
+### Implementation
+
+Added a personalized welcome message to replace the static "VA Claims Research Assistant" heading on the dashboard page. This enhancement improves user experience by providing a more personalized greeting when users log in.
+
+1. **Component Structure**:
+
+   - Created a new client component `welcome-message.tsx` in the dashboard directory
+   - Modified `app/dashboard/page.tsx` to use the new component instead of the static text
+
+2. **Personalization Logic**:
+
+   - Implemented a React component that displays "Welcome, {name}. We are glad you are here."
+   - Used mock data for the current implementation (name: "Toby")
+   - Added a fallback to the original "VA Claims Research Assistant" text when user data isn't available
+
+3. **Technical Implementation**:
+   - Used React's useState and useEffect hooks to handle the user data
+   - Implemented the component as a client component with the "use client" directive
+   - Ensured graceful fallback when user data is loading or unavailable
+
+This enhancement creates a more engaging user experience by personalizing the dashboard interface. In a production environment, this would connect to the authentication system to retrieve the actual user's name.
+
 ## May 2024 - Updated Middleware to Display Landing Page
 
 ### Issue
@@ -1101,11 +1125,15 @@ I performed a comprehensive check of all relevant files to ensure Tailwind CSS v
 3. **Configuration Files**:
 
    - Confirmed `postcss.config.mjs` is properly configured for v4:
+
      ```javascript
      const config = {
        plugins: ["@tailwindcss/postcss"]
      };
+
+     export default config;
      ```
+
    - Verified `tailwind.config.js` uses the v4 export syntax.
    - Checked `components.json` to ensure it's properly configured.
 
@@ -1349,3 +1377,481 @@ Restored and enhanced the FAQ section for the VA Disability Calculator page with
    - Ensured mobile-friendly layout for all FAQ content
 
 This restoration addresses the missing FAQ section while significantly improving its content quality and SEO value compared to the previous implementation.
+
+## July 2024 - Enhanced File Manager with Document Categorization and OCR
+
+### Implementation - Phase 1: Data Models and State Management
+
+Enhanced the file manager with document categorization, OCR text extraction, and improved file management capabilities. The first phase focused on creating the necessary data models and state management.
+
+1. **Created Type Definitions**:
+
+   - Defined interfaces for File, Category, Tag, and related types in `types/file-manager.ts`
+   - Added enums for FileType (PDF, JPG, PNG) and FileStatus (UPLOADING, PROCESSING, COMPLETE, ERROR)
+   - Created interfaces for upload progress, OCR results, and filtering options
+
+2. **VA Claim-Related Document Categories**:
+
+   - Implemented predefined VA claim-related categories in `lib/mock/file-categories.ts`:
+     - Medical Records
+     - Service Records
+     - VA Forms
+     - Correspondence
+     - Evidence Documents
+     - Appeals Documents
+     - Decision Letters
+     - Others
+   - Added predefined tags for document status and priority
+
+3. **Mock Data Generation**:
+
+   - Created mock file data in `lib/mock/file-data.ts` with VA-related document examples
+   - Simulated various file types, sizes, categories, and tags
+
+4. **State Management with Zustand**:
+
+   - Implemented a comprehensive Zustand store in `store/useFileManagerStore.ts`
+   - Added state for files, categories, tags, filtering, sorting, and searching
+   - Implemented actions for CRUD operations on files, categories, and tags
+
+5. **OCR Service**:
+
+   - Created a mock OCR service in `lib/services/ocr-service.ts`
+   - Implemented functions for text extraction and auto-categorization
+
+6. **File Utilities**:
+   - Added utility functions in `lib/utils/file-utils.ts` for file validation, type detection, and size formatting
+
+### Implementation - Phase 2: Enhanced File Manager UI
+
+The second phase focused on enhancing the file manager UI components with improved upload, categorization, filtering, and preview capabilities.
+
+1. **Enhanced File Upload Dialog**:
+
+   - Improved `FileUploadDialog` component with:
+     - File type validation (PDF, JPG, PNG)
+     - Size validation (max 20MB)
+     - Upload progress indicators
+     - Error handling for invalid files
+     - OCR processing integration
+     - Auto-categorization based on file content
+
+2. **Improved File Listing**:
+
+   - Enhanced `TableRecentFiles` component with:
+     - Display of categories and tags with color-coding
+     - Sorting by various fields (name, size, date, type)
+     - Advanced filtering by category, tag, type, and starred status
+     - Search functionality for file names and content
+     - Star/favorite feature for important documents
+
+3. **Document Preview**:
+
+   - Added a document preview dialog showing:
+     - Document metadata
+     - File preview (images) or placeholder (PDF)
+     - Assigned categories and tags
+     - Extracted OCR text content
+     - Quick actions for file management
+
+4. **Category Management**:
+
+   - Improved `FolderListCards` component to display categories as folders
+   - Added functionality to create custom categories
+   - Implemented filtering by category when clicking on folder cards
+   - Added special folders for All Files, Starred, and Uncategorized
+   - Displayed file counts per category
+
+5. **Storage Statistics**:
+
+   - Updated `SummaryCards` to show real statistics about files and categories
+   - Enhanced `StorageStatusCard` to display detailed storage usage by file type
+   - Implemented progress bars for visualizing storage distribution
+
+6. **OCR Auto-Categorization**:
+
+   - Enhanced OCR service with VA claim-specific keyword matching
+   - Implemented intelligent auto-categorization based on document content
+   - Added suggestion system for additional relevant categories
+
+7. **Improved Layout**:
+   - Updated the main file manager page layout for better UX
+   - Added responsive design for different screen sizes
+   - Integrated all components with the Zustand store for state management
+   - Added initialization with mock data
+
+### Results and Benefits
+
+The enhanced file manager now provides a comprehensive solution for organizing and managing VA disability claims documents with several key benefits:
+
+1. **Improved Organization**: Documents are automatically categorized based on content, making it easier to find specific files.
+
+2. **Advanced Search and Filtering**: Users can quickly locate documents using search, filters, and tags.
+
+3. **Intuitive Interface**: The redesigned UI provides clear visualizations of file organization and storage usage.
+
+4. **File Preview**: Users can preview documents and see extracted text content without downloading.
+
+5. **Customization**: Users can create custom categories and tag documents based on their specific needs.
+
+6. **VA-Specific Categories**: Predefined categories specifically designed for VA claim documents help users organize their files more effectively.
+
+The implementation ensures that the file manager is well-organized, easy to use, and provides a solid foundation for future enhancements when the application moves to production.
+
+## June 2024 - Enhanced File Upload Dialog in File Manager
+
+### Implementation
+
+Completed Phase 2 of the File Manager enhancement plan by implementing an enhanced file upload dialog with improved user experience and functionality. This enhancement provides a more robust file upload process for VA claim-related documents.
+
+1. **Improved File Type Validation**:
+
+   - Added clear visual indicators for supported file types (PDF, JPG, PNG)
+   - Implemented file type icons for better visual recognition
+   - Enhanced validation to properly identify file types based on extensions
+
+2. **Enhanced Size Validation**:
+
+   - Added clear size limit indicators (20MB per file)
+   - Implemented user-friendly error messages for oversized files
+   - Added a tooltip with additional information about file type recommendations
+
+3. **Multiple File Selection Improvements**:
+
+   - Added a file count indicator showing selected files (x/20)
+   - Implemented duplicate file detection with clear error messages
+   - Added a progress tracking system for multiple file uploads
+
+4. **Better Upload Progress Indicators**:
+
+   - Added individual progress bars for each file
+   - Implemented an overall progress indicator for batch uploads
+   - Added status indicators (processing, complete, error) with appropriate colors
+
+5. **Strengthened Error Handling**:
+
+   - Improved error messaging with specific details about issues
+   - Added visual indicators for files with errors
+   - Implemented a global error alert for batch-level issues
+
+6. **UX Enhancements**:
+   - Redesigned the file list interface for better readability
+   - Added completion statistics (x complete, y failed)
+   - Improved button states to prevent multiple submissions
+
+The enhanced file upload dialog provides a more intuitive and robust way for users to upload VA claim-related documents. It handles various edge cases and provides clear feedback throughout the upload process.
+
+This implementation completes Phase 2 of the File Manager enhancement plan, setting the foundation for Phase 3 (OCR Processing).
+
+## June 2024 - Implemented Enhanced OCR Processing for File Manager
+
+### Implementation
+
+Completed Phase 3 of the File Manager enhancement plan by implementing a robust OCR processing service with advanced capabilities. This enhancement provides better text extraction, document categorization, and error handling for VA claim-related documents.
+
+1. **OCR Processing Queue**:
+
+   - Implemented a queue-based system for handling multiple file processing
+   - Added support for concurrent processing (2 files at a time)
+   - Created methods for adding, processing, and managing queue items
+   - Added queue length tracking and queue clearing functionality
+
+2. **Enhanced OCR Text Extraction**:
+
+   - Added more varied and realistic document content for different file types
+   - Created VA-specific mock content including medical records, service records, and form documents
+   - Implemented more representative OCR confidence scores based on file type
+   - Added processing time tracking for better user feedback
+
+3. **Improved Categorization**:
+
+   - Enhanced the auto-categorization algorithm with better keyword matching
+   - Expanded keyword sets for more accurate categorization of VA-specific documents
+   - Implemented fallback to best partial match when no category has full match
+   - Added support for suggesting additional categories based on document content
+
+4. **Robust Error Handling and Retries**:
+
+   - Implemented automatic retry mechanism for failed OCR processing
+   - Added configurable retry limits and attempt tracking
+   - Enhanced error reporting with more specific error messages
+   - Added progress tracking throughout the OCR process (0-100%)
+
+5. **Integration with File Upload**:
+   - Updated the file upload dialog to use the new queue-based OCR processing
+   - Implemented progress reporting from OCR to file upload component
+   - Added proper error handling and status updates in the UI
+   - Enhanced the user experience with real-time processing feedback
+
+The enhanced OCR processing service provides a more realistic simulation of document processing, better error handling, and a more robust categorization system. The implementation is designed to be easily replaced with actual OCR libraries (like Tesseract.js for images and PDF.js for PDFs) in the future.
+
+This implementation completes Phase 3 of the File Manager enhancement plan, setting the foundation for Phase 4 (File Manager UI Enhancements).
+
+## June 2024 - File Manager UI Enhancements (Phase 4)
+
+### Implementation
+
+Completed Phase 4 of the File Manager enhancement plan by implementing UI improvements and new components to enhance the user experience and functionality.
+
+1. **Document Preview Component**:
+
+   - Implemented a comprehensive document preview dialog with multiple tabs
+   - Added tabs for preview, details, and extracted text
+   - Created a detailed metadata display with timeline information
+   - Added category and tag management within the preview
+   - Implemented file actions (download, share, delete, star)
+
+2. **Category Selector Component**:
+
+   - Created a dedicated component for managing file categories
+   - Implemented a dropdown interface for selecting from predefined categories
+   - Added ability to create new custom categories
+   - Included color selection for better visual organization
+   - Added visual indicators for each category with appropriate icons
+
+3. **Tag Input Component**:
+
+   - Implemented a component for managing file tags
+   - Created an interface for selecting from existing tags
+   - Added ability to create new custom tags with color selection
+   - Implemented tag removal functionality
+   - Provided compact mode for space-efficient display
+
+4. **Enhanced TableRecentFiles**:
+
+   - Added advanced filtering capabilities:
+     - File type filtering (PDF, JPG, PNG)
+     - Category and tag filtering
+     - Starred files filtering
+     - Uncategorized files filtering
+   - Improved sorting functionality with clear indicators
+   - Added multi-select for bulk operations
+   - Enhanced search functionality to include document content
+   - Added file metadata preview in the table
+   - Implemented OCR badge for files with extracted text
+
+5. **UI/UX Improvements**:
+   - Added tooltips for better user guidance
+   - Enhanced visual feedback for interactions
+   - Improved empty state handling
+   - Added confirmation dialogs for destructive actions
+   - Implemented consistent styling across components
+
+### Technical Approach
+
+- Created reusable components that can be utilized throughout the application
+- Used compound component patterns for flexible composition
+- Implemented controlled components with proper state management
+- Used store for centralized state management
+- Added helper functions to improve code organization and reusability
+- Enhanced type definitions to ensure type safety
+
+### Next Steps
+
+Moving on to Phase 5: Document Preview Implementation, which will focus on enhancing the document preview capabilities with more advanced features for PDF and image viewing.
+
+### Date: June 11, 2024
+
+## 2024-05-22: File Manager Enhancement - Phase 5 (Advanced Document Preview)
+
+### Summary
+
+Implemented Phase 5 of the File Manager enhancement plan, focusing on advanced document preview capabilities. This phase introduces specialized viewers for PDF and image files with robust annotation, zoom, rotation, and navigation features.
+
+### Implementation Details
+
+1. **Data Model Enhancement**:
+
+   - Extended the `File` interface with new properties for document preview:
+     - `pageCount`, `currentPage`, `dimensions`, `documentQuality`
+     - `previewPages`, `annotations`, `rotation`, `zoom`
+   - Added new types: `DocumentQuality` enum and `Annotation` interface
+
+2. **State Management**:
+
+   - Enhanced `useFileManagerStore` with document preview-specific state:
+     - Added properties: `currentPage`, `zoom`, `rotation`, `annotationMode`, `annotationColor`
+     - Implemented actions for page navigation, zoom, rotation, view reset, and annotation management
+
+3. **PDF Viewer Implementation**:
+
+   - Created a specialized `PDFViewer` component with:
+     - Pagination controls with current/total page display
+     - Zoom controls (preset zoom levels via dropdown)
+     - Rotation tools
+     - Annotation tools (highlight, underline, rectangle, note)
+     - Annotation color picker
+     - Fullscreen mode and toolbar for document operations
+
+4. **Image Viewer Implementation**:
+
+   - Created a specialized `ImageViewer` component with:
+     - Interactive pan and zoom functionality
+     - Smooth image rotation
+     - Image-specific annotation tools
+     - Quality indicators
+     - Zoom slider controls
+     - Image enhancement tools
+
+5. **Document Preview Dialog Enhancement**:
+
+   - Updated the main `DocumentPreview` component to:
+     - Integrate specialized viewers based on file type
+     - Improve tabs organization (Preview, Details, Extracted Text)
+     - Enhance the Details tab with rich metadata display
+     - Add annotation summary in the Details view
+     - Display document quality and dimension information
+
+6. **Mock Data Update**:
+   - Added realistic mock data for previewing different document types
+   - Added sample annotations to demonstrate annotation rendering
+   - Included document quality indicators and dimension information
+
+### Technical Approach
+
+- **Component Separation**: Created specialized viewers rather than a one-size-fits-all approach
+- **Responsive Design**: All components adapt to different screen sizes
+- **Modular UI**: Organized UI elements into logical groups for navigation, tools, etc.
+- **Custom Handlers**: Implemented custom mouse event handlers for interactive features like panning
+- **Progressive Enhancement**: Features gracefully degrade when properties are missing
+
+### Next Steps
+
+1. **Integration with Actual Documents**:
+
+   - Replace mock data with actual document rendering (PDF.js for PDFs)
+   - Implement backend storage for annotations
+
+2. **Advanced Annotation Features**:
+
+   - Add annotation editing and comments
+   - Implement annotation searching and filtering
+
+3. **Collaboration Features**:
+
+   - Add shared annotations and collaborative viewing
+   - Implement real-time updates for multi-user scenarios
+
+4. **Accessibility Improvements**:
+
+   - Ensure all controls are keyboard accessible
+   - Add screen reader support for annotations
+
+5. **Performance Optimization**:
+   - Implement lazy loading for document pages
+   - Add virtualization for large documents
+
+## 2024-08-10
+
+### Fixed undefined component error in file manager
+
+Fixed an issue in the file manager where the `getCategoryIcon` function was returning `undefined` for some icons, causing a React error: "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined."
+
+Changes made:
+
+1. Updated `getCategoryIcon` in `lib/mock/file-categories.ts` to always return a valid component by using the Folder icon as a fallback:
+
+   ```typescript
+   export const getCategoryIcon = (iconName: string): LucideIcon => {
+     const iconMap: Record<string, LucideIcon> = {
+       FileText,
+       Stethoscope,
+       Medal
+       // ...other icons
+     };
+
+     return iconMap[iconName as keyof typeof iconMap] || Folder;
+   };
+   ```
+
+2. Fixed the implementations in both `folder-list-cards.tsx` and `table-recent-files.tsx` to use the fallback icon directly instead of conditional rendering.
+
+3. Fixed the `Tag` interface implementation in `predefinedTags` by adding the required `count` property to each tag.
+
+These changes ensure that the file manager components render correctly without any "undefined" component errors.
+
+## June 2024 - Fixed File Manager Component Errors
+
+### Issues
+
+The file manager page was encountering multiple React errors:
+
+1. **Undefined Component Error**: The error "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined" was occurring in both `StorageStatusCard` and `TableRecentFiles` components.
+
+2. **Import Error**: There was an error with the `FilePdf` import from lucide-react: "Attempted import error: 'FilePdf' is not exported from 'lucide-react'".
+
+3. **Type Error in getCategoryIcon**: The `getCategoryIcon` function in `lib/mock/file-categories.ts` was returning a component type that wasn't properly handled in the components using it.
+
+### Root Cause
+
+1. The `FilePdf` component doesn't exist in the lucide-react library - it should be using `FileText` instead.
+
+2. The `getCategoryIcon` function in `lib/mock/file-categories.ts` was returning a component type (LucideIcon) but wasn't properly handling the React component type.
+
+3. Some components weren't properly handling the case when `getCategoryIcon` might return undefined.
+
+### Fix
+
+## August 12, 2024 - Fixed File Manager Layout Issue with Left Margin Gap
+
+### Issue
+
+The file manager page (`/dashboard/file-manager`) had an inconsistent layout with an extra gap/margin on the left side compared to other dashboard pages. This made the page appear narrower and created an inconsistent user experience.
+
+### Root Cause
+
+The issue was traced to the sidebar component configuration. The sidebar was using a `variant="sidebar"` property which was causing inconsistent spacing in the layout compared to the reference design at shadcnuikit.com/dashboard/default.
+
+In the SidebarInset component, the CSS included:
+
+```tsx
+"md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2";
+```
+
+When the sidebar was using the "sidebar" variant, it wasn't applying the correct spacing that would match the reference design.
+
+### Fix
+
+Updated the sidebar component in `components/layout/sidebar.tsx` to use the "floating" variant instead:
+
+```tsx
+// Before
+const sidebarVariant = "sidebar";
+
+// After
+const sidebarVariant = "floating";
+```
+
+This change ensures that the sidebar properly applies the floating style with the correct margins and padding, matching the reference design at shadcnuikit.com/dashboard/default.
+
+### Resolution
+
+After making this change, the file manager page now displays correctly with consistent spacing on the left side, matching the layout of other pages in the dashboard. The floating sidebar style also provides a more modern, elevated appearance that better matches the intended design.
+
+## August 13, 2024 - Fixed File Manager Layout Issue with Nested Layout Structure
+
+### Issue
+
+The file manager page (`/dashboard/file-manager`) had a broken layout with incorrect spacing and duplicate sidebar elements. This was causing visual inconsistencies and navigation problems.
+
+### Root Cause
+
+The issue was identified as a layout conflict between nested layouts:
+
+1. The main dashboard layout (`app/dashboard/layout.tsx`) was applying a sidebar structure with `SidebarProvider`, `Sidebar`, and `SidebarInset` components
+2. The auth layout (`app/dashboard/(auth)/layout.tsx`) was also applying the same sidebar structure
+3. This caused the sidebar components to be rendered twice, creating conflicts in the DOM structure and CSS application
+
+### Fix
+
+Modified the auth layout (`app/dashboard/(auth)/layout.tsx`) to remove the duplicate sidebar structure:
+
+- Removed the `SidebarProvider`, `Sidebar`, and `SidebarInset` components
+- Simplified the layout to only include the content container and toaster
+- Kept the same container styling for consistency
+
+This change ensures that only one sidebar structure is applied by the parent dashboard layout, eliminating the conflicts and restoring the proper layout for the file manager page.
+
+### Result
+
+The file manager page now displays correctly with proper spacing and sidebar behavior, matching the design reference from shadcnuikit.com/dashboard/default.

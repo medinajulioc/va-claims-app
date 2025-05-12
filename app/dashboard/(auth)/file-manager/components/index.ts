@@ -4,3 +4,8 @@ export * from "./chart-file-transfer";
 export * from "./table-recent-files";
 export * from "./storage-status-card";
 export * from "./file-upload-dialog";
+export * from "./document-preview";
+export * from "./category-selector";
+export * from "./tag-input";
+export * from "./pdf-viewer";
+export * from "./image-viewer";

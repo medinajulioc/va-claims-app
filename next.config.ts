@@ -57,6 +57,9 @@ const nextConfig: NextConfig = {
         hostname: "bundui-images.netlify.app"
       }
     ]
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react"]
   }
 };
 
