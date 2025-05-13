@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
+import { CopyButton } from "./copy-button";
 
 export type CodeBlockProps = {
   children?: React.ReactNode;
@@ -58,14 +59,30 @@ function CodeBlockCode({
   );
 
   // SSR fallback: render plain code if not hydrated yet
-  return highlightedHtml ? (
-    <div className={classNames} dangerouslySetInnerHTML={{ __html: highlightedHtml }} {...props} />
-  ) : (
-    <div className={classNames} {...props}>
-      <pre>
-        <code>{code}</code>
-      </pre>
-    </div>
+  return (
+    <>
+      <CodeBlockGroup>
+        <div className="flex items-center gap-2 px-4 py-2">
+          <span className="text-muted-foreground text-xs">{language}</span>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2">
+          <CopyButton text={code} compact />
+        </div>
+      </CodeBlockGroup>
+      {highlightedHtml ? (
+        <div
+          className={classNames}
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+          {...props}
+        />
+      ) : (
+        <div className={classNames} {...props}>
+          <pre>
+            <code>{code}</code>
+          </pre>
+        </div>
+      )}
+    </>
   );
 }
 

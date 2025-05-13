@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Markdown } from "./markdown";
+import { CopyButton } from "./copy-button";
 
 export type MessageProps = {
   children: React.ReactNode;
@@ -45,17 +46,24 @@ const MessageContent = ({
   ...props
 }: MessageContentProps) => {
   const classNames = cn(
-    "rounded-lg py-2 px-3 text-foreground bg-secondary prose break-words whitespace-normal",
+    "rounded-lg py-2 px-3 text-foreground bg-secondary prose break-words whitespace-normal relative",
     className
   );
 
-  return markdown ? (
-    <Markdown className={classNames} {...props}>
-      {children as string}
-    </Markdown>
-  ) : (
-    <div className={classNames} {...props}>
-      {children}
+  return (
+    <div className="relative w-full">
+      <div className="absolute top-2 right-2 z-10">
+        <CopyButton text={typeof children === "string" ? children : ""} compact />
+      </div>
+      {markdown ? (
+        <Markdown className={classNames} {...props}>
+          {children as string}
+        </Markdown>
+      ) : (
+        <div className={classNames} {...props}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };

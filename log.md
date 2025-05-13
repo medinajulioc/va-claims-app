@@ -2649,3 +2649,51 @@ The implementation ensures that when users update their information in the accou
 - Implemented with TypeScript for type safety
 - Maintained the existing mock data approach for development
 - Designed with future production implementation in mind
+
+## May 31, 2024 - Fixed Chat Interface Text Visibility
+
+### Changes
+
+1. **Chat Input Text Enhancement**:
+   - Improved text visibility in the chat input fields by adding `font-medium` class
+   - Updated both main chat and support chat components:
+     - `app/dashboard/(auth)/apps/chat/components/chat-footer.tsx`
+     - `app/dashboard/(auth)/apps/support/components/chat-footer.tsx`
+
+### Rationale
+
+The text in the chat input fields was too dull and difficult to read against the dark background. Adding the `font-medium` class makes the text appear brighter and more visible, improving the user experience and making it easier to see what's being typed in the chat interface.
+
+## June 1, 2024 - Enhanced Chat Interface with Markdown Support and Usability Features
+
+### Changes
+
+1. **Chat Text Input Visibility Fix**:
+
+   - Improved text visibility in chat input fields by adding explicit white text color and caret color
+   - Updated both main chat and support chat components:
+     - `app/dashboard/(auth)/apps/chat/components/chat-footer.tsx`
+     - `app/dashboard/(auth)/apps/support/components/chat-footer.tsx`
+
+2. **Markdown Support**:
+
+   - Added markdown formatting support for messages in the chat interface
+   - Updated the app-render.tsx to use markdown for message display
+   - Added informational text to show users available markdown formatting options
+   - Supports bold, italic, code snippets, and code blocks
+
+3. **Message Length Indicator**:
+
+   - Created a new component `MessageLengthIndicator` to show character count
+   - Implemented color-coded feedback (green, amber, red) based on message length
+   - Set mock character limit of 2000 characters for development
+
+4. **Copy Button Functionality**:
+   - Added copy buttons for both entire messages and code blocks
+   - Created a new `CopyButton` component with visual feedback when copied
+   - Enhanced `CodeBlock` component to include language display and copy functionality
+   - Improved message component to include copy option for entire messages
+
+### Rationale
+
+These enhancements significantly improve the usability and functionality of the chat interface. The text visibility fix addresses the immediate issue of hard-to-see text in the input field. Adding markdown support enables more expressive communication, allowing users to emphasize important points and share formatted code snippets. The message length indicator helps users gauge appropriate message length, while the copy button functionality makes it easy to save and reuse important information from the conversation. All these features work with the existing mock data system and will seamlessly integrate with the real backend when implemented.

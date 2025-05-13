@@ -1,44 +1,33 @@
-import { Mic, PlusCircleIcon, SendIcon, SmileIcon, Paperclip } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+"use client";
+
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ChatFileUpload } from "./chat-file-upload";
-import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
-import useChatStore from "@/store/useChatStore";
-import useUserStore from "@/store/useUserStore";
-import { getFirstName } from "@/lib/utils";
-import { useState } from "react";
+import { ArrowUp, Paperclip } from "lucide-react";
+import { MessageLengthIndicator } from "@/components/ui/custom/prompt/message-length-indicator";
 
-export function ChatFooter() {
-  const { selectedChat } = useChatStore();
-  const { firstName: currentUserFirstName } = useUserStore();
+interface ChatFooterProps {
+  onSendMessage: (message: string) => void;
+  placeholder?: string;
+}
+
+export function ChatFooter({ onSendMessage, placeholder = "Type a message..." }: ChatFooterProps) {
   const [message, setMessage] = useState("");
-
-  // Use recipient's name for the placeholder
-  const recipientFirstName = selectedChat?.user ? getFirstName(selectedChat.user.name) : "";
-  const placeholder = recipientFirstName ? `Message ${recipientFirstName}...` : "Enter message...";
+  const MAX_MESSAGE_LENGTH = 2000; // Mock limit for now
 
   const handleSendMessage = () => {
-    // In a real app, this would send the message to the backend
-    // For now, we'll just clear the input
     if (message.trim()) {
+      onSendMessage(message);
       setMessage("");
     }
   };
 
   return (
-    <div className="px-2 lg:px-4">
-      <div className="bg-muted/80 relative flex items-center rounded-md border shadow-sm">
+    <div className="border-t p-4">
+      <div className="relative">
         <Input
           type="text"
-          className="bg-background/20 focus-visible:bg-background/30 focus-visible:ring-primary/30 h-14 border-transparent px-4 pe-32 text-white shadow-transparent! ring-transparent! transition-all duration-200 ease-in-out placeholder:text-gray-300/70 focus-visible:ring-[4px] lg:pe-56"
+          className="bg-background/20 focus-visible:bg-background/30 focus-visible:ring-primary/30 h-14 border-transparent px-4 pe-32 font-medium text-white shadow-transparent! ring-transparent! transition-all duration-200 ease-in-out placeholder:text-gray-300/70 focus-visible:ring-[4px] lg:pe-56"
           placeholder={placeholder}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -47,67 +36,33 @@ export function ChatFooter() {
               handleSendMessage();
             }
           }}
+          style={{ color: "white", caretColor: "white" }}
+          maxLength={MAX_MESSAGE_LENGTH}
         />
         <div className="absolute end-4 flex items-center gap-1">
-          <div className="block lg:hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="hover:bg-background/20 size-10 rounded-full p-0 text-gray-200 hover:text-white">
-                  <PlusCircleIcon className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Emoji</DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="w-full px-2 py-1.5">
-                    <FileUploadDialog
-                      customTrigger={
-                        <div className="flex w-full cursor-pointer items-center">Upload Files</div>
-                      }
-                    />
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem>Send Voice</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="hidden lg:flex lg:items-center lg:gap-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-background/20 rounded-full text-gray-200 hover:text-white">
-                    <SmileIcon className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Emoji</TooltipContent>
-              </Tooltip>
-              <ChatFileUpload />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-background/20 rounded-full text-gray-200 hover:text-white">
-                    <Mic className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">Send Voice</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
           <Button
-            variant="outline"
-            className="bg-primary/10 border-primary/20 hover:bg-primary/20 hover:border-primary/30 ms-2 text-white transition-colors"
-            onClick={handleSendMessage}>
-            <span className="hidden lg:inline">Send</span>{" "}
-            <SendIcon className="inline size-4 lg:ms-0" />
+            size="icon"
+            variant="ghost"
+            className="bg-background/30 text-muted-foreground hover:bg-background/50 hover:text-foreground h-9 w-9 rounded-full">
+            <Paperclip className="size-4" />
+            <span className="sr-only">Attach file</span>
+          </Button>
+          <Button
+            size="icon"
+            className="h-9 w-9 rounded-full"
+            onClick={handleSendMessage}
+            disabled={!message.trim()}>
+            <ArrowUp className="size-4" />
+            <span className="sr-only">Send message</span>
           </Button>
         </div>
+      </div>
+      <MessageLengthIndicator currentLength={message.length} maxLength={MAX_MESSAGE_LENGTH} />
+      <div className="text-muted-foreground mt-2 text-xs">
+        <span>
+          Supports <strong>markdown</strong> formatting: **bold**, *italic*, `code`, ```code
+          blocks```
+        </span>
       </div>
     </div>
   );

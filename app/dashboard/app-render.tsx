@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpIcon, Paperclip, SquareIcon, X } from "lucide-react";
 import { Suggestion } from "@/components/ui/custom/prompt/suggestion";
 import { ChatContainer } from "@/components/ui/custom/prompt/chat-container";
-import { Message, MessageContent } from "@/components/ui/custom/prompt/message";
+import { Message, MessageContent, MessageAvatar } from "@/components/ui/custom/prompt/message";
 import { CfrMarkdown } from "@/components/ui/custom/prompt/cfr-markdown";
 import { cn } from "@/lib/utils";
 import { PromptLoader } from "@/components/ui/custom/prompt/loader";
@@ -248,60 +248,38 @@ The process typically takes 3-5 months, though some claims may take longer depen
         scrollToRef={bottomRef}>
         {messages.map((message) => {
           const isAssistant = message.role === "assistant";
-
-          // Get avatar information based on message role
-          const avatarSrc = isAssistant
-            ? process.env.ASSETS_URL + "/avatars/01.png" // Default avatar for assistant
-            : ""; // User avatar could be added here if available
-
-          const avatarName = isAssistant ? "System" : `${firstName} ${lastName}`;
-
           return (
             <Message
               key={message.id}
-              className={message.role === "user" ? "justify-end" : "justify-start"}>
-              {/* Add avatar for assistant messages */}
+              className={cn("items-start", isAssistant ? "" : "justify-end")}>
               {isAssistant && (
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarImage src={avatarSrc} alt="Assistant" />
-                  <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
-                </Avatar>
+                <MessageAvatar
+                  src="/images/avatars/ai-assistant.png"
+                  alt="AI Assistant"
+                  fallback="AI"
+                />
               )}
 
-              <div
-                className={cn("max-w-[85%] flex-1 sm:max-w-[75%]", {
-                  "justify-end text-end": !isAssistant
-                })}>
-                {isAssistant ? (
-                  <div className="bg-secondary text-foreground prose rounded-lg px-3 py-2">
-                    <CfrMarkdown className={"space-y-4"}>{message.content}</CfrMarkdown>
+              <div className={cn("flex flex-col gap-2", isAssistant ? "" : "items-end")}>
+                <MessageContent markdown={true} className={isAssistant ? "" : "bg-primary/10"}>
+                  {message.content}
+                </MessageContent>
+
+                {message.files && message.files.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {message.files.map((file, index) => (
+                      <FileListItem key={index} file={file} dismiss={false} index={index} />
+                    ))}
                   </div>
-                ) : message?.files && message.files.length > 0 ? (
-                  <div className="flex flex-col items-end space-y-2">
-                    <div className="flex flex-wrap justify-end gap-2">
-                      {message.files.map((file, index) => (
-                        <FileListItem key={index} index={index} file={file} dismiss={false} />
-                      ))}
-                    </div>
-                    {message.content ? (
-                      <MessageContent className="bg-primary text-primary-foreground inline-flex">
-                        {message.content}
-                      </MessageContent>
-                    ) : null}
-                  </div>
-                ) : (
-                  <MessageContent className="bg-primary text-primary-foreground inline-flex text-start">
-                    {message.content}
-                  </MessageContent>
                 )}
               </div>
 
-              {/* Add avatar for user messages */}
               {!isAssistant && (
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarImage src="" alt="User" />
-                  <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
-                </Avatar>
+                <MessageAvatar
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${firstName} ${lastName}`}
+                  alt="User"
+                  fallback={generateAvatarFallback(`${firstName} ${lastName}`)}
+                />
               )}
             </Message>
           );
@@ -342,7 +320,7 @@ The process typically takes 3-5 months, though some claims may take longer depen
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 pb-2">
             {files.map((file, index) => (
-              <FileListItem key={index} index={index} file={file} />
+              <FileListItem key={index} file={file} dismiss={true} index={index} />
             ))}
           </div>
         )}
