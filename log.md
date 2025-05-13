@@ -1911,3 +1911,322 @@ Significantly improved the theme customizer with new features inspired by the sh
    - Created shareable theme URLs
 
 These enhancements provide users with much more granular control over the application's appearance while maintaining a user-friendly interface. The toggle between panel and drawer modes accommodates different user preferences and screen sizes.
+
+## July 3, 2024 - Fixed Theme Customizer Error
+
+### Issue
+
+The application was encountering a TypeError when using the theme customizer:
+
+```
+TypeError: (0 , _components_active_theme__WEBPACK_IMPORTED_MODULE_7__.useTheme) is not a function
+    at ThemeManager (webpack-internal:///(app-pages-browser)/./components/theme-customizer/theme-manager.tsx:31:101)
+    at ThemeCustomizerPanel (webpack-internal:///(app-pages-browser)/./components/theme-customizer/panel.tsx:183:112)
+    at ThemeCustomizerToggle (webpack-internal:///(app-pages-browser)/./components/theme-customizer/toggle.tsx:27:107)
+    at Header (webpack-internal:///(app-pages-browser)/./components/layout/header/index.tsx:60:92)
+    at DashboardLayout (rsc://React/Server/webpack-internal:///(rsc)/./app/dashboard/layout.tsx?163:34:96)
+```
+
+### Root Cause
+
+The error was caused by importing a non-existent function `useTheme` from the `@/components/active-theme` module. Looking at the `active-theme.tsx` file, it actually exports a function called `useThemeConfig` instead of `useTheme`.
+
+Affected files:
+
+- `components/theme-customizer/theme-manager.tsx`
+- `components/theme-customizer/theme-exporter.tsx`
+
+### Fix
+
+1. In `theme-manager.tsx`, updated the import statement to use `useThemeConfig` instead of `useTheme`:
+
+   ```jsx
+   // Before
+   import { useTheme } from "@/components/active-theme";
+
+   // After
+   import { useThemeConfig } from "@/components/active-theme";
+   ```
+
+2. Also updated the usage of the hook in the component:
+
+   ```jsx
+   // Before
+   const { current, setTheme } = useTheme();
+
+   // After
+   const { theme: current, setTheme } = useThemeConfig();
+   ```
+
+3. Made similar changes in `theme-exporter.tsx`.
+
+### Resolution
+
+After making these changes and restarting the server, the theme customizer is now functioning correctly without any TypeErrors. This ensures the theme customization feature is available to users for personalizing their interface experience.
+
+## July 2024 - Fixed ThemeCustomizerToggle Component in Dashboard Header
+
+### Issue
+
+The "Try drawer mode" / "Try panel mode" button was incorrectly positioned outside of its container, causing it to appear at the top of the dashboard page instead of being properly contained within the theme customizer component.
+
+### Root Cause
+
+The ThemeCustomizerToggle component had an absolute positioning design that was not properly contained within its parent container. The toggle button was positioned with `absolute` styling at the bottom of a relative container, but this container wasn't properly sized, causing the button to appear in an unexpected location.
+
+### Fix
+
+1. Completely redesigned the ThemeCustomizerToggle component to:
+
+   - Remove the absolute positioning that was causing layout issues
+   - Replace the text button with an icon button that fits better in the header
+   - Add a tooltip to explain the button's function
+   - Use more appropriate icons (BookOpen/PanelRight) to indicate the current mode
+   - Simplify the component structure to work properly in the header layout
+
+2. Technical changes:
+   - Replaced the complex nested div structure with React fragments
+   - Removed the absolute positioning classes
+   - Added proper tooltips for better UX
+   - Simplified the toggle function by inlining it
+   - Added appropriate icons to better indicate the current mode
+
+### Resolution
+
+After implementing these changes, the theme customizer toggle button now appears correctly in the dashboard header alongside other controls, and properly toggles between panel and drawer modes without any layout issues.
+
+## July 26, 2024 - Improved ThemeCustomizer Toggle Integration
+
+### Issue
+
+The ThemeCustomizer component had separate buttons for opening the customizer and for toggling between panel and drawer modes. The "Try drawer mode"/"Try panel mode" button was appearing incorrectly in the layout, not properly integrated with the customizer UI.
+
+### Root Cause
+
+The ThemeCustomizerToggle component was implemented with two separate, uncoordinated UI elements:
+
+1. A gear icon button that opened either the panel or drawer
+2. A separate toggle button for switching between panel and drawer modes
+
+This separation created layout issues and a disjointed user experience.
+
+### Solution
+
+1. **Unified UI Approach**:
+
+   - Consolidated the functionality into a single gear icon button in the header
+   - Added a mode toggle button inside the customizer panel/drawer UIs
+   - Removed the separate mode toggle button from the header
+
+2. **Component Changes**:
+
+   - Updated `ThemeCustomizerToggle` to manage the mode state but only render a single button
+   - Modified `ThemeCustomizerPanel` to accept an `onModeChange` prop with a "Switch to drawer" button
+   - Updated `ThemeCustomizerDrawer` to accept an `onModeChange` prop with a "Switch to panel" button
+   - Added clear tooltips explaining the current mode
+
+3. **UX Improvements**:
+   - When in panel mode, the panel includes a "Switch to drawer" option
+   - When in drawer mode, the drawer includes a "Switch to panel" option
+   - The main customizer button in the header shows a tooltip indicating the current mode
+
+The implementation now provides a more cohesive user experience with a single entry point in the header and contextual mode-switching options within the customizer UI itself.
+
+## July 29, 2024 - Fixed Duplicate Theme Customizer Icons
+
+### Issue
+
+The theme customizer had duplicate gear icons appearing in the header: one from the `ThemeCustomizerToggle` component and a second from the Panel/Drawer components that were rendered by the Toggle component.
+
+### Root Cause
+
+The issue occurred because:
+
+1. The `ThemeCustomizerToggle` component rendered a gear icon button
+2. It then conditionally rendered either a `ThemeCustomizerPanel` or `ThemeCustomizerDrawer` component
+3. Both panel and drawer components also rendered their own gear icon buttons
+4. This resulted in two visually identical buttons appearing in the header
+
+### Fix
+
+1. Modified the `ThemeCustomizerToggle` component to:
+
+   - Use a shared trigger button between panel and drawer modes
+   - Directly integrate with DropdownMenu/Sheet components
+   - Pass hideIcon prop to child components
+
+2. Updated `ThemeCustomizerPanel` and `ThemeCustomizerDrawer` components to:
+   - Accept a hideIcon prop
+   - Conditionally render their content without the gear icon when hideIcon is true
+   - Maintain all existing functionality for mode switching
+
+This implementation preserves all theme customizer functionality while eliminating the duplicate UI elements, providing a cleaner, more professional appearance in the header.
+
+## July 29, 2024 - Fixed Theme Customizer Click Functionality
+
+### Issue
+
+After fixing the duplicate gear icons, the theme customizer wasn't opening when users clicked on the gear icon.
+
+### Root Cause
+
+The issue occurred due to improper nesting of components in the `ThemeCustomizerToggle`:
+
+1. The tooltip component was wrapping both the trigger button and the dropdown/sheet
+2. This caused click events to be intercepted by the tooltip instead of being passed to the dropdown/sheet trigger
+3. The component function `TriggerButton` was creating a new component instance with its own React tree
+
+### Fix
+
+1. Modified the `ThemeCustomizerToggle` component to:
+
+   - Replace the functional component `TriggerButton` with a simple JSX element `triggerButton`
+   - Restructure the component nesting to ensure proper event handling
+   - Move the tooltip to wrap the dropdown/sheet rather than being inside it
+   - Add explicit state control with `open` and `onOpenChange` props
+
+2. Added explicit state management:
+   - Added `dropdownOpen` state for the panel mode
+   - Maintained `drawerOpen` state for the drawer mode
+   - These states ensure the customizer responds to clicks properly
+
+This implementation ensures the theme customizer opens properly when clicking the gear icon while maintaining the tooltip functionality.
+
+## August 11, 2024 - Fixed Notifications Modal Truncation Issue
+
+### Issue
+
+The notification messages in the dropdown modal were being truncated with ellipses, preventing users from seeing the complete notification content. This was particularly problematic for important notifications like claim updates and document requirements.
+
+### Root Cause
+
+The truncation was caused by the `line-clamp-2` utility class applied to notification message containers, which was limiting text to exactly 2 lines regardless of message length. Additionally, the ScrollArea component's max-height was restricting the overall content display area.
+
+### Fix
+
+1. **Removed text truncation:**
+
+   - Replaced `line-clamp-2` with `whitespace-normal` to allow text to wrap naturally
+   - Removed the `truncate` class from the notification title for consistency
+
+2. **Expanded display area:**
+   - Increased the ScrollArea's max-height from 300px to 400px (450px on XL screens)
+   - This allows more notification content to be visible at once
+
+### Result
+
+Notifications now display their full message text without truncation, improving the readability and usability of the notification system. Users can now see complete information about their claims, appointments, and document requirements directly in the dropdown without having to navigate to a separate page.
+
+## August 13, 2024 - Fixed UI Glitch in Theme Customizer Tooltip
+
+### Issue
+
+The theme customizer dropdown had an unwanted UI element appearing in the bottom right corner of the panel. This appeared as a small floating element that had no functional purpose and detracted from the overall UI quality.
+
+### Root Cause
+
+The issue was caused by improper nesting of the Tooltip component in the ThemeCustomizerToggle. The tooltip's content was being rendered outside its expected container due to the use of React fragments (`<>...</>`) and how the tooltip was positioned relative to the dropdown/drawer components.
+
+### Fix
+
+1. **Improved tooltip implementation:**
+
+   - Added a `delayDuration` to improve tooltip usability
+   - Set a specific `side="bottom"` to control tooltip placement
+   - Added a wrapper `<div>` around the dropdown/sheet components
+   - Removed unnecessary paragraph tags around tooltip content
+   - Removed React fragments that were causing positioning issues
+
+2. **UI cleanup:**
+   - Fixed how the tooltip interacts with the dropdown menu
+   - Ensured all UI elements appear in their intended positions
+
+### Result
+
+The theme customizer now displays correctly without any unwanted UI elements. The tooltip functionality works as expected, showing "Theme Customizer (panel/drawer mode)" when hovering over the gear icon, and the dropdown/drawer UI appears clean and professional.
+
+## August 13, 2024 - Fixed Theme Customizer Panel Layout
+
+### Issue
+
+The "Switch to drawer" button in the Theme Customizer panel was being cut off or only partially visible, making it difficult for users to switch between panel and drawer modes.
+
+### Root Cause
+
+The issue was caused by:
+
+1. Insufficient width of the dropdown panel (320px was too narrow)
+2. Inflexible layout that didn't account for button text length
+3. Lack of responsive design for the footer section containing action buttons
+
+### Fix
+
+1. **Increased panel width:**
+
+   - Changed panel width from 320px to 340px to provide more space for UI elements
+
+2. **Improved footer layout:**
+
+   - Replaced the simple flex layout with a more robust nested structure
+   - Added `flex-wrap` to ensure buttons can wrap to a new line if needed
+   - Added `gap-2` to ensure proper spacing between buttons when wrapped
+   - Converted the direct flex container to a better structured layout with inner div
+
+3. **Enhanced responsive behavior:**
+   - Made the button container responsive to different screen sizes
+   - Ensured consistent spacing and alignment between buttons
+
+### Result
+
+The Theme Customizer panel now properly displays both the "Reset to Default" and "Switch to drawer" buttons with adequate spacing. The buttons remain fully visible and functional on all screen sizes. Users can now easily switch between panel and drawer modes as intended.
+
+## August 13, 2024 - Improved Theme Customizer UI and UX
+
+### Issue
+
+1. The "Switch to drawer" button in the Theme Customizer panel was positioned awkwardly on the right side, making the layout unbalanced
+2. The tooltip for the Theme Customizer toggle was unnecessarily verbose, showing the current mode (panel/drawer)
+
+### Changes Made
+
+1. **Centered Theme Customizer buttons:**
+
+   - Changed the layout from horizontal flex with space-between to a vertical centered layout
+   - Improved the visual hierarchy of the Reset and Switch buttons by placing them in a column
+   - Added more spacing between the buttons for better tap targets
+
+2. **Simplified tooltip text:**
+   - Changed tooltip from "Theme Customizer (panel mode)" to simply "Theme Customizer"
+   - Maintained the same hover behavior and tooltip functionality
+   - Improved code organization in the toggle component
+
+### Benefits
+
+- More balanced and visually pleasing interface
+- Clearer button placement with better visibility
+- Simplified tooltip that communicates function without unnecessary details
+- Cleaner and more maintainable code structure
+
+## August 13, 2024 - Added Tooltip to Notifications Icon
+
+### Enhancement
+
+Added a tooltip with the text "Notifications" to the notification bell icon in the header. This improves user experience by providing clear feedback about the button's function.
+
+### Implementation
+
+1. **Added Tooltip Component**:
+
+   - Imported `Tooltip`, `TooltipContent`, and `TooltipTrigger` from the UI components
+   - Wrapped the notification button with the tooltip components
+   - Set a 300ms delay duration for better user experience
+   - Positioned the tooltip below the icon for optimal visibility
+
+2. **Technical Details**:
+   - Used the same tooltip implementation pattern as the theme customizer for consistency
+   - Maintained all existing functionality including the notification badge and animation
+   - Ensured proper nesting of component hierarchy with the DropdownMenuTrigger
+
+### Benefit
+
+This enhancement improves accessibility and discoverability of the application's interface by clearly communicating the purpose of the notification icon, especially helpful for new users.

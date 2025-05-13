@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 import { mockNotifications, getUnreadCount, markAsRead } from "@/lib/mock/notifications";
 import { NotificationType, Priority, Status } from "@/types/notifications";
@@ -70,18 +71,23 @@ const Notifications = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="icon" variant="outline" className="relative">
-          <>
-            <BellIcon className={unreadCount > 0 ? "animate-tada" : ""} />
-            {unreadCount > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -end-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center p-0 text-xs">
-                {unreadCount}
-              </Badge>
-            )}
-          </>
-        </Button>
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger asChild>
+            <Button size="icon" variant="outline" className="relative">
+              <>
+                <BellIcon className={unreadCount > 0 ? "animate-tada" : ""} />
+                {unreadCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -end-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center p-0 text-xs">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Notifications</TooltipContent>
+        </Tooltip>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={isMobile ? "center" : "end"} className="z-10 ms-4 me-4 w-80 p-0">
         <DropdownMenuLabel className="bg-background dark:bg-muted sticky top-0 z-10 p-0">
@@ -113,7 +119,7 @@ const Notifications = () => {
             </Tabs>
           </div>
         </DropdownMenuLabel>
-        <ScrollArea className="max-h-[300px] xl:max-h-[350px]">
+        <ScrollArea className="max-h-[400px] xl:max-h-[450px]">
           {filteredNotifications.length === 0 ? (
             <div className="text-muted-foreground flex flex-col items-center justify-center p-6 text-center">
               <p>No notifications to display</p>
@@ -137,7 +143,7 @@ const Notifications = () => {
                 </div>
                 <div className="flex flex-1 flex-col gap-1">
                   <div className="flex items-center justify-between">
-                    <div className="dark:group-hover:text-default-800 truncate text-sm font-medium">
+                    <div className="dark:group-hover:text-default-800 text-sm font-medium">
                       {item.title}
                     </div>
                     {item.priority !== Priority.LOW && (
@@ -146,7 +152,7 @@ const Notifications = () => {
                       </Badge>
                     )}
                   </div>
-                  <div className="dark:group-hover:text-default-700 text-muted-foreground line-clamp-2 text-xs">
+                  <div className="dark:group-hover:text-default-700 text-muted-foreground text-xs whitespace-normal">
                     {item.message}
                   </div>
                   {item.actions && item.actions.length > 0 && (

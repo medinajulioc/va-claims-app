@@ -9,11 +9,11 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { useTheme } from "@/components/active-theme";
+import { useThemeConfig } from "@/components/active-theme";
 import { cn } from "@/lib/utils";
 
 export function ThemeExporter() {
-  const { current } = useTheme();
+  const { theme: current } = useThemeConfig();
   const [copied, setCopied] = useState(false);
 
   // Generate CSS variables based on current theme

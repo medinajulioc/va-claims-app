@@ -9,16 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
+  DialogFooter
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Save, Download, Upload, Share2, Trash2, Check } from "lucide-react";
-import { useTheme } from "@/components/active-theme";
+import { useThemeConfig } from "@/components/active-theme";
 import { cn } from "@/lib/utils";
 
 interface SavedTheme {
@@ -30,7 +30,7 @@ interface SavedTheme {
 }
 
 export function ThemeManager() {
-  const { current, setTheme } = useTheme();
+  const { theme: current, setTheme } = useThemeConfig();
   const [savedThemes, setSavedThemes] = useState<SavedTheme[]>([]);
   const [newThemeName, setNewThemeName] = useState("");
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -49,7 +49,7 @@ export function ThemeManager() {
         console.error("Error loading saved themes:", error);
       }
     };
-    
+
     loadThemes();
   }, []);
 
@@ -62,36 +62,51 @@ export function ThemeManager() {
   const getCurrentCSSVars = () => {
     const computedStyle = getComputedStyle(document.documentElement);
     const cssVars: Record<string, string> = {};
-    
+
     // Array of CSS variable names to save
     const varNames = [
-      "--background", "--foreground", "--card", "--card-foreground",
-      "--popover", "--popover-foreground", "--primary", "--primary-foreground",
-      "--secondary", "--secondary-foreground", "--muted", "--muted-foreground",
-      "--accent", "--accent-foreground", "--destructive", "--destructive-foreground",
-      "--border", "--input", "--ring", "--radius",
+      "--background",
+      "--foreground",
+      "--card",
+      "--card-foreground",
+      "--popover",
+      "--popover-foreground",
+      "--primary",
+      "--primary-foreground",
+      "--secondary",
+      "--secondary-foreground",
+      "--muted",
+      "--muted-foreground",
+      "--accent",
+      "--accent-foreground",
+      "--destructive",
+      "--destructive-foreground",
+      "--border",
+      "--input",
+      "--ring",
+      "--radius"
     ];
-    
-    varNames.forEach(name => {
+
+    varNames.forEach((name) => {
       cssVars[name] = computedStyle.getPropertyValue(name).trim();
     });
-    
+
     return cssVars;
   };
 
   // Save current theme
   const saveCurrentTheme = () => {
     if (!newThemeName.trim()) return;
-    
+
     const newTheme: SavedTheme = {
       id: crypto.randomUUID(),
       name: newThemeName.trim(),
       timestamp: Date.now(),
       themeData: { ...current },
-      cssVars: getCurrentCSSVars(),
+      cssVars: getCurrentCSSVars()
     };
-    
-    setSavedThemes(prev => [...prev, newTheme]);
+
+    setSavedThemes((prev) => [...prev, newTheme]);
     setNewThemeName("");
     setSaveDialogOpen(false);
   };
@@ -99,19 +114,19 @@ export function ThemeManager() {
   // Load a saved theme
   const loadTheme = (theme: SavedTheme) => {
     // Apply theme presets
-    setTheme(theme.themeData);
-    
+    setTheme(theme.themeData as typeof current);
+
     // Apply CSS variables
     Object.entries(theme.cssVars).forEach(([varName, value]) => {
       document.documentElement.style.setProperty(varName, value);
     });
-    
+
     setLoadDialogOpen(false);
   };
 
   // Delete a saved theme
   const deleteTheme = (id: string) => {
-    setSavedThemes(prev => prev.filter(theme => theme.id !== id));
+    setSavedThemes((prev) => prev.filter((theme) => theme.id !== id));
   };
 
   // Export theme as JSON file
@@ -131,32 +146,32 @@ export function ThemeManager() {
   const importTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const imported = JSON.parse(e.target?.result as string) as SavedTheme;
-        
+
         // Validate imported theme has required properties
         if (!imported.name || !imported.themeData || !imported.cssVars) {
           throw new Error("Invalid theme file format");
         }
-        
+
         // Add ID and timestamp if missing
         const validTheme: SavedTheme = {
           ...imported,
           id: imported.id || crypto.randomUUID(),
-          timestamp: imported.timestamp || Date.now(),
+          timestamp: imported.timestamp || Date.now()
         };
-        
-        setSavedThemes(prev => [...prev, validTheme]);
+
+        setSavedThemes((prev) => [...prev, validTheme]);
       } catch (error) {
         console.error("Error importing theme:", error);
         alert("Invalid theme file format");
       }
     };
     reader.readAsText(file);
-    
+
     // Reset the input
     event.target.value = "";
   };
@@ -170,11 +185,11 @@ export function ThemeManager() {
         t: theme.themeData,
         c: theme.cssVars
       };
-      
+
       // Create shareable URL
       const compressed = btoa(JSON.stringify(shareData));
       const url = `${window.location.origin}?theme=${encodeURIComponent(compressed)}`;
-      
+
       navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -191,31 +206,26 @@ export function ThemeManager() {
           variant="outline"
           size="sm"
           className="h-8 gap-1 text-xs"
-          onClick={() => setSaveDialogOpen(true)}
-        >
+          onClick={() => setSaveDialogOpen(true)}>
           <Save className="h-3.5 w-3.5" />
           <span>Save</span>
         </Button>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
               size="sm"
               className="h-8 gap-1 text-xs"
-              disabled={savedThemes.length === 0}
-            >
+              disabled={savedThemes.length === 0}>
               <Download className="h-3.5 w-3.5" />
               <span>Load</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {savedThemes.length > 0 ? (
-              savedThemes.map(theme => (
-                <DropdownMenuItem 
-                  key={theme.id}
-                  onClick={() => loadTheme(theme)}
-                >
+              savedThemes.map((theme) => (
+                <DropdownMenuItem key={theme.id} onClick={() => loadTheme(theme)}>
                   {theme.name}
                 </DropdownMenuItem>
               ))
@@ -224,7 +234,7 @@ export function ThemeManager() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-        
+
         <div className="relative">
           <Input
             type="file"
@@ -233,25 +243,19 @@ export function ThemeManager() {
             accept=".json"
             onChange={importTheme}
           />
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 text-xs"
-          >
+          <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
             <Upload className="h-3.5 w-3.5" />
             <span>Import</span>
           </Button>
         </div>
       </div>
-      
+
       {/* Save Theme Dialog */}
       <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Save Current Theme</DialogTitle>
-            <DialogDescription>
-              Give your theme a name to save it for later use.
-            </DialogDescription>
+            <DialogDescription>Give your theme a name to save it for later use.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -265,22 +269,16 @@ export function ThemeManager() {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSaveDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              onClick={saveCurrentTheme}
-              disabled={!newThemeName.trim()}
-            >
+            <Button onClick={saveCurrentTheme} disabled={!newThemeName.trim()}>
               Save Theme
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Manage Themes Dialog */}
       <Dialog open={loadDialogOpen} onOpenChange={setLoadDialogOpen}>
         <DialogTrigger asChild>
@@ -288,29 +286,25 @@ export function ThemeManager() {
             variant="outline"
             size="sm"
             className="mt-2 h-8 w-full gap-1 text-xs"
-            disabled={savedThemes.length === 0}
-          >
+            disabled={savedThemes.length === 0}>
             Manage Themes
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Manage Saved Themes</DialogTitle>
-            <DialogDescription>
-              Load, export, share or delete your saved themes.
-            </DialogDescription>
+            <DialogDescription>Load, export, share or delete your saved themes.</DialogDescription>
           </DialogHeader>
           <div className="max-h-96 overflow-y-auto">
             {savedThemes.length > 0 ? (
               <div className="space-y-4">
-                {savedThemes.map(theme => (
-                  <div 
-                    key={theme.id} 
-                    className="flex items-center justify-between rounded-md border p-3"
-                  >
+                {savedThemes.map((theme) => (
+                  <div
+                    key={theme.id}
+                    className="flex items-center justify-between rounded-md border p-3">
                     <div className="flex-1">
                       <h4 className="text-sm font-medium">{theme.name}</h4>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         {new Date(theme.timestamp).toLocaleDateString()}
                       </p>
                     </div>
@@ -319,24 +313,21 @@ export function ThemeManager() {
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => loadTheme(theme)}
-                      >
+                        onClick={() => loadTheme(theme)}>
                         <Download className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => exportTheme(theme)}
-                      >
+                        onClick={() => exportTheme(theme)}>
                         <Share2 className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-destructive"
-                        onClick={() => deleteTheme(theme.id)}
-                      >
+                        className="text-destructive h-7 w-7"
+                        onClick={() => deleteTheme(theme.id)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -344,7 +335,7 @@ export function ThemeManager() {
                 ))}
               </div>
             ) : (
-              <div className="flex h-24 items-center justify-center text-center text-sm text-muted-foreground">
+              <div className="text-muted-foreground flex h-24 items-center justify-center text-center text-sm">
                 No saved themes. Create one by customizing and saving your theme.
               </div>
             )}
@@ -353,4 +344,4 @@ export function ThemeManager() {
       </Dialog>
     </div>
   );
-} 
+}
