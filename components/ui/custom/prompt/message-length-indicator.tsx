@@ -14,21 +14,15 @@ export function MessageLengthIndicator({
   maxLength,
   className
 }: MessageLengthIndicatorProps) {
-  // Calculate percentage of max length used
   const percentage = (currentLength / maxLength) * 100;
 
-  // Determine color based on percentage
-  const getColor = () => {
-    if (percentage < 70) return "text-green-500";
-    if (percentage < 90) return "text-amber-500";
-    return "text-red-500";
-  };
+  // Only show warning colors when approaching limit
+  const textColorClass = percentage > 90 ? "text-destructive" : "text-muted-foreground";
 
   return (
-    <div
-      className={cn("text-muted-foreground mt-1 flex items-center justify-end text-xs", className)}>
-      <span className={cn(getColor())}>
-        {currentLength} / {maxLength}
+    <div className={cn("flex items-center text-xs", textColorClass, className)}>
+      <span>
+        {currentLength}/{maxLength}
       </span>
     </div>
   );

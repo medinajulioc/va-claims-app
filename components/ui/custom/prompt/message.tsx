@@ -3,15 +3,32 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { Markdown } from "./markdown";
 import { CopyButton } from "./copy-button";
+import { format } from "date-fns";
 
 export type MessageProps = {
   children: React.ReactNode;
   className?: string;
+  timestamp?: Date;
+  isUser?: boolean;
 } & React.HTMLProps<HTMLDivElement>;
 
-const Message = ({ children, className, ...props }: MessageProps) => (
-  <div className={cn("flex gap-3", className)} {...props}>
+const Message = ({ children, className, timestamp, isUser = false, ...props }: MessageProps) => (
+  <div className={cn("group mb-4 flex gap-3", isUser ? "justify-end" : "", className)} {...props}>
     {children}
+    {timestamp && (
+      <TooltipProvider>
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger asChild>
+            <div className="text-muted-foreground self-end pb-1 text-xs opacity-0 transition-opacity group-hover:opacity-70">
+              {format(timestamp, "h:mm a")}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="left" className="text-xs">
+            {format(timestamp, "MMM d, yyyy h:mm a")}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )}
   </div>
 );
 
@@ -36,6 +53,7 @@ export type MessageContentProps = {
   children: React.ReactNode;
   markdown?: boolean;
   className?: string;
+  isUser?: boolean;
 } & React.ComponentProps<typeof Markdown> &
   React.HTMLProps<HTMLDivElement>;
 
@@ -43,17 +61,19 @@ const MessageContent = ({
   children,
   markdown = false,
   className,
+  isUser = false,
   ...props
 }: MessageContentProps) => {
   const classNames = cn(
-    "rounded-lg py-2 px-3 text-foreground bg-secondary prose break-words whitespace-normal relative",
+    "rounded-lg py-3 px-4 text-foreground prose break-words whitespace-normal relative",
+    isUser ? "bg-primary/10 shadow-sm" : "bg-secondary shadow-sm",
     className
   );
 
   return (
-    <div className="relative w-full">
+    <div className="group animate-fadeIn relative w-full max-w-[85%]">
       <div className="absolute top-2 right-2 z-10">
-        <CopyButton text={typeof children === "string" ? children : ""} compact />
+        <CopyButton text={typeof children === "string" ? children : ""} compact showOnHover />
       </div>
       {markdown ? (
         <Markdown className={classNames} {...props}>

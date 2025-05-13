@@ -21,13 +21,18 @@ function Suggestion({
   ...props
 }: PromptSuggestionProps) {
   const isHighlightMode = highlight !== undefined && highlight.trim() !== "";
-  const content = typeof children === "string" ? children : "";
+  const content =
+    typeof children === "string"
+      ? children
+      : Array.isArray(children)
+        ? children.join("")
+        : String(children || "");
 
   if (!isHighlightMode) {
     return (
       <Button
         variant={variant || "outline"}
-        size={size || "lg"}
+        size={size || "md"}
         className={cn("rounded-full", className)}
         {...props}>
         {children}
