@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Input,
   PromptInputAction,
@@ -12,11 +12,15 @@ import { ArrowUpIcon, Paperclip, SquareIcon, X } from "lucide-react";
 import { Suggestion } from "@/components/ui/custom/prompt/suggestion";
 import { ChatContainer } from "@/components/ui/custom/prompt/chat-container";
 import { Message, MessageContent } from "@/components/ui/custom/prompt/message";
-import { Markdown } from "@/components/ui/custom/prompt/markdown";
+import { CfrMarkdown } from "@/components/ui/custom/prompt/cfr-markdown";
 import { cn } from "@/lib/utils";
 import { PromptLoader } from "@/components/ui/custom/prompt/loader";
 import { PromptScrollButton } from "@/components/ui/custom/prompt/scroll-button";
 import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
+import { RegulationSearchResults } from "@/components/ui/custom/prompt/regulation-search-results";
+import { ecfrService } from "@/lib/services/ecfr-service";
+import { RegulationSummary } from "@/lib/services/ecfr-service/types";
+import { isCfrQuery, extractRegulationSearchTerms } from "@/lib/utils/cfr-utils";
 
 const chatSuggestions = [
   "How do I file a VA disability claim?",
@@ -26,13 +30,23 @@ const chatSuggestions = [
   "What happens during a C&P exam?"
 ];
 
+// Add some CFR-specific suggestions
+const cfrSuggestions = [
+  "What does 38 CFR 3.303 say about service connection?",
+  "Explain 38 CFR 3.309 presumptive conditions",
+  "What are the mental disorder ratings in 38 CFR 4.130?",
+  "How does 38 CFR define Agent Orange exposure?"
+];
+
+// Combine suggestions, but prioritize regular ones first
+const allSuggestions = [...chatSuggestions, ...cfrSuggestions];
+
 export default function AppRender() {
   const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
-  const [isFirstResponse, setIsFirstResponse] = useState(false); // Understanding whether the conversation has started or not
-
+  const [isFirstResponse, setIsFirstResponse] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const streamIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamContentRef = useRef("");
@@ -43,7 +57,51 @@ export default function AppRender() {
     { id: number; role: string; content: string; files?: File[] }[]
   >([]);
 
+  // State for CFR regulation search results
+  const [regulationResults, setRegulationResults] = useState<RegulationSummary[]>([]);
+  const [isSearchingRegulations, setIsSearchingRegulations] = useState(false);
+
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  // Check if a query is related to CFR and search for regulations
+  const searchRegulations = async (query: string) => {
+    if (!isCfrQuery(query)) return;
+
+    setIsSearchingRegulations(true);
+    try {
+      const searchTerms = extractRegulationSearchTerms(query);
+      const results = await ecfrService.searchRegulations(searchTerms);
+      setRegulationResults(results.results.slice(0, 3)); // Limit to top 3 results
+    } catch (error) {
+      console.error("Error searching regulations:", error);
+    } finally {
+      setIsSearchingRegulations(false);
+    }
+  };
+
+  // Include regulation in response
+  const includeRegulationInResponse = (regulation: RegulationSummary) => {
+    // In a real implementation, this would modify the AI response
+    // For now, we'll just append it to the last assistant message
+    const lastAssistantMessageIndex = [...messages]
+      .reverse()
+      .findIndex((m) => m.role === "assistant");
+
+    if (lastAssistantMessageIndex >= 0) {
+      const actualIndex = messages.length - 1 - lastAssistantMessageIndex;
+      const updatedMessages = [...messages];
+
+      const citationText = `\n\n**Relevant Regulation:**\n\n${regulation.heading}\n\n${regulation.content}\n\nSource: [${regulation.heading}](${regulation.url})`;
+
+      updatedMessages[actualIndex] = {
+        ...updatedMessages[actualIndex],
+        content: updatedMessages[actualIndex].content + citationText
+      };
+
+      setMessages(updatedMessages);
+      setRegulationResults([]); // Clear results after including one
+    }
+  };
 
   const streamResponse = async () => {
     if (isStreaming) return;
@@ -63,13 +121,45 @@ export default function AppRender() {
         }
       ]);
 
+      // Search for regulations if the query is CFR-related
+      await searchRegulations(prompt);
+
       setPrompt("");
       setFiles([]);
 
-      await delay(2000);
+      await delay(1000);
 
-      const fullResponse =
-        "Fetching data in Next.js using getServerSideProps is straightforward. Here's a basic example:\n\n```ts\nexport async function getServerSideProps() {\n  const res = await fetch('https://api.example.com/data');\n  const data = await res.json();\n\n  return {\n    props: { data },\n  };\n}\n```\n\nThis function runs on the server before rendering the page and provides `data` as props.\nIt's ideal for dynamic data that changes often.\n\nWould you like to see an example using `getStaticProps` instead?";
+      // Generate a mock response based on the query type
+      let fullResponse = "";
+
+      if (isCfrQuery(prompt)) {
+        fullResponse = `Based on Title 38 of the Code of Federal Regulations (CFR), which covers VA benefits, I can provide some information about your question.
+
+The relevant section is 38 CFR 3.303, which outlines the principles of service connection. According to this regulation, service connection means that evidence establishes that a particular injury or disease resulting in disability was incurred during active military service.
+
+For a claim to be successful, you generally need:
+1. A current diagnosed disability
+2. An in-service event, injury, or illness
+3. A medical nexus linking the current disability to the in-service occurrence
+
+The regulation specifically states that service connection may be granted for any disease diagnosed after discharge when all the evidence establishes that the disease was incurred in service.
+
+Would you like me to provide more specific information about any part of this regulation?`;
+      } else {
+        fullResponse = `To file a VA disability claim, you'll need to follow these steps:
+
+1. **Gather evidence** - Collect medical records, service records, and any supporting documentation for your claim.
+
+2. **Complete VA Form 21-526EZ** - This is the Application for Disability Compensation and Related Compensation Benefits form.
+
+3. **Submit your claim** - You can file online through VA.gov (fastest method), by mail, in person at a VA regional office, or with an accredited representative.
+
+4. **Attend C&P exam** - If requested by the VA, you'll need to attend a Compensation & Pension examination to evaluate your condition.
+
+5. **Wait for a decision** - The VA will review your claim and send a decision letter with their determination.
+
+The process typically takes 3-5 months, though some claims may take longer depending on complexity and evidence needed. Would you like more specific information about any of these steps?`;
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -100,7 +190,7 @@ export default function AppRender() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (streamIntervalRef.current) {
         clearInterval(streamIntervalRef.current);
@@ -162,7 +252,7 @@ export default function AppRender() {
                 })}>
                 {isAssistant ? (
                   <div className="bg-secondary text-foreground prose rounded-lg px-3 py-2">
-                    <Markdown className={"space-y-4"}>{message.content}</Markdown>
+                    <CfrMarkdown className={"space-y-4"}>{message.content}</CfrMarkdown>
                   </div>
                 ) : message?.files && message.files.length > 0 ? (
                   <div className="flex flex-col items-end space-y-2">
@@ -190,6 +280,22 @@ export default function AppRender() {
         {isStreaming && (
           <div className="ps-2">
             <PromptLoader variant="pulse-dot" />
+          </div>
+        )}
+
+        {/* Show regulation search results if available */}
+        {regulationResults.length > 0 && !isStreaming && (
+          <div className="ps-2 pt-2">
+            <RegulationSearchResults
+              results={regulationResults}
+              onSelectRegulation={includeRegulationInResponse}
+            />
+          </div>
+        )}
+
+        {isSearchingRegulations && !isStreaming && (
+          <div className="ps-2">
+            <p className="text-muted-foreground text-sm">Searching regulations...</p>
           </div>
         )}
       </ChatContainer>
@@ -238,7 +344,7 @@ export default function AppRender() {
 
       {!isFirstResponse && (
         <div className="mx-auto flex w-full max-w-4xl flex-wrap justify-center gap-3 pt-4">
-          {chatSuggestions.map((suggestion: string, key: number) => (
+          {allSuggestions.map((suggestion: string, key: number) => (
             <Suggestion
               key={key}
               variant="outline"

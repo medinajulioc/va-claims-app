@@ -107,6 +107,12 @@ export const admin_routes: PageRoutesType[] = [
         icon: "Key"
       },
       {
+        title: "API Usage",
+        href: "/bdoc/api-usage",
+        icon: "Activity",
+        isNew: true
+      },
+      {
         title: "Analytics",
         href: "/bdoc/analytics",
         icon: "BarChart"

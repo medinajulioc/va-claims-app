@@ -2450,3 +2450,35 @@ The API keys functionality was previously moved from the dashboard to the admin 
 ### Rationale
 
 After moving the API Keys functionality from the dashboard to the admin panel, the navigation link needed to be added to the admin routes configuration. This change completes the migration process by ensuring that administrators can easily access the API Keys management interface from the admin navigation menu, maintaining a consistent and intuitive user experience.
+
+## May 17, 2025 - Added eCFR API Integration and API Usage Monitoring
+
+### Changes
+
+1. **eCFR API Integration**:
+
+   - Created a new service architecture for eCFR API integration (`lib/services/ecfr-service/`)
+   - Implemented TypeScript interfaces for the eCFR API data structures
+   - Built a mock eCFR service for development with sample VA regulations data
+   - Created a live eCFR service implementation ready for production use
+   - Added CFR query detection and citation extraction utilities
+   - Updated the chat interface to handle CFR-related queries and display regulation results
+   - Added interactive CFR citation components for better user experience
+
+2. **API Usage Monitoring**:
+   - Created a comprehensive API usage tracking system (`lib/services/api-usage/`)
+   - Implemented models for tracking API calls, usage statistics, and API keys
+   - Built a mock API usage service for development with realistic sample data
+   - Added API usage logging to all eCFR service calls
+   - Created an API Keys management page in the admin panel (`/bdoc/api-keys`)
+   - Built a detailed API Usage monitoring dashboard (`/bdoc/api-usage`) with:
+     - Usage statistics cards
+     - Daily usage charts
+     - Endpoint distribution visualization
+     - Detailed API call logs
+
+### Rationale
+
+These changes enhance the VA Claims application with the ability to reference the Code of Federal Regulations (CFR) Title 38, which contains critical information about VA benefits and disability claims. The implementation follows a development-first approach using mock data while ensuring a smooth transition to production by having all the necessary infrastructure in place.
+
+The API usage monitoring system provides administrators with valuable insights into API usage patterns, performance metrics, and potential issues. This will be essential for managing API costs, monitoring service health, and making data-driven decisions about API usage as the application scales.
