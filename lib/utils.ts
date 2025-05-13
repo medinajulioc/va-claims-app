@@ -53,3 +53,13 @@ export const getInitials = (fullName: string) => {
   const lastNameInitial = nameParts[1].charAt(0).toUpperCase();
   return `${firstNameInitial}${lastNameInitial}`;
 };
+
+/**
+ * Extract the first name from a full name
+ * @param name Full name string
+ * @returns First name
+ */
+export function getFirstName(name?: string): string {
+  if (!name) return "";
+  return name.split(" ")[0];
+}

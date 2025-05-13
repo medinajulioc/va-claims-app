@@ -3,8 +3,9 @@
 import React from "react";
 import { ArrowLeft, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { generateAvatarFallback } from "@/lib/utils";
+import { generateAvatarFallback, getFirstName } from "@/lib/utils";
 import useChatStore from "@/store/useChatStore";
+import useUserStore from "@/store/useUserStore";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -17,6 +18,8 @@ import { UserPropsTypes } from "@/app/dashboard/(auth)/apps/chat/types";
 
 export function ChatHeader({ user }: { user: UserPropsTypes }) {
   const { setSelectedChat } = useChatStore();
+  const { firstName: currentUserFirstName } = useUserStore();
+  const recipientFirstName = getFirstName(user?.name);
 
   return (
     <div className="flex justify-between gap-4 lg:px-4">

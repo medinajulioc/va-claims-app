@@ -1,4 +1,7 @@
-import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from "lucide-react";
+"use client";
+
+import { BadgeCheck, CreditCard, LogOut, Sparkles, User } from "lucide-react";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -10,14 +13,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import useUserStore from "@/store/useUserStore";
 
 export default function UserMenu() {
+  const { firstName, lastName, email } = useUserStore();
+  const fullName = `${firstName} ${lastName}`;
+  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
           <AvatarImage src={`${process.env.ASSETS_URL}/avatars/01.png`} alt="shadcn ui kit" />
-          <AvatarFallback className="rounded-lg">TB</AvatarFallback>
+          <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-60" align="end">
@@ -25,11 +33,11 @@ export default function UserMenu() {
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar>
               <AvatarImage src={`${process.env.ASSETS_URL}/avatars/01.png`} alt="shadcn ui kit" />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Toby Belhome</span>
-              <span className="text-muted-foreground truncate text-xs">contact@bundui.io</span>
+              <span className="truncate font-semibold">{fullName}</span>
+              <span className="text-muted-foreground truncate text-xs">{email}</span>
             </div>
           </div>
         </DropdownMenuLabel>
@@ -42,22 +50,28 @@ export default function UserMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/profile">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/pages/settings">
+              <BadgeCheck className="mr-2 h-4 w-4" />
+              Account
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/pages/settings/billing">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Billing
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogOut />
+          <LogOut className="mr-2 h-4 w-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

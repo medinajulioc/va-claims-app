@@ -2482,3 +2482,109 @@ After moving the API Keys functionality from the dashboard to the admin panel, t
 These changes enhance the VA Claims application with the ability to reference the Code of Federal Regulations (CFR) Title 38, which contains critical information about VA benefits and disability claims. The implementation follows a development-first approach using mock data while ensuring a smooth transition to production by having all the necessary infrastructure in place.
 
 The API usage monitoring system provides administrators with valuable insights into API usage patterns, performance metrics, and potential issues. This will be essential for managing API costs, monitoring service health, and making data-driven decisions about API usage as the application scales.
+
+## 2023-06-25: Implemented Personalized Chat Greetings
+
+Added personalized chat experience using the user's first name:
+
+1. Created a utility function `getFirstName()` in `utils.ts` to extract first names from full names
+2. Updated the chat interface to display a personalized greeting when a chat is first opened
+3. Personalized the chat input placeholder to include the user's first name
+4. Added a response personalization system that can detect common greeting patterns and include the user's name in responses
+
+The implementation works with the existing mock data structure, extracting first names from the full name field. This creates a more friendly and personalized chat experience for users.
+
+## July 13, 2024 - Avatar Menu Navigation Enhancement
+
+Implemented navigation functionality for the avatar dropdown menu:
+
+1. **Updated User Menu Component**:
+
+   - Added a new "Profile" option that links to `/dashboard/profile`
+   - Modified "Account" option to link to `/dashboard/pages/settings`
+   - Modified "Billing" option to link to `/dashboard/pages/settings/billing`
+   - Removed the "Notifications" option as requested
+   - Added proper Link components and icon styling
+
+2. **Created Billing Page**:
+
+   - Created a new billing page at `/dashboard/pages/settings/billing`
+   - Implemented a mock billing UI with subscription plan selection and payment method form
+   - Added toast notifications for form submissions
+
+3. **Enhanced Settings Page**:
+   - Added tab navigation to the settings page
+   - Implemented tab switching logic with routing
+   - Created a redirect mechanism for the billing tab
+
+These changes allow users to navigate directly to their profile or account settings from the avatar menu, improving the overall user experience without disrupting existing functionality.
+
+## August 14, 2024 - Added First and Last Name Fields to Account Settings
+
+### Changes
+
+1. **Account Settings Form Enhancement**:
+   - Updated the account settings form to include separate first and last name fields
+   - Replaced the single "Name" field with a two-column layout for "First Name" and "Last Name"
+   - Updated the form schema to validate both fields independently
+   - Added appropriate placeholders and validation messages
+   - Maintained the same form description explaining how the name will be used
+
+### Rationale
+
+This change improves user experience by providing a more structured approach to name input, allowing for better data organization and personalization throughout the application. Separating first and last names enables more personalized greetings and more accurate user identification in the system.
+
+## August 14, 2024 - Removed Language Field from Account Settings
+
+### Changes
+
+1. **Account Settings Form Simplification**:
+   - Removed the language selection field from the account settings page
+   - Updated the form schema to remove the language field validation
+   - Removed related imports (Command components, CaretSortIcon, CheckIcon)
+   - Removed the languages array constant
+   - Simplified the UI to focus only on name and date of birth fields
+
+### Rationale
+
+This change streamlines the account settings page by removing the language selection option, which was determined to be unnecessary for the current application context. The simplified form now focuses on the essential user information (first name, last name, and date of birth), creating a more focused and straightforward user experience.
+
+## August 14, 2024 - Implemented User Data Store for Consistent User Information
+
+### Changes
+
+1. **Created User Store with Zustand**:
+   - Created a new store/useUserStore.ts file to centralize user data management
+   - Implemented a Zustand store with mock data for development
+   - Added actions for updating user information (firstName, lastName, email, dob)
+   - Designed the store to be easily connected to real authentication in production
+
+2. **Updated Account Settings Page**:
+   - Connected the account form to the user store
+   - Form now loads initial values from the store
+   - Form submissions update the store data
+   - Added useEffect to sync form with store changes
+
+3. **Updated Welcome Message Component**:
+   - Replaced the hardcoded mock name with data from the user store
+   - Removed unnecessary useState and useEffect
+   - Simplified component to directly use the firstName from the store
+
+4. **Updated User Menu Component**:
+   - Connected the user menu to the user store
+   - Display full name and email from the store
+   - Generate avatar initials dynamically from first and last name
+   - Added "use client" directive for client-side rendering
+
+### Rationale
+
+This implementation creates a centralized source of truth for user data in the application. By using Zustand for state management, we maintain a consistent user experience across different parts of the application while still using mock data for development. The solution is designed to be easily replaced with real authentication data in production by updating the store's initial values and possibly adding persistence.
+
+The implementation ensures that when users update their information in the account settings, those changes are immediately reflected in the welcome message on the dashboard and in the user menu dropdown, creating a cohesive user experience.
+
+### Technical Notes
+
+- Used Zustand for lightweight state management without the boilerplate of more complex solutions
+- Implemented with TypeScript for type safety
+- Maintained the existing mock data approach for development
+- Designed with future production implementation in mind

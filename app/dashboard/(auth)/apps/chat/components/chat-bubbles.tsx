@@ -1,6 +1,9 @@
 import { cn } from "@/lib/utils";
 import { Ellipsis, FileIcon, PlayIcon } from "lucide-react";
 import { ChatMessageProps } from "../types";
+import { getFirstName } from "@/lib/utils";
+import useChatStore from "@/store/useChatStore";
+import useUserStore from "@/store/useUserStore";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -14,7 +17,43 @@ import { Button } from "@/components/ui/button";
 import { MessageStatusIcon } from "@/app/dashboard/(auth)/apps/chat/components";
 import Image from "next/image";
 
+// Helper function to personalize responses
+function personalizeResponse(content: string, firstName: string): string {
+  // List of patterns to personalize
+  const patterns = [
+    { regex: /^(hi|hello|hey)(\s|$)/i, replacement: `$1 ${firstName}$2` },
+    {
+      regex: /^(good morning|good afternoon|good evening)(\s|$)/i,
+      replacement: `$1 ${firstName}$2`
+    },
+    { regex: /^(thank you|thanks)(\s|$)/i, replacement: `$1 ${firstName}$2` },
+    { regex: /^(how are you)(\s|$)/i, replacement: `$1 ${firstName}$2` }
+  ];
+
+  // Check if the content matches any of our patterns
+  for (const pattern of patterns) {
+    if (pattern.regex.test(content)) {
+      return content.replace(pattern.regex, pattern.replacement);
+    }
+  }
+
+  return content;
+}
+
 function TextChatBubble({ message }: { message: ChatMessageProps }) {
+  const { selectedChat } = useChatStore();
+  const { firstName: currentUserFirstName } = useUserStore();
+
+  // Use recipient's name for messages from the current user (own_message: true)
+  // Use current user's name for messages from others (own_message: false)
+  const recipientFirstName = selectedChat?.user ? getFirstName(selectedChat.user.name) : "";
+  const firstName = message.own_message ? recipientFirstName : currentUserFirstName;
+
+  // Only personalize if we have a name to use
+  const content = !firstName
+    ? message.content
+    : personalizeResponse(message.content || "", firstName);
+
   return (
     <div
       className={cn("max-w-(--breakpoint-sm) space-y-1", {
@@ -25,7 +64,7 @@ function TextChatBubble({ message }: { message: ChatMessageProps }) {
           className={cn("bg-muted inline-flex rounded-md border p-4", {
             "order-1": message.own_message
           })}>
-          {message.content}
+          {content}
         </div>
         <div className={cn({ "order-2": !message.own_message })}>
           <DropdownMenu>
@@ -304,18 +343,25 @@ function ImageChatBubble({ message }: { message: ChatMessageProps }) {
 }
 
 export function ChatBubble({ message, type }: { message: ChatMessageProps; type?: string }) {
-  switch (type) {
-    case "text":
-      return <TextChatBubble message={message} />;
-    case "video":
-      return <VideoChatBubble message={message} />;
-    case "sound":
-      return <SoundChatBubble message={message} />;
-    case "image":
-      return <ImageChatBubble message={message} />;
-    case "file":
-      return <FileChatBubble message={message} />;
-    default:
-      break;
+  if (type === "text") {
+    return <TextChatBubble message={message} />;
   }
+
+  if (type === "file") {
+    return <FileChatBubble message={message} />;
+  }
+
+  if (type === "video") {
+    return <VideoChatBubble message={message} />;
+  }
+
+  if (type === "sound") {
+    return <SoundChatBubble message={message} />;
+  }
+
+  if (type === "image") {
+    return <ImageChatBubble message={message} />;
+  }
+
+  return <TextChatBubble message={message} />;
 }
