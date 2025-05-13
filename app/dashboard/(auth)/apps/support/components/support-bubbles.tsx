@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MessageStatusIcon } from "@/app/dashboard/(auth)/apps/chat/components";
+import { SupportMessageStatusIcon as MessageStatusIcon } from "./";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
@@ -41,7 +41,7 @@ function personalizeResponse(content: string, firstName: string): string {
   return content;
 }
 
-function TextChatBubble({ message }: { message: ChatMessageProps }) {
+export function TextSupportBubble({ message }: { message: ChatMessageProps }) {
   const { selectedChat } = useChatStore();
   const { firstName: currentUserFirstName } = useUserStore();
 
@@ -120,7 +120,7 @@ function TextChatBubble({ message }: { message: ChatMessageProps }) {
   );
 }
 
-function FileChatBubble({ message }: { message: ChatMessageProps }) {
+export function FileSupportBubble({ message }: { message: ChatMessageProps }) {
   const { selectedChat } = useChatStore();
 
   // Get the appropriate avatar based on message ownership
@@ -202,7 +202,7 @@ function FileChatBubble({ message }: { message: ChatMessageProps }) {
   );
 }
 
-function VideoChatBubble({ message }: { message: ChatMessageProps }) {
+export function VideoSupportBubble({ message }: { message: ChatMessageProps }) {
   const { selectedChat } = useChatStore();
 
   // Get the appropriate avatar based on message ownership
@@ -217,25 +217,41 @@ function VideoChatBubble({ message }: { message: ChatMessageProps }) {
       className={cn("max-w-(--breakpoint-sm) space-y-1", {
         "self-end": message.own_message
       })}>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         {!message.own_message && (
           <Avatar className="size-8 shrink-0">
             <AvatarImage src={avatarSrc} alt="avatar" />
             <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
           </Avatar>
         )}
-        <div
-          style={{
-            backgroundImage: `url(${message?.data?.cover})`
-          }}
-          className={cn(
-            "relative order-1 flex aspect-4/3 w-52 shrink-0 cursor-pointer items-center justify-center self-start rounded-lg bg-cover transition-opacity hover:opacity-90"
-          )}>
-          <PlayIcon className="size-8 text-white/80" />
-          <div className="absolute end-2 top-2 text-xs font-semibold text-white/60">
-            {message?.data?.duration}
+        <Card
+          className={cn("w-80 overflow-hidden border p-0", {
+            "order-1": message.own_message
+          })}>
+          <div className="relative">
+            <Image
+              src={message.data?.cover || ""}
+              className="aspect-video object-cover"
+              alt="Video cover"
+              width={320}
+              height={180}
+            />
+            <Button
+              size="icon"
+              variant="secondary"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full">
+              <PlayIcon />
+            </Button>
           </div>
-        </div>
+          <CardContent className="p-3">
+            <div className="text-sm">{message.data?.file_name}</div>
+            <div className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
+              <span>{message.data?.duration}</span>
+              <span>•</span>
+              <span>{message.data?.size}</span>
+            </div>
+          </CardContent>
+        </Card>
         {message.own_message && (
           <Avatar className="size-8 shrink-0">
             <AvatarImage src={avatarSrc} alt="avatar" />
@@ -246,7 +262,7 @@ function VideoChatBubble({ message }: { message: ChatMessageProps }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
-                <Ellipsis />
+                <Ellipsis className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align={message.own_message ? "start" : "end"}>
@@ -276,7 +292,7 @@ function VideoChatBubble({ message }: { message: ChatMessageProps }) {
   );
 }
 
-function SoundChatBubble({ message }: { message: ChatMessageProps }) {
+export function SoundSupportBubble({ message }: { message: ChatMessageProps }) {
   const { selectedChat } = useChatStore();
 
   // Get the appropriate avatar based on message ownership
@@ -288,7 +304,88 @@ function SoundChatBubble({ message }: { message: ChatMessageProps }) {
 
   return (
     <div
-      className={cn("max-w-(--breakpoint-sm)", {
+      className={cn("max-w-(--breakpoint-sm) space-y-1", {
+        "self-end": message.own_message
+      })}>
+      <div className="flex items-center gap-2">
+        {!message.own_message && (
+          <Avatar className="size-8 shrink-0">
+            <AvatarImage src={avatarSrc} alt="avatar" />
+            <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
+          </Avatar>
+        )}
+        <Card
+          className={cn("w-80 overflow-hidden border", {
+            "order-1": message.own_message
+          })}>
+          <CardContent className="p-3">
+            <div className="text-sm">{message.data?.file_name}</div>
+            <div className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
+              <span>{message.data?.duration}</span>
+              <span>•</span>
+              <span>{message.data?.size}</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <Button size="icon" variant="secondary" className="rounded-full">
+                <PlayIcon className="h-4 w-4" />
+              </Button>
+              <div className="bg-muted h-1 flex-1 rounded-full" />
+            </div>
+          </CardContent>
+        </Card>
+        {message.own_message && (
+          <Avatar className="size-8 shrink-0">
+            <AvatarImage src={avatarSrc} alt="avatar" />
+            <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
+          </Avatar>
+        )}
+        <div className={cn({ "order-2": !message.own_message })}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">
+                <Ellipsis className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align={message.own_message ? "start" : "end"}>
+              <DropdownMenuGroup>
+                <DropdownMenuItem>Forward</DropdownMenuItem>
+                <DropdownMenuItem>Star</DropdownMenuItem>
+                {message.own_message && <DropdownMenuItem>Edit</DropdownMenuItem>}
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div
+        className={cn("flex items-center gap-2", {
+          "justify-end": message.own_message
+        })}>
+        <time
+          className={cn("text-muted-foreground mt-1 flex items-center text-xs", {
+            "justify-end": message.own_message
+          })}>
+          05:23 PM
+        </time>
+        {message.own_message && <MessageStatusIcon status="read" />}
+      </div>
+    </div>
+  );
+}
+
+export function ImageSupportBubble({ message }: { message: ChatMessageProps }) {
+  const { selectedChat } = useChatStore();
+
+  // Get the appropriate avatar based on message ownership
+  const avatarSrc = message.own_message
+    ? process.env.ASSETS_URL + "/avatars/01.png" // Default avatar for LLM/system
+    : selectedChat?.user?.avatar; // User's avatar
+
+  const avatarName = message.own_message ? "System" : selectedChat?.user?.name || "User";
+
+  return (
+    <div
+      className={cn("max-w-(--breakpoint-sm) space-y-1", {
         "self-end": message.own_message
       })}>
       <div className="flex items-center gap-2">
@@ -299,13 +396,14 @@ function SoundChatBubble({ message }: { message: ChatMessageProps }) {
           </Avatar>
         )}
         <div
-          className={cn("bg-muted inline-flex gap-4 rounded-md p-4", {
-            "relative order-1 flex items-center justify-center": message.own_message
+          className={cn("bg-muted inline-flex flex-wrap gap-1 rounded-md border p-1", {
+            "order-1": message.own_message
           })}>
-          {message.content}
-          <audio id="song" className="block w-80" controls>
-            <source src={message?.data?.path} type="audio/mpeg" />
-          </audio>
+          {message.data?.images?.map((item, key) => (
+            <div key={key} className="overflow-hidden rounded">
+              <Image src={item} width={150} height={150} className="size-full" alt="Image" />
+            </div>
+          ))}
         </div>
         {message.own_message && (
           <Avatar className="size-8 shrink-0">
@@ -336,104 +434,6 @@ function SoundChatBubble({ message }: { message: ChatMessageProps }) {
           "justify-end": message.own_message
         })}>
         <time
-          className={cn("text-muted-foreground mt-1 flex items-center text-sm", {
-            "justify-end": message.own_message
-          })}>
-          05:23 PM
-        </time>
-        {message.own_message && <MessageStatusIcon status="read" />}
-      </div>
-    </div>
-  );
-}
-
-function ImageChatBubble({ message }: { message: ChatMessageProps }) {
-  const images_limit = 4;
-  const images = message?.data?.images ?? [];
-  const images_with_limit = images.slice(0, images_limit);
-  const { selectedChat } = useChatStore();
-
-  // Get the appropriate avatar based on message ownership
-  const avatarSrc = message.own_message
-    ? process.env.ASSETS_URL + "/avatars/01.png" // Default avatar for LLM/system
-    : selectedChat?.user?.avatar; // User's avatar
-
-  const avatarName = message.own_message ? "System" : selectedChat?.user?.name || "User";
-
-  return (
-    <div
-      className={cn("max-w-(--breakpoint-sm)", {
-        "self-end": message.own_message
-      })}>
-      <div className="flex items-center gap-2">
-        {!message.own_message && (
-          <Avatar className="size-8 shrink-0">
-            <AvatarImage src={avatarSrc} alt="avatar" />
-            <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
-          </Avatar>
-        )}
-        <div
-          className={cn("bg-muted inline-flex gap-4 rounded-md border p-4", {
-            "relative order-1 flex items-center justify-center": message.own_message
-          })}>
-          {message.content}
-          {images.length && (
-            <div
-              className={cn("grid gap-2", {
-                "grid-cols-1": images.length === 1,
-                "grid-cols-2": images.length > 1
-              })}>
-              {images_with_limit.map((image, key) => (
-                <figure
-                  className="relative cursor-pointer overflow-hidden rounded-lg transition-opacity hover:opacity-90"
-                  key={key}>
-                  <Image
-                    src={image}
-                    className="aspect-4/3 object-cover"
-                    width={100}
-                    height={100}
-                    alt="shadcn/ui"
-                    unoptimized
-                  />
-                  {key + 1 === images_limit && images.length > images_limit && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-3xl font-semibold text-white">
-                      +{images.length - images_with_limit.length}
-                    </div>
-                  )}
-                </figure>
-              ))}
-            </div>
-          )}
-        </div>
-        {message.own_message && (
-          <Avatar className="size-8 shrink-0">
-            <AvatarImage src={avatarSrc} alt="avatar" />
-            <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
-          </Avatar>
-        )}
-        <div className={cn({ "order-2": !message.own_message })}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <Ellipsis />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align={message.own_message ? "start" : "end"}>
-              <DropdownMenuGroup>
-                <DropdownMenuItem>Forward</DropdownMenuItem>
-                <DropdownMenuItem>Star</DropdownMenuItem>
-                {message.own_message && <DropdownMenuItem>Edit</DropdownMenuItem>}
-                <DropdownMenuItem>Delete</DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <div
-        className={cn("mt-1 flex items-center gap-2", {
-          "justify-end": message.own_message
-        })}>
-        <time
           className={cn("text-muted-foreground mt-1 flex items-center text-xs", {
             "justify-end": message.own_message
           })}>
@@ -445,26 +445,22 @@ function ImageChatBubble({ message }: { message: ChatMessageProps }) {
   );
 }
 
-export function ChatBubble({ message, type }: { message: ChatMessageProps; type?: string }) {
-  if (type === "text") {
-    return <TextChatBubble message={message} />;
-  }
-
+export function SupportBubble({ message, type }: { message: ChatMessageProps; type?: string }) {
   if (type === "file") {
-    return <FileChatBubble message={message} />;
+    return <FileSupportBubble message={message} />;
   }
 
   if (type === "video") {
-    return <VideoChatBubble message={message} />;
+    return <VideoSupportBubble message={message} />;
   }
 
   if (type === "sound") {
-    return <SoundChatBubble message={message} />;
+    return <SoundSupportBubble message={message} />;
   }
 
   if (type === "image") {
-    return <ImageChatBubble message={message} />;
+    return <ImageSupportBubble message={message} />;
   }
 
-  return <TextChatBubble message={message} />;
+  return <TextSupportBubble message={message} />;
 }

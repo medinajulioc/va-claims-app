@@ -4,12 +4,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
 
 /**
- * ChatFileUpload component
+ * SupportFileUpload component
  *
  * Integrates the centralized file upload functionality from the file-manager
- * into the chat interface with a consistent UI style
+ * into the support interface with a consistent UI style
  */
-export function ChatFileUpload() {
+export function SupportFileUpload() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>

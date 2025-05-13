@@ -8,15 +8,11 @@ import useChatStore from "@/store/useChatStore";
 import useUserStore from "@/store/useUserStore";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import {
-  CallDialog,
-  ChatUserDropdown,
-  VideoCallDialog
-} from "@/app/dashboard/(auth)/apps/chat/components";
+import { SupportCallDialog as CallDialog, SupportVideoCallDialog as VideoCallDialog } from "./";
 import { Avatar, AvatarFallback, AvatarImage, AvatarIndicator } from "@/components/ui/avatar";
-import { UserPropsTypes } from "@/app/dashboard/(auth)/apps/chat/types";
+import { UserPropsTypes } from "@/app/dashboard/(auth)/apps/support/types";
 
-export function ChatHeader({ user }: { user: UserPropsTypes }) {
+export function SupportHeader({ user }: { user: UserPropsTypes }) {
   const { setSelectedChat } = useChatStore();
   const { firstName: currentUserFirstName } = useUserStore();
   const recipientFirstName = getFirstName(user?.name);
@@ -66,11 +62,9 @@ export function ChatHeader({ user }: { user: UserPropsTypes }) {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <ChatUserDropdown>
-          <Button size="icon" variant="ghost">
-            <Ellipsis />
-          </Button>
-        </ChatUserDropdown>
+        <Button size="icon" variant="ghost">
+          <Ellipsis />
+        </Button>
       </div>
     </div>
   );

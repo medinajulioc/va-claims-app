@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowUp, Paperclip } from "lucide-react";
 import { MessageLengthIndicator } from "@/components/ui/custom/prompt/message-length-indicator";
 
-interface ChatFooterProps {
+interface SupportFooterProps {
   onSendMessage: (message: string) => void;
   placeholder?: string;
 }
 
-export function ChatFooter({ onSendMessage, placeholder = "Type a message..." }: ChatFooterProps) {
+export function SupportFooter({
+  onSendMessage,
+  placeholder = "Type a message..."
+}: SupportFooterProps) {
   const [message, setMessage] = useState("");
   const MAX_MESSAGE_LENGTH = 2000; // Mock limit for now
 

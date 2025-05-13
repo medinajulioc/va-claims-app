@@ -4,7 +4,7 @@ import Link from "next/link";
 import { generateAvatarFallback } from "@/lib/utils";
 import { Dribbble, Facebook, FileText, Instagram, Linkedin, SheetIcon, X } from "lucide-react";
 import useChatStore from "@/store/useChatStore";
-import { UserPropsTypes } from "@/app/dashboard/(auth)/apps/chat/types";
+import { UserPropsTypes } from "../types";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -12,14 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-export function UserDetailSheet({ user }: { user: UserPropsTypes }) {
+export function SupportUserDetailSheet({ user }: { user: UserPropsTypes }) {
   const { showProfileSheet, toggleProfileSheet } = useChatStore();
 
   return (
     <Sheet open={showProfileSheet} onOpenChange={toggleProfileSheet}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle className="text-2xl">Profile</SheetTitle>
+          <SheetTitle className="text-2xl">Support Profile</SheetTitle>
         </SheetHeader>
         <div className="overflow-y-auto px-4">
           <div className="my-4 flex flex-col items-center justify-end">

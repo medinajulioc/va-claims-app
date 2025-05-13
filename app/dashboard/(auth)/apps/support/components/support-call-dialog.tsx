@@ -1,33 +1,33 @@
 "use client";
 
 import React from "react";
-import { Phone, VideoIcon, X } from "lucide-react";
+import { Phone, PhoneMissedIcon, X } from "lucide-react";
 
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-export function VideoCallDialog() {
+export function SupportCallDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button size="icon" variant="outline">
-          <VideoIcon />
+          <PhoneMissedIcon />
         </Button>
       </DialogTrigger>
       <DialogContent className="top-8 flex translate-y-0 items-center justify-between">
         <VisuallyHidden>
-          <DialogTitle>Calling...</DialogTitle>
+          <DialogTitle>Calling Support...</DialogTitle>
         </VisuallyHidden>
         <div className="flex items-center gap-4">
           <Avatar className="size-16">
             <AvatarImage src={`${process.env.ASSETS_URL}/avatars/04.png`} alt="shadcn/ui avatar" />
           </Avatar>
-          <div className="text-lg">Jennica calling ...</div>
+          <div className="text-lg">Support Agent calling ...</div>
         </div>
         <div className="flex gap-4">
-          <Button variant="destructive" className="h-12 w-12 rounded-full">
+          <Button variant="destructive" className="size-12 rounded-full">
             <X />
           </Button>
           <Button

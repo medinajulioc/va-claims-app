@@ -1,7 +1,7 @@
 import { Check, CheckCheck } from "lucide-react";
 import { MessageStatusIconType } from "../types";
 
-export function MessageStatusIcon({ status }: MessageStatusIconType) {
+export function SupportMessageStatusIcon({ status }: MessageStatusIconType) {
   switch (status) {
     case "read":
       return <CheckCheck className="h-4 w-4 shrink-0 text-green-500" />;

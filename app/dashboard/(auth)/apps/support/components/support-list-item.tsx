@@ -4,10 +4,10 @@ import { ChatItemProps } from "../types";
 import { Ellipsis } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ChatUserDropdown, MessageStatusIcon } from "@/app/dashboard/(auth)/apps/chat/components";
+import { SupportMessageStatusIcon } from "./";
 import { Avatar, AvatarFallback, AvatarImage, AvatarIndicator } from "@/components/ui/avatar";
 
-export function ChatListItem({ chat, active }: { chat: ChatItemProps; active: boolean | null }) {
+export function SupportListItem({ chat, active }: { chat: ChatItemProps; active: boolean | null }) {
   const { setSelectedChat } = useChatStore();
 
   const handleClick = (chat: ChatItemProps) => {
@@ -34,7 +34,7 @@ export function ChatListItem({ chat, active }: { chat: ChatItemProps; active: bo
           <span className="text-muted-foreground flex-none text-xs">{chat.date}</span>
         </div>
         <div className="flex items-center gap-2">
-          <MessageStatusIcon status={chat.status} />
+          <SupportMessageStatusIcon status={chat.status} />
           <span className="text-muted-foreground truncate text-start text-sm">
             {chat.last_message}
           </span>
@@ -51,11 +51,9 @@ export function ChatListItem({ chat, active }: { chat: ChatItemProps; active: bo
           { "from-muted": !active },
           { "dark:from-muted from-gray-200": active }
         )}>
-        <ChatUserDropdown>
-          <Button size="icon" variant="outline" className="rounded-full">
-            <Ellipsis />
-          </Button>
-        </ChatUserDropdown>
+        <Button size="icon" variant="outline" className="rounded-full">
+          <Ellipsis />
+        </Button>
       </div>
     </div>
   );

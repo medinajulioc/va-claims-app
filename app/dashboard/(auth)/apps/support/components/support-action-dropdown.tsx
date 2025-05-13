@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-export function ActionDropdown() {
+export function SupportActionDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -19,9 +19,9 @@ export function ActionDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuItem>New chat</DropdownMenuItem>
-          <DropdownMenuItem>Create group</DropdownMenuItem>
-          <DropdownMenuItem>Add contact</DropdownMenuItem>
+          <DropdownMenuItem>New support ticket</DropdownMenuItem>
+          <DropdownMenuItem>Create support group</DropdownMenuItem>
+          <DropdownMenuItem>Add support contact</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

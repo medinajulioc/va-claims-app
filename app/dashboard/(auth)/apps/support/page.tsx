@@ -3,27 +3,27 @@ import path from "path";
 import { promises as fs } from "fs";
 import { ChatItemProps, UserPropsTypes } from "./types";
 
-import { ChatSidebar, ChatContent } from "@/app/dashboard/(auth)/apps/chat/components";
+import { SupportSidebar, SupportContent } from "./components";
 
 export async function generateMetadata() {
   return generateMeta({
-    title: "Chat App",
+    title: "Support App",
     description:
-      "A template to create chat and messaging apps for your customers or users. Built with shadcn/ui, Next.js and Tailwind CSS.",
-    canonical: "/apps/chat"
+      "A template to create support and messaging apps for your customers or users. Built with shadcn/ui, Next.js and Tailwind CSS.",
+    canonical: "/apps/support"
   });
 }
 
 async function getChats() {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/dashboard/(auth)/apps/chat/data/chats.json")
+    path.join(process.cwd(), "app/dashboard/(auth)/apps/support/data/chats.json")
   );
   return JSON.parse(data.toString());
 }
 
 async function getChatUser(id: number) {
   const data = await fs.readFile(
-    path.join(process.cwd(), "app/dashboard/(auth)/apps/chat/data/contacts.json")
+    path.join(process.cwd(), "app/dashboard/(auth)/apps/support/data/contacts.json")
   );
 
   return JSON.parse(data.toString()).find((item: UserPropsTypes) => item.id === id);
@@ -41,9 +41,9 @@ export default async function Page() {
 
   return (
     <div className="flex h-[calc(100vh-5.3rem)] w-full">
-      <ChatSidebar chats={chats_with_user} />
+      <SupportSidebar chats={chats_with_user} />
       <div className="grow">
-        <ChatContent />
+        <SupportContent />
       </div>
     </div>
   );
