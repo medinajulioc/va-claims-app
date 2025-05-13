@@ -1,5 +1,88 @@
 # VA Claims App - Implementation Log
 
+## May 16, 2025 - Removed User Pages Section from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the entire "User Pages" section from the sidebar navigation
+   - Removed the following items and their subitems:
+     - Authentication (with Login v1, Login v2, Register v1, Register v2, and Forgot Password subitems)
+     - VA.gov (external link)
+
+### Rationale
+
+The entire User Pages section was removed to complete the streamlining of the navigation and focus exclusively on the core VA Claims functionality. This change eliminates authentication-related pages that are handled through other means and removes the external VA.gov link that isn't essential to the main application flow. The result is a much cleaner, more focused sidebar that only contains the most relevant and actively used features of the application.
+
+## May 16, 2025 - Removed Benefits Section from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the "Benefits" section from the User Pages section in the sidebar navigation
+   - Removed the following subitems:
+     - Disability Benefits (`/dashboard/pages/pricing/column`)
+     - Compensation Table (`/dashboard/pages/pricing/table`)
+     - Appeals Process (`/dashboard/pages/pricing/single`)
+   - The removed section had the Shield icon
+
+### Rationale
+
+The Benefits section was removed to further streamline the User Pages navigation and focus on the most essential functionality. This change simplifies the user experience by removing pages that were repurposed from pricing templates and not fully customized for VA benefits information. The VA Disability Calculator already provides core benefits information in a more appropriate format, making these additional pages redundant.
+
+## May 16, 2025 - Removed Veterans Section from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the "Veterans" section from the User Pages section in the sidebar navigation
+   - Removed the following subitems:
+     - Veterans List (`/dashboard/pages/users`)
+     - Veteran Profile (`/dashboard/pages/profile`)
+   - The removed section had the Users icon
+
+### Rationale
+
+The Veterans section was removed to streamline the User Pages navigation and focus on the most essential functionality. This change simplifies the user experience by removing pages that were not fully customized for the VA Claims application context. The core user profile functionality is still accessible through other means when needed, but removing these links from the main navigation reduces clutter and improves focus.
+
+## May 16, 2025 - Removed Claim Tracker Link from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the "Claim Tracker" link from the sidebar navigation (`/dashboard/apps/kanban`)
+   - The removed link was in the Resources section with the SquareKanban icon
+   - This was a "coming soon" feature as indicated by the `isComing: true` flag
+
+### Rationale
+
+The Claim Tracker link was removed to further streamline the navigation and focus on the core VA Claims functionality. Since this was a placeholder feature marked as "coming soon" and not yet implemented, removing it helps simplify the user experience by eliminating options that aren't currently functional.
+
+## May 16, 2025 - Removed Document Uploader Link from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the "Document Uploader" link from the sidebar navigation (`/dashboard/apps/file-manager`)
+   - The removed link was in the Resources section with the ArchiveRestore icon
+   - This was a "coming soon" feature as indicated by the `isComing: true` flag
+
+### Rationale
+
+The Document Uploader link was removed to streamline the navigation and reduce redundancy, as the application already has a fully-functional File Manager at `/dashboard/file-manager`. This change simplifies the user experience by eliminating a duplicate file management option that was marked as "coming soon" but not yet implemented.
+
+## May 15, 2025 - Removed Mail App from Sidebar
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+   - Removed the "VA Notifications" link from the sidebar navigation (`/dashboard/apps/mail`)
+   - The removed link was in the Resources section with the Mail icon
+
+### Rationale
+
+The mail app was removed to streamline the navigation and focus on the core VA Claims functionality. This change simplifies the user experience by removing a feature that wasn't fully implemented for the VA Claims application context.
+
 ## May 14, 2025 - Removed Additional Navigation Links from Sidebar
 
 ### Changes
@@ -2317,3 +2400,53 @@ Added a tooltip with the text "Notifications" to the notification bell icon in t
 ### Benefit
 
 This enhancement improves accessibility and discoverability of the application's interface by clearly communicating the purpose of the notification icon, especially helpful for new users.
+
+## May 15, 2024 - Moved API Keys Management from Dashboard to Admin Panel
+
+### Changes
+
+1. **API Keys Section Migration**:
+   - Moved the API keys management functionality from `/dashboard/apps/api-keys` to `/bdoc/api-keys`
+   - Created the necessary directory structure in `app/bdoc/api-keys/`
+   - Migrated and adapted the following components:
+     - `page.tsx` - Main API keys page
+     - `datatable.tsx` - API keys data table component
+     - `create-api-key-dialog.tsx` - Dialog for creating new API keys
+     - `upgrade-plan-card.tsx` - Card showing total API keys
+     - `successful-conversions-card.tsx` - Card showing active API keys
+     - `failed-conversions-card.tsx` - Card showing expired API keys
+     - `data.json` - Sample API keys data
+
+### Rationale
+
+The API keys management functionality was moved to the admin panel (`/bdoc`) to centralize all administrative functions in one location. This change ensures that API keys, which are critical to the application's functionality, can be properly managed and monitored from the admin dashboard rather than being mixed with user-facing features in the main dashboard.
+
+## August 14, 2024 - Removed API Keys Page from Dashboard
+
+### Changes
+
+1. **Sidebar Navigation Update**:
+
+   - Removed the "eBenefits Access" link from the sidebar navigation (`/dashboard/apps/api-keys`)
+   - Updated the `lib/routes-config.tsx` file to remove the API keys entry
+
+2. **File System Cleanup**:
+   - Deleted the API keys directory from the dashboard: `app/dashboard/(auth)/apps/api-keys`
+   - Confirmed that the API keys functionality remains available in the admin panel at `/bdoc/api-keys`
+
+### Rationale
+
+The API keys functionality was previously moved from the dashboard to the admin panel (`/bdoc/api-keys`) to centralize all administrative functions. This change completes the migration by removing the now-redundant API keys page from the dashboard, ensuring that API keys are managed exclusively from the admin panel. This further streamlines the navigation and maintains a clear separation between user-facing features and administrative functions.
+
+## August 14, 2024 - Added API Keys to Admin Navigation
+
+### Changes
+
+1. **Admin Navigation Update**:
+   - Added "API Keys" link to the admin navigation menu in `lib/routes-config.tsx`
+   - Set the link to point to `/bdoc/api-keys` with a Key icon
+   - Positioned the link between "Claims Administration" and "Analytics" in the menu order
+
+### Rationale
+
+After moving the API Keys functionality from the dashboard to the admin panel, the navigation link needed to be added to the admin routes configuration. This change completes the migration process by ensuring that administrators can easily access the API Keys management interface from the admin navigation menu, maintaining a consistent and intuitive user experience.

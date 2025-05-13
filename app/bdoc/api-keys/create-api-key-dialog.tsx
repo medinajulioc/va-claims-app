@@ -45,7 +45,7 @@ export default function CreateApiKeyDialog() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.success("Success!");
+    toast.success("API key created successfully!");
     console.log(values);
     setDialogOpen(false);
   }
@@ -55,7 +55,7 @@ export default function CreateApiKeyDialog() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
           <Button>
-            <PlusCircledIcon /> Create Api Key
+            <PlusCircledIcon className="mr-2" /> Create API Key
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -75,7 +75,7 @@ export default function CreateApiKeyDialog() {
                   <FormItem>
                     <FormLabel>API key name</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} placeholder="Enter a descriptive name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,7 +106,7 @@ export default function CreateApiKeyDialog() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                          disabled={(date) => date < new Date()}
                           initialFocus
                         />
                       </PopoverContent>
@@ -115,7 +115,7 @@ export default function CreateApiKeyDialog() {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Create API</Button>
+              <Button type="submit">Create API Key</Button>
             </form>
           </Form>
         </DialogContent>
