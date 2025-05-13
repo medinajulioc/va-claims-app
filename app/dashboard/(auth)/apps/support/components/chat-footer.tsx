@@ -1,5 +1,3 @@
-"use client";
-
 import { Mic, PlusCircleIcon, SendIcon, SmileIcon, Paperclip } from "lucide-react";
 import {
   DropdownMenu,

@@ -21,6 +21,9 @@ import { RegulationSearchResults } from "@/components/ui/custom/prompt/regulatio
 import { ecfrService } from "@/lib/services/ecfr-service";
 import { RegulationSummary } from "@/lib/services/ecfr-service/types";
 import { isCfrQuery, extractRegulationSearchTerms } from "@/lib/utils/cfr-utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useUserStore from "@/store/useUserStore";
+import { generateAvatarFallback } from "@/lib/utils";
 
 const chatSuggestions = [
   "How do I file a VA disability claim?",
@@ -60,6 +63,9 @@ export default function AppRender() {
   // State for CFR regulation search results
   const [regulationResults, setRegulationResults] = useState<RegulationSummary[]>([]);
   const [isSearchingRegulations, setIsSearchingRegulations] = useState(false);
+
+  // Add this line to get user information for avatars
+  const { firstName, lastName } = useUserStore();
 
   const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -242,10 +248,26 @@ The process typically takes 3-5 months, though some claims may take longer depen
         scrollToRef={bottomRef}>
         {messages.map((message) => {
           const isAssistant = message.role === "assistant";
+
+          // Get avatar information based on message role
+          const avatarSrc = isAssistant
+            ? process.env.ASSETS_URL + "/avatars/01.png" // Default avatar for assistant
+            : ""; // User avatar could be added here if available
+
+          const avatarName = isAssistant ? "System" : `${firstName} ${lastName}`;
+
           return (
             <Message
               key={message.id}
               className={message.role === "user" ? "justify-end" : "justify-start"}>
+              {/* Add avatar for assistant messages */}
+              {isAssistant && (
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarImage src={avatarSrc} alt="Assistant" />
+                  <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
+                </Avatar>
+              )}
+
               <div
                 className={cn("max-w-[85%] flex-1 sm:max-w-[75%]", {
                   "justify-end text-end": !isAssistant
@@ -273,6 +295,14 @@ The process typically takes 3-5 months, though some claims may take longer depen
                   </MessageContent>
                 )}
               </div>
+
+              {/* Add avatar for user messages */}
+              {!isAssistant && (
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarImage src="" alt="User" />
+                  <AvatarFallback>{generateAvatarFallback(avatarName)}</AvatarFallback>
+                </Avatar>
+              )}
             </Message>
           );
         })}

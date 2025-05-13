@@ -40,7 +40,7 @@ export const page_routes: PageRoutesType[] = [
     title: "Resources",
     items: [
       { title: "Service Notes", href: "/dashboard/apps/notes", icon: "StickyNote" },
-      { title: "Support Chat", href: "/dashboard/apps/chat", icon: "MessageSquare" },
+      { title: "Support", href: "/dashboard/apps/support", icon: "MessageSquare" },
       {
         title: "Tasks Checklist",
         href: "/dashboard/apps/todo-list-app",
