@@ -24,40 +24,15 @@ export const page_routes: PageRoutesType[] = [
         icon: "FileCheck"
       },
       {
-        title: "Claim Types",
-        href: "#",
-        icon: "ListCheck",
-        items: [
-          { title: "Disability Claims", href: "/dashboard/ecommerce" },
-          { title: "Conditions List", href: "/dashboard/pages/products" },
-          { title: "Condition Details", href: "/dashboard/pages/products/1" },
-          { title: "Add Condition", href: "/dashboard/pages/products/create" },
-          { title: "Claims List", href: "/dashboard/pages/orders" },
-          { title: "Claim Detail", href: "/dashboard/pages/orders/detail" }
-        ]
-      },
-      {
-        title: "Claims Analytics",
-        href: "/dashboard/website-analytics",
-        icon: "BarChart"
-      },
-      {
-        title: "Document Management",
-        href: "/dashboard/project-management",
-        icon: "FolderDot"
-      },
-      {
         title: "File Manager",
         href: "/dashboard/file-manager",
         icon: "Folder"
       },
-      { title: "Compensation Rates", href: "/dashboard/crypto", icon: "DollarSign" },
       {
         title: "VA Disability Calculator",
         href: "/dashboard/va-disability-calculator",
         icon: "Calculator"
-      },
-      { title: "Treatment Tracker", href: "/dashboard/hospital-management", icon: "Activity" }
+      }
     ],
     routeType: "user"
   },
@@ -102,18 +77,6 @@ export const page_routes: PageRoutesType[] = [
         ]
       },
       {
-        title: "Settings",
-        href: "/dashboard/pages/settings",
-        icon: "Settings",
-        items: [
-          { title: "Profile", href: "/dashboard/pages/settings" },
-          { title: "Account", href: "/dashboard/pages/settings/account" },
-          { title: "Appearance", href: "/dashboard/pages/settings/appearance" },
-          { title: "Notifications", href: "/dashboard/pages/settings/notifications" },
-          { title: "Display", href: "/dashboard/pages/settings/display" }
-        ]
-      },
-      {
         title: "Benefits",
         href: "#",
         icon: "Shield",
@@ -133,16 +96,6 @@ export const page_routes: PageRoutesType[] = [
           { title: "Register v1", href: "/dashboard/register/v1" },
           { title: "Register v2", href: "/dashboard/register/v2" },
           { title: "Forgot Password", href: "/dashboard/forgot-password" }
-        ]
-      },
-      {
-        title: "Error Pages",
-        href: "/",
-        icon: "Fingerprint",
-        items: [
-          { title: "404", href: "/dashboard/pages/error/404" },
-          { title: "500", href: "/dashboard/pages/error/500" },
-          { title: "403", href: "/dashboard/pages/error/403" }
         ]
       },
       {
