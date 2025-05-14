@@ -32,6 +32,12 @@ export const page_routes: PageRoutesType[] = [
         title: "VA Disability Calculator",
         href: "/dashboard/va-disability-calculator",
         icon: "Calculator"
+      },
+      {
+        title: "Community Forum",
+        href: "/dashboard/community",
+        icon: "Users",
+        isNew: true
       }
     ],
     routeType: "user"

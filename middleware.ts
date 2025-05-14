@@ -3,7 +3,11 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   // Public pages that should always be accessible
-  if (request.nextUrl.pathname === '/dashboard/va-disability-calculator') {
+  if (
+    request.nextUrl.pathname === "/dashboard/va-disability-calculator" ||
+    request.nextUrl.pathname.startsWith("/community") ||
+    request.nextUrl.pathname.startsWith("/dashboard/community")
+  ) {
     return NextResponse.next();
   }
 
@@ -39,5 +43,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/bdoc/:path*"]
+  matcher: ["/", "/dashboard/:path*", "/bdoc/:path*", "/community/:path*"]
 };
