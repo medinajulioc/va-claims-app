@@ -27,15 +27,11 @@ npm install recoil react-hook-form date-fns react-icons
 Create or edit `app/community/layout.tsx` to wrap forum pages in `RecoilRoot`, isolating Recoil state to the forum feature:
 
 ```tsx
-import { RecoilRoot } from 'recoil';
-import { ReactNode } from 'react';
+import { RecoilRoot } from "recoil";
+import { ReactNode } from "react";
 
 export default function CommunityLayout({ children }: { children: ReactNode }) {
-  return (
-    <RecoilRoot>
-      {children}
-    </RecoilRoot>
-  );
+  return <RecoilRoot>{children}</RecoilRoot>;
 }
 ```
 
@@ -44,32 +40,39 @@ export default function CommunityLayout({ children }: { children: ReactNode }) {
 Create `app/community/lib/recoilAtoms.ts` to define Recoil atoms for mock data (communities, posts, comments, users). Example:
 
 ```tsx
-import { atom } from 'recoil';
-import { Community, Post, Comment, User } from './types';
+import { atom } from "recoil";
+import { Community, Post, Comment, User } from "./types";
 
 export const communitiesState = atom<Community[]>({
-  key: 'communitiesState',
+  key: "communitiesState",
   default: [
-    { id: '1', name: 'General', description: 'General discussion', members: 100 },
-    { id: '2', name: 'Tech', description: 'Tech talk', members: 50 },
-  ],
+    { id: "1", name: "General", description: "General discussion", members: 100 },
+    { id: "2", name: "Tech", description: "Tech talk", members: 50 }
+  ]
 });
 
 export const postsState = atom<Post[]>({
-  key: 'postsState',
+  key: "postsState",
   default: [
-    { id: '1', communityId: '1', title: 'Welcome', content: 'Hello!', userId: 'u1', createdAt: new Date() },
-  ],
+    {
+      id: "1",
+      communityId: "1",
+      title: "Welcome",
+      content: "Hello!",
+      userId: "u1",
+      createdAt: new Date()
+    }
+  ]
 });
 
 export const commentsState = atom<Comment[]>({
-  key: 'commentsState',
-  default: [],
+  key: "commentsState",
+  default: []
 });
 
 export const currentUserState = atom<User | null>({
-  key: 'currentUserState',
-  default: { id: 'u1', username: 'testuser', email: 'test@example.com' },
+  key: "currentUserState",
+  default: { id: "u1", username: "testuser", email: "test@example.com" }
 });
 ```
 
@@ -78,15 +81,17 @@ export const currentUserState = atom<User | null>({
 Add selectors in `app/community/lib/recoilAtoms.ts` for data operations:
 
 ```tsx
-import { selector } from 'recoil';
-import { postsState } from './recoilAtoms';
+import { selector } from "recoil";
+import { postsState } from "./recoilAtoms";
 
 export const getPostsByCommunityId = selector({
-  key: 'getPostsByCommunityId',
-  get: ({ get }) => (communityId: string) => {
-    const posts = get(postsState);
-    return posts.filter(post => post.communityId === communityId);
-  },
+  key: "getPostsByCommunityId",
+  get:
+    ({ get }) =>
+    (communityId: string) => {
+      const posts = get(postsState);
+      return posts.filter((post) => post.communityId === communityId);
+    }
 });
 ```
 
@@ -152,15 +157,15 @@ Add utilities in `app/community/lib/` for mock data generation if needed.
 Create components in `app/community/components/` (e.g., `CommunityCard.tsx`):
 
 ```tsx
-import { useRecoilValue } from 'recoil';
-import { communitiesState } from '../lib/recoilAtoms';
+import { useRecoilValue } from "recoil";
+import { communitiesState } from "../lib/recoilAtoms";
 
 export default function CommunityCard() {
   const communities = useRecoilValue(communitiesState);
   return (
     <div className="grid gap-4">
-      {communities.map(community => (
-        <div key={community.id} className="p-4 bg-gray-100 rounded-lg">
+      {communities.map((community) => (
+        <div key={community.id} className="rounded-lg bg-gray-100 p-4">
           <h2 className="text-xl font-bold">{community.name}</h2>
           <p>{community.description}</p>
           <p>{community.members} members</p>
@@ -178,12 +183,12 @@ Style with Tailwind CSS v4 and use `react-icons` for icons.
 - **Forum Homepage (**`page.tsx`**)**:
 
 ```tsx
-import CommunityCard from '../components/CommunityCard';
+import CommunityCard from "../components/CommunityCard";
 
 export default function CommunityPage() {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Community Forum</h1>
+      <h1 className="mb-4 text-3xl font-bold">Community Forum</h1>
       <CommunityCard />
     </div>
   );
@@ -193,17 +198,17 @@ export default function CommunityPage() {
 - **Community Detail (**`[id]/page.tsx`**)**:
 
 ```tsx
-import { useRecoilValue } from 'recoil';
-import { getPostsByCommunityId } from '../../lib/recoilAtoms';
+import { useRecoilValue } from "recoil";
+import { getPostsByCommunityId } from "../../lib/recoilAtoms";
 
 export default function CommunityDetail({ params }: { params: { id: string } }) {
   const getPosts = useRecoilValue(getPostsByCommunityId);
   const posts = getPosts(params.id);
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Community Posts</h1>
-      {posts.map(post => (
-        <div key={post.id} className="p-4 bg-gray-100 rounded-lg mb-2">
+      <h1 className="mb-4 text-3xl font-bold">Community Posts</h1>
+      {posts.map((post) => (
+        <div key={post.id} className="mb-2 rounded-lg bg-gray-100 p-4">
           <h2 className="text-xl">{post.title}</h2>
           <p>{post.content}</p>
         </div>
@@ -225,7 +230,7 @@ In `PostForm.tsx`, integrate your upload dialog with a 20 MB limit for images/PD
 
 ## Phase 3: Enhance, Polish, and Prepare for Production
 
-### Step 12: Implement Additional Features 
+### Step 12: Implement Additional Features
 
 Add tags or search components in `app/community/components/`.
 
@@ -235,8 +240,8 @@ Add metadata in pages:
 
 ```tsx
 export const metadata = {
-  title: 'Community Forum',
-  description: 'Join our discussion forum!',
+  title: "Community Forum",
+  description: "Join our discussion forum!"
 };
 ```
 

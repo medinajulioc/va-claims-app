@@ -5,6 +5,8 @@ import { Comment } from "../lib/types";
 import { formatRelativeTime, formatNumber } from "../lib/utils";
 import { commentsState, currentUserState } from "../lib/recoilAtoms";
 import { useRecoilValueCompat, useSetRecoilStateCompat } from "../lib/recoil-compat";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CommentCardProps {
   comment: Comment;
@@ -52,22 +54,28 @@ export default function CommentCard({ comment }: CommentCardProps) {
   };
 
   return (
-    <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-      {error && <div className="mb-2 text-sm text-red-500">{error}</div>}
+    <div className="bg-muted rounded-lg p-4">
+      {error && (
+        <Alert variant="destructive" className="mb-2">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-      <div className="mb-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-        <span className="font-medium text-gray-900 dark:text-gray-100">{comment.username}</span>
+      <div className="text-muted-foreground mb-2 flex items-center text-sm">
+        <span className="font-medium">{comment.username}</span>
         <span className="mx-1">•</span>
         <span>{formatRelativeTime(comment.createdAt)}</span>
       </div>
 
-      <div className="mb-3 text-gray-800 dark:text-gray-200">{comment.content}</div>
+      <div className="mb-3">{comment.content}</div>
 
       <div className="flex items-center text-sm">
-        <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
-          <button
+        <div className="text-muted-foreground flex items-center space-x-1">
+          <Button
             onClick={() => handleVote(1)}
-            className="rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-800"
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0"
             aria-label="Upvote">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -82,13 +90,15 @@ export default function CommentCard({ comment }: CommentCardProps) {
                 d="M5 15l7-7 7 7"
               />
             </svg>
-          </button>
+          </Button>
 
           <span className="font-medium">{formatNumber(comment.voteStatus)}</span>
 
-          <button
+          <Button
             onClick={() => handleVote(-1)}
-            className="rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-800"
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0"
             aria-label="Downvote">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -103,17 +113,17 @@ export default function CommentCard({ comment }: CommentCardProps) {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-          </button>
+          </Button>
         </div>
 
-        <button className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <Button variant="ghost" size="sm" className="text-muted-foreground ml-4 h-auto p-0">
           Reply
-        </button>
+        </Button>
 
         {currentUser?.id === comment.userId && (
-          <button className="ml-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <Button variant="ghost" size="sm" className="text-muted-foreground ml-4 h-auto p-0">
             Delete
-          </button>
+          </Button>
         )}
       </div>
     </div>

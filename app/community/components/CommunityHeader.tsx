@@ -5,6 +5,9 @@ import { Community } from "../lib/types";
 import { currentUserState } from "../lib/recoilAtoms";
 import { formatDate } from "../lib/utils";
 import { useRecoilValueCompat } from "../lib/recoil-compat";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface CommunityHeaderProps {
   community: Community;
@@ -29,7 +32,7 @@ export default function CommunityHeader({ community }: CommunityHeaderProps) {
   const isJoined = currentUser?.joinedCommunities?.includes(community.id);
 
   return (
-    <div className="mb-6 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <Card className="mb-6">
       <div className="relative h-40 bg-gradient-to-r from-blue-500 to-indigo-600">
         {community.imageUrl && (
           <div
@@ -39,23 +42,21 @@ export default function CommunityHeader({ community }: CommunityHeaderProps) {
         )}
       </div>
 
-      <div className="p-6">
+      <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="mb-2 text-2xl font-bold">{community.name}</h1>
-            <p className="mb-4 text-gray-600 dark:text-gray-400">{community.description}</p>
+            <p className="text-muted-foreground mb-4">{community.description}</p>
 
             <div className="mb-4 flex flex-wrap gap-2">
               {community.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                <Badge key={tag} variant="secondary">
                   {tag}
-                </span>
+                </Badge>
               ))}
             </div>
 
-            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-muted-foreground flex items-center text-sm">
               <div className="mr-4 flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -84,17 +85,14 @@ export default function CommunityHeader({ community }: CommunityHeaderProps) {
           </div>
 
           {currentUser && (
-            <button
-              className={`rounded-md px-6 py-2 font-medium ${
-                isJoined
-                  ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
-              }`}>
+            <Button
+              variant={isJoined ? "outline" : "default"}
+              className={isJoined ? "font-medium" : "font-medium"}>
               {isJoined ? "Joined" : "Join"}
-            </button>
+            </Button>
           )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

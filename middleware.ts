@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+/**
+ * Middleware function for Next.js routes
+ * @param {import('next/server').NextRequest} request - The incoming request
+ * @returns {import('next/server').NextResponse | undefined}
+ */
 export function middleware(request: NextRequest) {
   // Public pages that should always be accessible
   if (

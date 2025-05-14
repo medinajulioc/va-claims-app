@@ -68,7 +68,50 @@ const defaultState: AppState = {
       tags: ["mental health", "support", "resources"]
     }
   ],
-  posts: [],
+  posts: [
+    {
+      id: "1",
+      communityId: "1",
+      title: "Welcome to the VA Claims Community",
+      content:
+        "Welcome to our community dedicated to helping veterans navigate their VA benefits and claims process. This is a safe space to ask questions, share experiences, and support one another through the claims journey.",
+      userId: "u1",
+      username: "admin",
+      createdAt: new Date("2023-01-16"),
+      voteStatus: 42,
+      commentCount: 12,
+      imageUrl: "/images/community/welcome-banner.jpg",
+      tags: ["welcome", "rules", "introduction"]
+    },
+    {
+      id: "2",
+      communityId: "2",
+      title: "How I Got My PTSD Rating Increased from 30% to 70%",
+      content:
+        "After years of struggling with my initial 30% PTSD rating, I finally got it increased to 70%. I wanted to share my experience and the documentation that made the difference.",
+      userId: "u3",
+      username: "veteran_2020",
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
+      voteStatus: 89,
+      commentCount: 24,
+      imageUrl: "/images/community/rating-document.jpg",
+      tags: ["success story", "ptsd", "rating increase", "dbq"]
+    },
+    {
+      id: "3",
+      communityId: "3",
+      title: "Free Mental Health Resources Every Veteran Should Know About",
+      content:
+        "Beyond the VA's standard mental health services, there are several free resources that have helped me tremendously.",
+      userId: "u5",
+      username: "wellness_advocate",
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36), // 36 hours ago
+      voteStatus: 156,
+      commentCount: 31,
+      imageUrl: "/images/community/mental-health-resources.jpg",
+      tags: ["mental health", "resources", "therapy", "support"]
+    }
+  ],
   comments: [],
   currentUser: null
 };
