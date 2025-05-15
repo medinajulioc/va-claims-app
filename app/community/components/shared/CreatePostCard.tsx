@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useCommunities, useCurrentUser } from "../../lib/mock-data-adapter";
 import { useCommunityContext } from "../../lib/community-provider";
+import { useCreatePostModal } from "../CreatePostProvider";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -30,14 +30,13 @@ export default function CreatePostCard({
   className = "",
   maxPostLength = 300
 }: CreatePostCardProps) {
-  const router = useRouter();
   const { isDashboard } = useCommunityContext();
+  const { openCreatePostModal } = useCreatePostModal();
   const { data: communities } = useCommunities();
   const { user: currentUser } = useCurrentUser();
   const [selectedCommunity, setSelectedCommunity] = useState(communityId || "");
   const [isDevelopment, setIsDevelopment] = useState(false);
   const [postText, setPostText] = useState("");
-  const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const textRef = useRef<HTMLInputElement>(null);
 
   // Check if we're in development mode
@@ -47,15 +46,9 @@ export default function CreatePostCard({
     );
   }, []);
 
-  // Handle creating a new post
+  // Handle creating a new post - now opens modal instead of navigation
   const handleCreatePost = () => {
-    if (selectedCommunity) {
-      router.push(`/community/${selectedCommunity}/posts/new`);
-    } else if (communityId) {
-      router.push(`/community/${communityId}/posts/new`);
-    } else {
-      router.push("/community/new");
-    }
+    openCreatePostModal(selectedCommunity || communityId);
   };
 
   // Handle text change with character limit
@@ -94,7 +87,7 @@ export default function CreatePostCard({
 
   // In development mode or when user is logged in, show post creation UI
   return (
-    <Card className={`border shadow-sm ${className}`}>
+    <Card className={`border bg-white/95 shadow-sm dark:bg-black/25 ${className}`}>
       <div className="p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10 border">

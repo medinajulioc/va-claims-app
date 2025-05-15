@@ -34,10 +34,16 @@ export const page_routes: PageRoutesType[] = [
         icon: "Calculator"
       },
       {
+        title: "Statement Generator",
+        href: "/dashboard/statement-generator",
+        icon: "FileText",
+        isNew: true
+      },
+      {
         title: "Community Forum",
         href: "/dashboard/community",
         icon: "Users",
-        isNew: true
+        isNew: false
       }
     ],
     routeType: "user"

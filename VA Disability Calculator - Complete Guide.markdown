@@ -1,9 +1,11 @@
 # VA Disability Calculator - Complete Guide for Next.js 15 with TypeScript and Tailwind CSS v4
 
 ## Introduction
+
 This guide provides step-by-step instructions to integrate the VA Disability Calculator into your existing Next.js project using the App Router. The calculator is accessible at `/va-disability-calculator` and includes the official 2025 VA compensation rates, the “whole person theory” calculation, and a disclaimer.
 
 ## Technologies Used
+
 - **Next.js 15**: Server-side rendering and App Router.
 - **TypeScript**: Type safety and maintainability.
 - **Tailwind CSS v4**: Utility-first styling.
@@ -13,14 +15,19 @@ This guide provides step-by-step instructions to integrate the VA Disability Cal
 ## Setup Instructions
 
 ### 1. Install Dependencies
+
 Run the following command in your project’s root directory to install required dependencies:
+
 ```bash
 npm install framer-motion react-hook-form
 ```
+
 Tailwind CSS is configured in our project. Do not break the app ui or ux and if you need anything, follow the [Tailwind CSS Next.js guide](https://tailwindcss.com/docs/guides/nextjs).
 
 ### 2. Directory Structure
+
 Create the following structure in your `app` directory:
+
 - `app/va-disability-calculator/page.tsx`
 - `app/va-disability-calculator/components/`
   - `Button.tsx`
@@ -32,25 +39,26 @@ Create the following structure in your `app` directory:
   - `CalculationSummary.tsx`
 
 ### 3. Add Components
+
 Implement the components in `app/va-disability-calculator/components/` as follows:
 
 #### Button.tsx
+
 ```tsx
-import React from 'react';
+import React from "react";
 
 type ButtonProps = {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
 };
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, className = '', type = 'button' }) => (
+const Button: React.FC<ButtonProps> = ({ children, onClick, className = "", type = "button" }) => (
   <button
     type={type}
-    className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors ${className}`}
-    onClick={onClick}
-  >
+    className={`rounded bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600 ${className}`}
+    onClick={onClick}>
     {children}
   </button>
 );
@@ -59,8 +67,9 @@ export default Button;
 ```
 
 #### Input.tsx
+
 ```tsx
-import React from 'react';
+import React from "react";
 
 type InputProps = {
   label: string;
@@ -76,9 +85,9 @@ const Input: React.FC<InputProps> = ({ label, type, name, register, errors }) =>
     <input
       type={type}
       {...register(name)}
-      className="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+      className="mt-1 block w-full rounded-md border p-2 focus:ring focus:ring-blue-300"
     />
-    {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name].message}</p>}
+    {errors[name] && <p className="mt-1 text-sm text-red-500">{errors[name].message}</p>}
   </div>
 );
 
@@ -86,8 +95,9 @@ export default Input;
 ```
 
 #### Select.tsx
+
 ```tsx
-import React from 'react';
+import React from "react";
 
 type SelectProps = {
   label: string;
@@ -102,15 +112,14 @@ const Select: React.FC<SelectProps> = ({ label, name, options, register, errors 
     <label className="block text-sm font-medium text-gray-700">{label}</label>
     <select
       {...register(name)}
-      className="mt-1 block w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
-    >
-      {options.map(option => (
+      className="mt-1 block w-full rounded-md border p-2 focus:ring focus:ring-blue-300">
+      {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
         </option>
       ))}
     </select>
-    {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name].message}</p>}
+    {errors[name] && <p className="mt-1 text-sm text-red-500">{errors[name].message}</p>}
   </div>
 );
 
@@ -118,13 +127,14 @@ export default Select;
 ```
 
 #### DisabilityInput.tsx
+
 ```tsx
-import React from 'react';
-import { useFieldArray, UseFormRegister, FieldErrors } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import Button from './Button';
-import Input from './Input';
-import Select from './Select';
+import React from "react";
+import { useFieldArray, UseFormRegister, FieldErrors } from "react-hook-form";
+import { motion } from "framer-motion";
+import Button from "./Button";
+import Input from "./Input";
+import Select from "./Select";
 
 type DisabilityInputProps = {
   register: UseFormRegister<any>;
@@ -135,7 +145,7 @@ type DisabilityInputProps = {
 const DisabilityInput: React.FC<DisabilityInputProps> = ({ register, control, errors }) => {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'disabilities',
+    name: "disabilities"
   });
 
   return (
@@ -143,17 +153,15 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ register, control, er
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-6"
-    >
-      <h2 className="text-xl font-semibold mb-4">Disabilities</h2>
+      className="mb-6">
+      <h2 className="mb-4 text-xl font-semibold">Disabilities</h2>
       {fields.map((field, index) => (
         <motion.div
           key={field.id}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex items-end gap-4 mb-4"
-        >
+          className="mb-4 flex items-end gap-4">
           <Input
             label={`Disability ${index + 1} Percentage`}
             type="number"
@@ -165,15 +173,15 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ register, control, er
             label="Affected Area"
             name={`disabilities.${index}.area`}
             options={[
-              { value: 'Other', label: 'Other' },
-              { value: 'Left Arm', label: 'Left Arm' },
-              { value: 'Right Arm', label: 'Right Arm' },
-              { value: 'Left Leg', label: 'Left Leg' },
-              { value: 'Right Leg', label: 'Right Leg' },
-              { value: 'Left Ear', label: 'Left Ear' },
-              { value: 'Right Ear', label: 'Right Ear' },
-              { value: 'Left Eye', label: 'Left Eye' },
-              { value: 'Right Eye', label: 'Right Eye' },
+              { value: "Other", label: "Other" },
+              { value: "Left Arm", label: "Left Arm" },
+              { value: "Right Arm", label: "Right Arm" },
+              { value: "Left Leg", label: "Left Leg" },
+              { value: "Right Leg", label: "Right Leg" },
+              { value: "Left Ear", label: "Left Ear" },
+              { value: "Right Ear", label: "Right Ear" },
+              { value: "Left Eye", label: "Left Eye" },
+              { value: "Right Eye", label: "Right Eye" }
             ]}
             register={register}
             errors={errors}
@@ -183,7 +191,7 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ register, control, er
           </Button>
         </motion.div>
       ))}
-      <Button onClick={() => append({ percentage: 0, area: 'Other' })}>Add Disability</Button>
+      <Button onClick={() => append({ percentage: 0, area: "Other" })}>Add Disability</Button>
     </motion.div>
   );
 };
@@ -192,12 +200,13 @@ export default DisabilityInput;
 ```
 
 #### DependentsInput.tsx
+
 ```tsx
-import React from 'react';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import Input from './Input';
-import Select from './Select';
+import React from "react";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { motion } from "framer-motion";
+import Input from "./Input";
+import Select from "./Select";
 
 type DependentsInputProps = {
   register: UseFormRegister<any>;
@@ -209,16 +218,9 @@ const DependentsInput: React.FC<DependentsInputProps> = ({ register, errors }) =
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: 0.2 }}
-    className="mb-6"
-  >
-    <h2 className="text-xl font-semibold mb-4">Dependents</h2>
-    <Input
-      label="Spouse (Yes/No)"
-      type="text"
-      name="spouse"
-      register={register}
-      errors={errors}
-    />
+    className="mb-6">
+    <h2 className="mb-4 text-xl font-semibold">Dependents</h2>
+    <Input label="Spouse (Yes/No)" type="text" name="spouse" register={register} errors={errors} />
     <Input
       label="Children Under 18"
       type="number"
@@ -237,9 +239,9 @@ const DependentsInput: React.FC<DependentsInputProps> = ({ register, errors }) =
       label="Dependent Parents"
       name="dependentParents"
       options={[
-        { value: '0', label: '0' },
-        { value: '1', label: '1' },
-        { value: '2', label: '2' },
+        { value: "0", label: "0" },
+        { value: "1", label: "1" },
+        { value: "2", label: "2" }
       ]}
       register={register}
       errors={errors}
@@ -251,11 +253,12 @@ export default DependentsInput;
 ```
 
 #### SMCInput.tsx
+
 ```tsx
-import React from 'react';
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import Select from './Select';
+import React from "react";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { motion } from "framer-motion";
+import Select from "./Select";
 
 type SMCInputProps = {
   register: UseFormRegister<any>;
@@ -267,21 +270,20 @@ const SMCInput: React.FC<SMCInputProps> = ({ register, errors }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: 0.4 }}
-    className="mb-6"
-  >
-    <h2 className="text-xl font-semibold mb-4">Special Monthly Compensation</h2>
+    className="mb-6">
+    <h2 className="mb-4 text-xl font-semibold">Special Monthly Compensation</h2>
     <Select
       label="SMC Level"
       name="smcLevel"
       options={[
-        { value: 'none', label: 'None' },
-        { value: 'K', label: 'SMC-K: Loss of use (+$136.06)' },
-        { value: 'L', label: 'SMC-L: Aid and attendance ($4,767.34)' },
-        { value: 'M', label: 'SMC-M: Higher aid level ($5,264.58)' },
-        { value: 'N', label: 'SMC-N: Severe disability ($5,768.77)' },
-        { value: 'O', label: 'SMC-O: Maximum aid ($6,466.32)' },
-        { value: 'R1', label: 'SMC-R1: Aid and attendance ($9,292.77)' },
-        { value: 'R2', label: 'SMC-R2: Personal health care ($10,540.79)' },
+        { value: "none", label: "None" },
+        { value: "K", label: "SMC-K: Loss of use (+$136.06)" },
+        { value: "L", label: "SMC-L: Aid and attendance ($4,767.34)" },
+        { value: "M", label: "SMC-M: Higher aid level ($5,264.58)" },
+        { value: "N", label: "SMC-N: Severe disability ($5,768.77)" },
+        { value: "O", label: "SMC-O: Maximum aid ($6,466.32)" },
+        { value: "R1", label: "SMC-R1: Aid and attendance ($9,292.77)" },
+        { value: "R2", label: "SMC-R2: Personal health care ($10,540.79)" }
       ]}
       register={register}
       errors={errors}
@@ -293,22 +295,25 @@ export default SMCInput;
 ```
 
 #### CalculationSummary.tsx
+
 ```tsx
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 type CalculationSummaryProps = {
   combinedRating: number;
   compensation: number;
 };
 
-const CalculationSummary: React.FC<CalculationSummaryProps> = ({ combinedRating, compensation }) => (
+const CalculationSummary: React.FC<CalculationSummaryProps> = ({
+  combinedRating,
+  compensation
+}) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.5 }}
-    className="mt-6 p-4 bg-gray-100 rounded-lg text-center text-lg font-semibold text-gray-800"
-  >
+    className="mt-6 rounded-lg bg-gray-100 p-4 text-center text-lg font-semibold text-gray-800">
     <p>Combined Rating: {combinedRating}%</p>
     <p>Monthly Compensation: ${compensation.toFixed(2)}</p>
   </motion.div>
@@ -318,70 +323,72 @@ export default CalculationSummary;
 ```
 
 ### 4. Implement the Main Page
+
 Add the following code to `app/va-disability-calculator/page.tsx`:
 
 #### page.tsx
+
 ```tsx
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import DisabilityInput from './components/DisabilityInput';
-import DependentsInput from './components/DependentsInput';
-import SMCInput from './components/SMCInput';
-import CalculationSummary from './components/CalculationSummary';
-import Button from './components/Button';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
+import DisabilityInput from "./components/DisabilityInput";
+import DependentsInput from "./components/DependentsInput";
+import SMCInput from "./components/SMCInput";
+import CalculationSummary from "./components/CalculationSummary";
+import Button from "./components/Button";
 
 // Official 2025 VA Base Rates (subset for brevity)
 const baseRates: { [key: number]: { [key: string]: number } } = {
-  10: { 'alone': 171.23 },
-  20: { 'alone': 338.49 },
+  10: { alone: 171.23 },
+  20: { alone: 338.49 },
   30: {
-    'alone': 537.42,
-    'with_spouse': 601.42,
-    'with_spouse_and_one_child': 648.42,
-    'with_one_child': 579.42,
-    'with_one_parent': 588.42,
-    'with_two_parents': 639.42,
-    'with_spouse_and_one_parent': 652.42,
-    'with_spouse_and_two_parents': 703.42,
+    alone: 537.42,
+    with_spouse: 601.42,
+    with_spouse_and_one_child: 648.42,
+    with_one_child: 579.42,
+    with_one_parent: 588.42,
+    with_two_parents: 639.42,
+    with_spouse_and_one_parent: 652.42,
+    with_spouse_and_two_parents: 703.42
   },
   100: {
-    'alone': 3737.85,
-    'with_spouse': 3947.85,
-    'with_spouse_and_one_child': 4088.85,
-    'with_one_child': 3878.85,
-  },
+    alone: 3737.85,
+    with_spouse: 3947.85,
+    with_spouse_and_one_child: 4088.85,
+    with_one_child: 3878.85
+  }
   // Add rates for 40%, 50%, 60%, 70%, 80%, 90% as needed
 };
 
 // Additional Rates for 2025 (subset)
 const additionalRates: { [key: number]: { [key: string]: number } } = {
   30: {
-    'child_under_18': 31.00,
-    'child_over_18': 102.00,
-    'spouse_aid': 58.00,
-    'additional_child': 31.00,
-    'each_parent': 51.00,
+    child_under_18: 31.0,
+    child_over_18: 102.0,
+    spouse_aid: 58.0,
+    additional_child: 31.0,
+    each_parent: 51.0
   },
   100: {
-    'child_under_18': 97.80,
-    'child_over_18': 314.00,
-    'spouse_aid': 191.00,
-    'additional_child': 97.80,
-    'each_parent': 151.00,
-  },
+    child_under_18: 97.8,
+    child_over_18: 314.0,
+    spouse_aid: 191.0,
+    additional_child: 97.8,
+    each_parent: 151.0
+  }
 };
 
 // SMC Rates for 2025
 const smcRates: { [key: string]: number } = {
-  'none': 0,
-  'K': 136.06,
-  'L': 4767.34,
-  'M': 5264.58,
-  'N': 5768.77,
-  'O': 6466.32,
-  'R1': 9292.77,
-  'R2': 10540.79,
+  none: 0,
+  K: 136.06,
+  L: 4767.34,
+  M: 5264.58,
+  N: 5768.77,
+  O: 6466.32,
+  R1: 9292.77,
+  R2: 10540.79
 };
 
 type FormData = {
@@ -398,18 +405,21 @@ const VADisabilityCalculator = () => {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors }
   } = useForm<FormData>({
     defaultValues: {
-      disabilities: [{ percentage: 0, area: 'Other' }],
-      spouse: 'No',
+      disabilities: [{ percentage: 0, area: "Other" }],
+      spouse: "No",
       childrenUnder18: 0,
       childrenOver18: 0,
-      dependentParents: '0',
-      smcLevel: 'none',
-    },
+      dependentParents: "0",
+      smcLevel: "none"
+    }
   });
-  const [result, setResult] = React.useState<{ combinedRating: number; compensation: number } | null>(null);
+  const [result, setResult] = React.useState<{
+    combinedRating: number;
+    compensation: number;
+  } | null>(null);
 
   // VA "Whole Person Theory" Formula
   const calculateCombinedRating = (percentages: number[]): number => {
@@ -430,24 +440,27 @@ const VADisabilityCalculator = () => {
 
     const rates = baseRates[combinedRating] || baseRates[30]; // Fallback to 30% if rating not found
     const addRates = additionalRates[combinedRating] || additionalRates[30];
-    let baseKey = 'alone';
-    if (data.spouse.toLowerCase() === 'yes') {
-      baseKey = data.childrenUnder18 > 0 || data.childrenOver18 > 0 ? 'with_spouse_and_one_child' : 'with_spouse';
+    let baseKey = "alone";
+    if (data.spouse.toLowerCase() === "yes") {
+      baseKey =
+        data.childrenUnder18 > 0 || data.childrenOver18 > 0
+          ? "with_spouse_and_one_child"
+          : "with_spouse";
     } else if (data.childrenUnder18 > 0 || data.childrenOver18 > 0) {
-      baseKey = 'with_one_child';
+      baseKey = "with_one_child";
     }
-    let compensation = rates[baseKey] || rates['alone'];
+    let compensation = rates[baseKey] || rates["alone"];
 
     // Additional dependents
     const totalChildren = data.childrenUnder18 + data.childrenOver18;
     if (totalChildren > 1) {
-      compensation += (totalChildren - 1) * addRates['additional_child'];
+      compensation += (totalChildren - 1) * addRates["additional_child"];
     }
-    compensation += data.childrenUnder18 * addRates['child_under_18'];
-    compensation += data.childrenOver18 * addRates['child_over_18'];
-    compensation += parseInt(data.dependentParents) * addRates['each_parent'];
-    if (data.spouse.toLowerCase() === 'yes' && combinedRating >= 30) {
-      compensation += addRates['spouse_aid'];
+    compensation += data.childrenUnder18 * addRates["child_under_18"];
+    compensation += data.childrenOver18 * addRates["child_over_18"];
+    compensation += parseInt(data.dependentParents) * addRates["each_parent"];
+    if (data.spouse.toLowerCase() === "yes" && combinedRating >= 30) {
+      compensation += addRates["spouse_aid"];
     }
 
     // Add SMC if applicable
@@ -457,25 +470,24 @@ const VADisabilityCalculator = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    const percentages = data.disabilities.map(d => Math.min(d.percentage, 100));
+    const percentages = data.disabilities.map((d) => Math.min(d.percentage, 100));
     const combinedRating = calculateCombinedRating(percentages);
     const compensation = calculateCompensation(data, combinedRating);
     setResult({ combinedRating, compensation });
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <header className="text-center mb-6">
+    <div className="container mx-auto max-w-4xl p-4">
+      <header className="mb-6 text-center">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl font-bold text-gray-800"
-        >
+          className="text-3xl font-bold text-gray-800">
           VA Disability Calculator (2025 Rates)
         </motion.h1>
       </header>
-      <main className="bg-white p-6 rounded-lg shadow-md">
+      <main className="rounded-lg bg-white p-6 shadow-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DisabilityInput register={register} control={control} errors={errors} />
           <DependentsInput register={register} errors={errors} />
@@ -485,11 +497,17 @@ const VADisabilityCalculator = () => {
           </Button>
         </form>
         {result && (
-          <CalculationSummary combinedRating={result.combinedRating} compensation={result.compensation} />
+          <CalculationSummary
+            combinedRating={result.combinedRating}
+            compensation={result.compensation}
+          />
         )}
       </main>
-      <footer className="text-center mt-6 text-sm text-gray-500">
-        <p>Reminder: These are estimations, and you should always verify with the VA for exact figures, especially in complex scenarios.</p>
+      <footer className="mt-6 text-center text-sm text-gray-500">
+        <p>
+          Reminder: These are estimations, and you should always verify with the VA for exact
+          figures, especially in complex scenarios.
+        </p>
       </footer>
     </div>
   );
@@ -499,27 +517,29 @@ export default VADisabilityCalculator;
 ```
 
 ### 5. Update Tailwind Configuration
+
 Ensure Tailwind CSS processes the new files by updating `tailwind.config.js`:
+
 ```js
 module.exports = {
-  content: [
-    './app/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-  ],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: { extend: {} },
-  plugins: [],
+  plugins: []
 };
 ```
 
 ## How to Use the Calculator
+
 1. **Add Disabilities**: Input each disability’s percentage and affected area. Use "Add Disability" for multiple entries.
 2. **Enter Dependents**: Specify spouse, children under/over 18, and dependent parents.
 3. **Select SMC Level**: Choose a Special Monthly Compensation level if applicable.
 4. **Calculate**: Click "Calculate" to see the combined rating and monthly compensation.
 
 ## Notes on Calculations
+
 - **Combined Rating**: Calculated using the VA’s “whole person theory” formula, capping at 100%.
 - **Compensation**: Based on official 2025 VA rates, including base rates, additional rates for dependents, and SMC.
 
 ## Updating Rates Annually
+
 Modify the `baseRates`, `additionalRates`, and `smcRates` objects in `page.tsx` with current VA rates as they change each year.
