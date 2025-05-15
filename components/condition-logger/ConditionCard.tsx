@@ -26,6 +26,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import Icon from "@/components/icon";
 
 interface Log {
   id: string;
@@ -157,12 +158,18 @@ export function ConditionCard({
   return (
     <Card
       className={cn(
-        "bg-card relative overflow-hidden transition-all duration-300",
-        isHovered ? "-translate-y-1 transform shadow-md" : "shadow-sm",
+        "bg-card relative cursor-pointer overflow-hidden transition-all duration-300",
+        isHovered ? "border-primary/50 -translate-y-1 transform shadow-md" : "shadow-sm",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}>
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        if (!totalLogs) {
+          e.stopPropagation();
+          onLogClick();
+        }
+      }}>
       {/* Background pattern for visual interest */}
       <div
         className="from-primary/5 absolute inset-0 z-0 bg-gradient-to-br to-transparent opacity-50"
@@ -184,9 +191,11 @@ export function ConditionCard({
               className="flex h-12 w-12 items-center justify-center rounded-full"
               style={{ backgroundColor: `${condition.color}20` }}>
               {condition.icon ? (
-                <span className="text-2xl" style={{ color: condition.color }}>
-                  {condition.icon}
-                </span>
+                <Icon
+                  name={condition.icon}
+                  className="h-6 w-6"
+                  style={{ color: condition.color }}
+                />
               ) : (
                 <Activity className="h-6 w-6" style={{ color: condition.color }} />
               )}
@@ -287,9 +296,17 @@ export function ConditionCard({
                 <PlusCircle className="text-muted-foreground h-6 w-6" />
               </div>
               <p className="text-muted-foreground mb-1">No logs recorded yet</p>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground mb-4 text-sm">
                 Track your {condition.name.toLowerCase()} symptoms to build your VA claim evidence
               </p>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onLogClick();
+                }}
+                className="mt-2">
+                Log {condition.name}
+              </Button>
             </div>
           )}
         </CardContent>
@@ -301,7 +318,10 @@ export function ConditionCard({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onViewHistory}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewHistory();
+                  }}
                   disabled={totalLogs === 0}>
                   <FileText className="mr-1 h-4 w-4" />
                   History
@@ -316,7 +336,14 @@ export function ConditionCard({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={onViewTrends} disabled={totalLogs < 2}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewTrends();
+                  }}
+                  disabled={totalLogs < 2}>
                   <BarChart2 className="mr-1 h-4 w-4" />
                   Trends
                 </Button>
@@ -327,23 +354,19 @@ export function ConditionCard({
             </Tooltip>
           </TooltipProvider>
 
-          <Button onClick={onLogClick}>
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onLogClick();
+            }}
+            className="transition-all duration-300">
             <PlusCircle className="mr-1 h-4 w-4" />
             Log Now
           </Button>
         </CardFooter>
       </div>
 
-      {/* Quick action overlay on hover */}
-      <div
-        className={cn(
-          "absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 transition-opacity duration-300",
-          isHovered ? "opacity-100" : ""
-        )}>
-        <Button variant="default" size="lg" className="shadow-lg" onClick={onLogClick}>
-          Log {condition.name} <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      {/* Removed overlay that was causing confusion */}
     </Card>
   );
 }
