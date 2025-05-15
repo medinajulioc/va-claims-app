@@ -15,8 +15,9 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { HelpCircle, Mic, MicOff } from "lucide-react";
+import { HelpCircle, Mic, MicOff, Flame, ThermometerSnowflake, Thermometer } from "lucide-react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DynamicFormProps {
   condition: Condition;
@@ -168,85 +169,110 @@ export const DynamicForm = ({ condition, onSubmit }: DynamicFormProps) => {
     switch (field.type) {
       case "text":
         return (
-          <Input
-            id={fieldId}
-            name={field.name}
-            value={formData[field.name] || ""}
-            onChange={(e) => handleChange(field.name, e.target.value)}
-            placeholder={field.placeholder}
-            required={field.required}
-            className="w-full"
-            aria-describedby={descriptionId}
-            aria-required={field.required}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}>
+            <Input
+              id={fieldId}
+              name={field.name}
+              value={formData[field.name] || ""}
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              placeholder={field.placeholder}
+              required={field.required}
+              className="focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2"
+              aria-describedby={descriptionId}
+              aria-required={field.required}
+            />
+          </motion.div>
         );
       case "number":
         return (
-          <Input
-            id={fieldId}
-            name={field.name}
-            type="number"
-            value={formData[field.name] || ""}
-            onChange={(e) => handleChange(field.name, parseInt(e.target.value, 10) || "")}
-            min={field.min}
-            max={field.max}
-            required={field.required}
-            className="w-full"
-            aria-describedby={descriptionId}
-            aria-required={field.required}
-            aria-valuemin={field.min}
-            aria-valuemax={field.max}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}>
+            <Input
+              id={fieldId}
+              name={field.name}
+              type="number"
+              value={formData[field.name] || ""}
+              onChange={(e) => handleChange(field.name, parseInt(e.target.value, 10) || "")}
+              min={field.min}
+              max={field.max}
+              required={field.required}
+              className="focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2"
+              aria-describedby={descriptionId}
+              aria-required={field.required}
+              aria-valuemin={field.min}
+              aria-valuemax={field.max}
+            />
+          </motion.div>
         );
       case "date":
         return (
-          <Input
-            id={fieldId}
-            name={field.name}
-            type="date"
-            value={formData[field.name] || ""}
-            onChange={(e) => handleChange(field.name, e.target.value)}
-            required={field.required}
-            className="w-full"
-            aria-describedby={descriptionId}
-            aria-required={field.required}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}>
+            <Input
+              id={fieldId}
+              name={field.name}
+              type="date"
+              value={formData[field.name] || ""}
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              required={field.required}
+              className="focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2"
+              aria-describedby={descriptionId}
+              aria-required={field.required}
+            />
+          </motion.div>
         );
       case "select":
         return (
-          <Select
-            value={formData[field.name] || ""}
-            onValueChange={(value) => handleChange(field.name, value)}
-            name={field.name}>
-            <SelectTrigger
-              className="w-full"
-              id={fieldId}
-              aria-describedby={descriptionId}
-              aria-required={field.required}>
-              <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
-            </SelectTrigger>
-            <SelectContent>
-              {field.options?.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}>
+            <Select
+              value={formData[field.name] || ""}
+              onValueChange={(value) => handleChange(field.name, value)}
+              name={field.name}>
+              <SelectTrigger
+                className="focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2"
+                id={fieldId}
+                aria-describedby={descriptionId}
+                aria-required={field.required}>
+                <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {field.options?.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </motion.div>
         );
       case "textarea":
         return (
-          <Textarea
-            id={fieldId}
-            name={field.name}
-            value={formData[field.name] || ""}
-            onChange={(e) => handleChange(field.name, e.target.value)}
-            placeholder={field.placeholder}
-            required={field.required}
-            className="min-h-[100px] w-full"
-            aria-describedby={descriptionId}
-            aria-required={field.required}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}>
+            <Textarea
+              id={fieldId}
+              name={field.name}
+              value={formData[field.name] || ""}
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              placeholder={field.placeholder}
+              required={field.required}
+              className="focus:ring-primary/20 min-h-[100px] w-full transition-all duration-200 focus:ring-2"
+              aria-describedby={descriptionId}
+              aria-required={field.required}
+            />
+          </motion.div>
         );
       default:
         return null;
@@ -254,53 +280,94 @@ export const DynamicForm = ({ condition, onSubmit }: DynamicFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <motion.form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       {/* Quick log buttons */}
       <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => handleQuickLog("mild")}>
-          Log Mild {condition.name}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => handleQuickLog("moderate")}>
-          Log Moderate {condition.name}
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={() => handleQuickLog("severe")}>
-          Log Severe {condition.name}
-        </Button>
-        <Button
-          type="button"
-          variant={isListening ? "destructive" : "outline"}
-          size="sm"
-          onClick={toggleListening}
-          className="ml-auto"
-          aria-label={isListening ? "Stop voice input" : "Start voice input"}>
-          {isListening ? <MicOff className="mr-2 h-4 w-4" /> : <Mic className="mr-2 h-4 w-4" />}
-          {isListening ? "Stop Voice" : "Voice Input"}
-        </Button>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickLog("mild")}
+            className="hover:bg-primary/5 transition-all duration-300">
+            <ThermometerSnowflake className="mr-2 h-4 w-4 text-blue-500" />
+            Mild {condition.name}
+          </Button>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickLog("moderate")}
+            className="hover:bg-primary/5 transition-all duration-300">
+            <Thermometer className="mr-2 h-4 w-4 text-amber-500" />
+            Moderate {condition.name}
+          </Button>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickLog("severe")}
+            className="hover:bg-primary/5 transition-all duration-300">
+            <Flame className="mr-2 h-4 w-4 text-red-500" />
+            Severe {condition.name}
+          </Button>
+        </motion.div>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="ml-auto">
+          <Button
+            type="button"
+            variant={isListening ? "destructive" : "outline"}
+            size="sm"
+            onClick={toggleListening}
+            className={`transition-all duration-300 ${isListening ? "" : "hover:bg-primary/5"}`}
+            aria-label={isListening ? "Stop voice input" : "Start voice input"}>
+            {isListening ? <MicOff className="mr-2 h-4 w-4" /> : <Mic className="mr-2 h-4 w-4" />}
+            {isListening ? "Stop Voice" : "Voice Input"}
+          </Button>
+        </motion.div>
       </div>
 
       {/* Voice transcript display */}
-      {voiceText && (
-        <div className="bg-muted rounded-md p-3">
-          <p className="text-muted-foreground text-sm">
-            <span className="font-medium">Voice input:</span> {voiceText}
-          </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            Try saying: "severity 7", "notes feeling pain in lower back", "duration 3 hours", or
-            "mild/moderate/severe"
-          </p>
-        </div>
-      )}
+      <AnimatePresence>
+        {voiceText && (
+          <motion.div
+            className="bg-muted rounded-md p-3"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}>
+            <p className="text-muted-foreground text-sm">
+              <span className="font-medium">Voice input:</span> {voiceText}
+            </p>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Try saying: "severity 7", "notes feeling pain in lower back", "duration 3 hours", or
+              "mild/moderate/severe"
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Dynamic form fields */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {condition.fields.map((field) => (
-          <div key={field.name} className="space-y-2">
+      <div className="grid gap-6 md:grid-cols-2">
+        {condition.fields.map((field, index) => (
+          <motion.div
+            key={field.name}
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}>
             <div className="flex items-center gap-1.5">
-              <Label htmlFor={`field-${field.name}`}>{field.label}</Label>
+              <Label htmlFor={`field-${field.name}`} className="text-sm font-medium">
+                {field.label}
+              </Label>
               {field.required && (
                 <span className="text-red-500" aria-hidden="true">
                   *
@@ -317,7 +384,7 @@ export const DynamicForm = ({ condition, onSubmit }: DynamicFormProps) => {
                       <HelpCircle className="text-muted-foreground h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="top">
+                  <TooltipContent side="top" className="max-w-[250px] text-sm">
                     <p id={`field-${field.name}-description`}>
                       {field.required
                         ? `${field.label} is required.`
@@ -329,13 +396,21 @@ export const DynamicForm = ({ condition, onSubmit }: DynamicFormProps) => {
               </TooltipProvider>
             </div>
             {renderField(field)}
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit">Save Log</Button>
-      </div>
-    </form>
+      <motion.div
+        className="flex justify-end"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <Button type="submit" className="transition-all duration-300">
+            Save Log
+          </Button>
+        </motion.div>
+      </motion.div>
+    </motion.form>
   );
 };

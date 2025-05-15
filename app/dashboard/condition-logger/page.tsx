@@ -15,6 +15,7 @@ import { AlertCircle, BarChart2, Calendar, LineChart } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Log {
   id: string;
@@ -136,139 +137,259 @@ export default function ConditionLoggerPage() {
     return logs.filter((log) => log.condition === selectedCondition.name);
   };
 
+  const fadeIn = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
+  const tabTransition = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.3, ease: "easeInOut" }
+  };
+
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6 pb-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}>
           <h1 className="text-3xl font-bold tracking-tight">Condition Logger</h1>
           <p className="text-muted-foreground">
             Track and document your symptoms for VA disability claims
           </p>
-        </div>
+        </motion.div>
       </div>
 
       <div className="grid gap-6">
-        {hasFlareUp && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Flare-Up Detected</AlertTitle>
-            <AlertDescription>
-              One or more of your conditions has reached flare-up level severity. Consider seeking
-              medical attention if symptoms persist.
-            </AlertDescription>
-          </Alert>
-        )}
+        <AnimatePresence>
+          {hasFlareUp && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Flare-Up Detected</AlertTitle>
+                <AlertDescription>
+                  One or more of your conditions has reached flare-up level severity. Consider
+                  seeking medical attention if symptoms persist.
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main Dashboard Tabs */}
-        <Tabs value={dashboardTab} onValueChange={setDashboardTab}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="logger">
+        <Tabs value={dashboardTab} onValueChange={setDashboardTab} className="w-full">
+          <TabsList className="bg-muted/50 mb-6 grid w-full grid-cols-3 p-1">
+            <TabsTrigger
+              value="logger"
+              className="data-[state=active]:bg-background transition-all duration-300 data-[state=active]:shadow-sm">
               <Calendar className="mr-2 h-4 w-4" />
               Logger
             </TabsTrigger>
-            <TabsTrigger value="analytics">
+            <TabsTrigger
+              value="analytics"
+              className="data-[state=active]:bg-background transition-all duration-300 data-[state=active]:shadow-sm">
               <LineChart className="mr-2 h-4 w-4" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="claims">
+            <TabsTrigger
+              value="claims"
+              className="data-[state=active]:bg-background transition-all duration-300 data-[state=active]:shadow-sm">
               <BarChart2 className="mr-2 h-4 w-4" />
               Claims
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="logger" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-card col-span-full rounded-lg border p-6 shadow">
-                <div className="flex flex-col space-y-1.5">
-                  <h3 className="text-2xl leading-none font-semibold tracking-tight">
-                    Getting Started
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Select a condition below to start logging your symptoms. Regular logging helps
-                    establish a record of your condition for VA disability claims.
-                  </p>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={dashboardTab}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={tabTransition}>
+              <TabsContent value="logger" className="mt-0 space-y-6">
+                <motion.div
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="bg-card col-span-full rounded-lg border p-6 shadow-sm">
+                    <div className="flex flex-col space-y-1.5">
+                      <h3 className="text-2xl leading-none font-semibold tracking-tight">
+                        Getting Started
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        Select a condition below to start logging your symptoms. Regular logging
+                        helps establish a record of your condition for VA disability claims.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Condition cards */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {conditions.map((condition, index) => (
+                    <motion.div
+                      key={condition.name}
+                      variants={fadeIn}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delay: index * 0.1 }}>
+                      <ConditionCard
+                        condition={condition}
+                        onSelect={handleSelectCondition}
+                        isSelected={selectedCondition?.name === condition.name}
+                      />
+                    </motion.div>
+                  ))}
                 </div>
-              </div>
-            </div>
 
-            {/* Condition cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {conditions.map((condition) => (
-                <ConditionCard
-                  key={condition.name}
-                  condition={condition}
-                  onSelect={handleSelectCondition}
-                  isSelected={selectedCondition?.name === condition.name}
-                />
-              ))}
-            </div>
+                {/* Dynamic form and logs */}
+                <AnimatePresence mode="wait">
+                  {selectedCondition && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.4 }}>
+                      <Tabs value={activeTab} onValueChange={setActiveTab}>
+                        <TabsList className="bg-muted/50 mb-4 grid w-full grid-cols-2 p-1">
+                          <TabsTrigger
+                            value="log"
+                            className="data-[state=active]:bg-background transition-all duration-300 data-[state=active]:shadow-sm">
+                            Log Symptoms
+                          </TabsTrigger>
+                          <TabsTrigger
+                            value="history"
+                            className="data-[state=active]:bg-background transition-all duration-300 data-[state=active]:shadow-sm">
+                            View History
+                          </TabsTrigger>
+                        </TabsList>
 
-            {/* Dynamic form and logs */}
-            {selectedCondition && (
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-4 grid w-full grid-cols-2">
-                  <TabsTrigger value="log">Log Symptoms</TabsTrigger>
-                  <TabsTrigger value="history">View History</TabsTrigger>
-                </TabsList>
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}>
+                            <TabsContent value="log" className="mt-0">
+                              <Card className="bg-card rounded-lg border p-6 shadow-sm">
+                                <h3 className="mb-4 text-xl font-semibold">
+                                  {selectedCondition.name} Symptom Logger
+                                </h3>
+                                <p className="text-muted-foreground mb-6 text-sm">
+                                  Log your {selectedCondition.name.toLowerCase()} symptoms below.
+                                  Regular tracking helps establish patterns and provides
+                                  documentation for your VA disability claim.
+                                </p>
+                                <DynamicForm
+                                  condition={selectedCondition}
+                                  onSubmit={handleFormSubmit}
+                                />
+                              </Card>
+                            </TabsContent>
 
-                <TabsContent value="log">
-                  <Card className="bg-card rounded-lg border p-6 shadow">
-                    <h3 className="mb-4 text-xl font-semibold">
-                      {selectedCondition.name} Symptom Logger
-                    </h3>
-                    <p className="text-muted-foreground mb-6 text-sm">
-                      Log your {selectedCondition.name.toLowerCase()} symptoms below. Regular
-                      tracking helps establish patterns and provides documentation for your VA
-                      disability claim.
-                    </p>
-                    <DynamicForm condition={selectedCondition} onSubmit={handleFormSubmit} />
-                  </Card>
-                </TabsContent>
+                            <TabsContent value="history" className="mt-0">
+                              <Card className="bg-card rounded-lg border p-6 shadow-sm">
+                                <LogTable
+                                  logs={logs}
+                                  selectedCondition={selectedCondition.name}
+                                  onDeleteLog={handleDeleteLog}
+                                  onViewDetails={handleViewDetails}
+                                />
+                              </Card>
+                            </TabsContent>
+                          </motion.div>
+                        </AnimatePresence>
+                      </Tabs>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                <TabsContent value="history">
-                  <Card className="bg-card rounded-lg border p-6 shadow">
-                    <LogTable
-                      logs={logs}
-                      selectedCondition={selectedCondition.name}
-                      onDeleteLog={handleDeleteLog}
-                      onViewDetails={handleViewDetails}
-                    />
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            )}
+                {/* All logs table when no condition is selected */}
+                <AnimatePresence>
+                  {!selectedCondition && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="bg-card rounded-lg border p-6 shadow-sm">
+                      <LogTable
+                        logs={logs}
+                        onDeleteLog={handleDeleteLog}
+                        onViewDetails={handleViewDetails}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </TabsContent>
+            </motion.div>
+          </AnimatePresence>
 
-            {/* All logs table when no condition is selected */}
-            {!selectedCondition && (
-              <div className="bg-card rounded-lg border p-6 shadow">
-                <LogTable
-                  logs={logs}
-                  onDeleteLog={handleDeleteLog}
-                  onViewDetails={handleViewDetails}
-                />
-              </div>
-            )}
-          </TabsContent>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={dashboardTab}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={tabTransition}>
+              <TabsContent value="analytics" className="mt-0 space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Progress Card */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}>
+                    <ProgressCard logs={logs} />
+                  </motion.div>
 
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              {/* Progress Card */}
-              <ProgressCard logs={logs} />
+                  {/* Correlation View */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}>
+                    <CorrelationView logs={logs} />
+                  </motion.div>
+                </div>
+              </TabsContent>
+            </motion.div>
+          </AnimatePresence>
 
-              {/* Correlation View */}
-              <CorrelationView logs={logs} />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="claims" className="space-y-6">
-            {/* Claims Tracker */}
-            <ClaimsTracker />
-          </TabsContent>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={dashboardTab}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={tabTransition}>
+              <TabsContent value="claims" className="mt-0 space-y-6">
+                {/* Claims Tracker */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}>
+                  <ClaimsTracker />
+                </motion.div>
+              </TabsContent>
+            </motion.div>
+          </AnimatePresence>
         </Tabs>
       </div>
 
       {/* Log detail dialog */}
       <LogDetailDialog log={selectedLog} open={isDialogOpen} onOpenChange={setIsDialogOpen} />
-    </div>
+    </motion.div>
   );
 }
