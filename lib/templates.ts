@@ -9,30 +9,90 @@
 const getCurrentDate = () => new Date().toISOString().split("T")[0];
 
 /**
+ * Get the current time in HH:MM format
+ */
+const getCurrentTime = () => {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+};
+
+/**
  * Templates for quick logging of common symptoms
  */
 export const templates = {
   Headaches: {
     mild: {
-      severity: 3,
       date: getCurrentDate(),
-      type: "Tension",
-      duration: "1-2 hours",
+      time: getCurrentTime(),
+      severity: 3,
+      duration: 2,
+      prostrating: "No",
+      painLocation: "Forehead",
+      symptoms: ["Light Sensitivity"],
+      medications: "Tylenol 500mg",
+      medEffectiveness: "4 - Very effective",
+      triggers: ["Diet"],
+      impact: "Mild limitation",
+      sleepQuality: "4 - Good",
+      weather: "Normal conditions",
       notes: "Mild headache with minimal impact on daily activities"
     },
     moderate: {
-      severity: 5,
       date: getCurrentDate(),
-      type: "Tension",
-      duration: "2-4 hours",
-      notes: "Moderate headache affecting concentration"
+      time: getCurrentTime(),
+      severity: 5,
+      duration: 4,
+      prostrating: "No",
+      painLocation: "Both temples",
+      symptoms: ["Light Sensitivity", "Sound Sensitivity"],
+      medications: "Ibuprofen 600mg",
+      medEffectiveness: "3 - Moderately effective",
+      triggers: ["Lack of Sleep", "Stress from Service"],
+      impact: "Moderate limitation",
+      sleepQuality: "3 - Fair",
+      weather: "Normal conditions",
+      notes: "Moderate headache affecting concentration and productivity"
     },
     severe: {
-      severity: 8,
       date: getCurrentDate(),
-      type: "Migraine",
-      duration: "4+ hours",
-      notes: "Severe headache with sensitivity to light and sound"
+      time: getCurrentTime(),
+      severity: 8,
+      duration: 8,
+      prostrating: "Yes",
+      painLocation: "Behind eyes",
+      symptoms: ["Aura", "Nausea", "Light Sensitivity", "Sound Sensitivity", "Vision Changes"],
+      medications: "Sumatriptan 100mg",
+      medEffectiveness: "3 - Moderately effective",
+      triggers: ["Bright Lights", "Weather Changes", "Lack of Sleep"],
+      impact: "Severe limitation",
+      sleepQuality: "2 - Poor",
+      weather: "Weather change, pressure drop",
+      notes: "Severe migraine requiring rest in dark room, unable to perform normal activities"
+    },
+    prostrating: {
+      date: getCurrentDate(),
+      time: getCurrentTime(),
+      severity: 9,
+      duration: 12,
+      prostrating: "Yes",
+      painLocation: "Entire head",
+      symptoms: [
+        "Aura",
+        "Nausea",
+        "Vomiting",
+        "Light Sensitivity",
+        "Sound Sensitivity",
+        "Sensory Changes",
+        "Dizziness"
+      ],
+      medications: "Sumatriptan 100mg, Zofran 4mg",
+      medEffectiveness: "2 - Slightly effective",
+      triggers: ["Loud Noises", "Flashbacks", "Stress from Service"],
+      impact: "Complete inability to function",
+      sleepQuality: "1 - Very poor",
+      weather: "Stormy, pressure change",
+      notes:
+        "Completely prostrating migraine. Unable to function at all. Required bed rest in dark room for entire day."
     }
   },
 
