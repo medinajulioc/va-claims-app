@@ -7,9 +7,28 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import PlaceholderImage from "./PlaceholderImage";
+import "./CommunityLinks.css";
 
 interface CommunitySidebarProps {
   className?: string;
+}
+
+// Function to determine a consistent placeholder variant based on community ID
+function getPlaceholderVariant(id: string): "default" | "blue" | "green" {
+  const lastChar = id.slice(-1);
+  const charCode = lastChar.charCodeAt(0);
+
+  switch (charCode % 3) {
+    case 0:
+      return "default";
+    case 1:
+      return "blue";
+    case 2:
+      return "green";
+    default:
+      return "default";
+  }
 }
 
 export default function CommunitySidebar({ className = "" }: CommunitySidebarProps) {
@@ -29,11 +48,11 @@ export default function CommunitySidebar({ className = "" }: CommunitySidebarPro
   const sortedCommunities = [...filteredCommunities].sort((a, b) => b.members - a.members);
 
   return (
-    <Card className={`border shadow-sm ${className}`}>
+    <Card className={`border bg-white/95 shadow-sm dark:bg-black/25 ${className}`}>
       <div className="border-b p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Communities</h2>
-          <Link href="/community/new">
+          <Link href="/community/new" className="community-link">
             <Button size="sm" className="h-8 gap-1 px-3">
               <PlusIcon className="h-4 w-4" />
               Create
@@ -61,30 +80,39 @@ export default function CommunitySidebar({ className = "" }: CommunitySidebarPro
         <div className="scrollbar-thin max-h-[400px] overflow-y-auto p-2">
           {sortedCommunities.length > 0 ? (
             <div className="space-y-1">
-              {sortedCommunities.map((community) => (
-                <Link
-                  key={community.id}
-                  href={`/community/${community.id}`}
-                  className="hover:bg-muted flex items-center gap-3 rounded-md p-2.5 transition-colors">
-                  {community.imageUrl ? (
-                    <div
-                      className="h-10 w-10 shrink-0 rounded-full border bg-cover bg-center"
-                      style={{ backgroundImage: `url(${community.imageUrl})` }}
-                      aria-label={`${community.name} community image`}
-                    />
-                  ) : (
-                    <div className="bg-primary text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                      {community.name.substring(0, 2).toUpperCase()}
+              {sortedCommunities.map((community) => {
+                const variant = getPlaceholderVariant(community.id);
+                return (
+                  <Link
+                    key={community.id}
+                    href={`/community/${community.id}`}
+                    className="community-link hover:bg-accent/20 flex items-center gap-3 rounded-md p-2.5 transition-colors">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border">
+                      {community.imageUrl ? (
+                        <PlaceholderImage
+                          src={community.imageUrl}
+                          alt={`${community.name} community image`}
+                          className="h-full w-full object-cover"
+                          width={800}
+                          height={800}
+                          type="avatar"
+                          variant={variant}
+                        />
+                      ) : (
+                        <div className="bg-primary text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                          {community.name.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate leading-tight font-medium">{community.name}</p>
-                    <p className="text-muted-foreground truncate text-xs">
-                      {community.members.toLocaleString()} members
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate leading-tight font-medium">{community.name}</p>
+                      <p className="text-muted-foreground truncate text-xs">
+                        {community.members.toLocaleString()} members
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div className="bg-muted/30 m-2 rounded-md p-4 text-center">
@@ -99,7 +127,7 @@ export default function CommunitySidebar({ className = "" }: CommunitySidebarPro
       <div className="border-t p-4">
         <Link
           href="/community"
-          className="text-primary hover:text-primary/80 flex items-center justify-center text-sm font-medium transition-colors hover:underline">
+          className="community-link-accent flex items-center justify-center text-sm font-medium transition-colors hover:underline">
           View all communities
         </Link>
       </div>

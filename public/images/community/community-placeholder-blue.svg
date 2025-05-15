@@ -1,0 +1,30 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="800" fill="#EFF6FF" />
+  
+  <!-- Border -->
+  <rect x="40" y="40" width="720" height="720" rx="360" stroke="#3B82F6" stroke-width="3" stroke-dasharray="8 8" />
+  
+  <!-- VA Logo with flag-like design -->
+  <rect x="250" y="240" width="300" height="200" fill="#DBEAFE" />
+  <rect x="250" y="240" width="300" height="40" fill="#1D4ED8" />
+  <rect x="250" y="280" width="300" height="40" fill="#FFFFFF" />
+  <rect x="250" y="320" width="300" height="40" fill="#1D4ED8" />
+  <rect x="250" y="360" width="300" height="40" fill="#FFFFFF" />
+  <rect x="250" y="400" width="300" height="40" fill="#1D4ED8" />
+  
+  <!-- Stars -->
+  <circle cx="280" cy="260" r="8" fill="#FFFFFF" />
+  <circle cx="280" cy="300" r="8" fill="#1D4ED8" />
+  <circle cx="280" cy="340" r="8" fill="#FFFFFF" />
+  <circle cx="280" cy="380" r="8" fill="#1D4ED8" />
+  
+  <!-- Text -->
+  <text x="400" y="500" font-family="system-ui, -apple-system, sans-serif" font-size="36" text-anchor="middle" fill="#2563EB" font-weight="bold">COMMUNITY</text>
+  
+  <!-- Message -->
+  <text x="400" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="24" text-anchor="middle" fill="#3B82F6">Avatar not available (800×800)</text>
+  
+  <!-- Small watermark -->
+  <text x="400" y="720" font-family="system-ui, -apple-system, sans-serif" font-size="16" text-anchor="middle" fill="#60A5FA">VA Claims Community</text>
+</svg> 

@@ -1,0 +1,20 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#F5F7F9" />
+  
+  <!-- Border -->
+  <rect x="40" y="40" width="1200" height="640" rx="8" stroke="#6B7280" stroke-width="2" stroke-dasharray="8 8" />
+  
+  <!-- Icon -->
+  <path d="M640 310C665.4 310 686 289.4 686 264C686 238.6 665.4 218 640 218C614.6 218 594 238.6 594 264C594 289.4 614.6 310 640 310Z" stroke="#4B5563" stroke-width="6" />
+  <path d="M520 464C520 411.05 553.05 367.65 600 349.95C611.75 345.05 624.6 342.5 638 342.5H642C655.4 342.5 668.25 345.05 680 349.95C726.95 367.65 760 411.05 760 464V475H520V464Z" stroke="#4B5563" stroke-width="6" />
+  
+  <!-- VA Logo Text -->
+  <text x="640" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="42" text-anchor="middle" fill="#4B5563" font-weight="bold">VETERANS AFFAIRS</text>
+  
+  <!-- Message -->
+  <text x="640" y="600" font-family="system-ui, -apple-system, sans-serif" font-size="32" text-anchor="middle" fill="#6B7280">Post image not available (1280×720)</text>
+  
+  <!-- Small watermark -->
+  <text x="640" y="680" font-family="system-ui, -apple-system, sans-serif" font-size="16" text-anchor="middle" fill="#9CA3AF">VA Claims Community</text>
+</svg> 

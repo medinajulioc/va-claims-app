@@ -23,36 +23,51 @@ export function formatDateTime(date: Date): string {
  * @param date Date to format
  * @returns Relative time string
  */
-export function formatRelativeTime(date: Date): string {
+export function formatRelativeTime(date: Date | string): string {
   const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const time = new Date(date);
+  const diff = now.getTime() - time.getTime();
 
-  if (diffInSeconds < 60) {
+  // Convert milliseconds to seconds
+  const seconds = Math.floor(diff / 1000);
+
+  if (seconds < 60) {
     return "just now";
   }
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} ${diffInMinutes === 1 ? "minute" : "minutes"} ago`;
+  // Convert seconds to minutes
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
   }
 
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
+  // Convert minutes to hours
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours} hour${hours === 1 ? "" : "s"} ago`;
   }
 
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) {
-    return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+  // Convert hours to days
+  const days = Math.floor(hours / 24);
+  if (days < 7) {
+    return `${days} day${days === 1 ? "" : "s"} ago`;
   }
 
-  const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) {
-    return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
+  // Convert days to weeks
+  const weeks = Math.floor(days / 7);
+  if (weeks < 4) {
+    return `${weeks} week${weeks === 1 ? "" : "s"} ago`;
   }
 
-  const diffInYears = Math.floor(diffInMonths / 12);
-  return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
+  // Convert weeks to months
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return `${months} month${months === 1 ? "" : "s"} ago`;
+  }
+
+  // Convert months to years
+  const years = Math.floor(days / 365);
+  return `${years} year${years === 1 ? "" : "s"} ago`;
 }
 
 /**
@@ -101,10 +116,49 @@ export function getInitials(name: string): string {
  */
 export function formatNumber(num: number): string {
   if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(1)}m`;
+    return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "m";
   }
   if (num >= 1000) {
-    return `${(num / 1000).toFixed(1)}k`;
+    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
   }
   return num.toString();
+}
+
+/**
+ * Helper to generate a placeholder image URL or fallback
+ * @param type Type of placeholder
+ * @param id Optional ID for generating a consistent color
+ * @returns Placeholder image URL
+ */
+export function getPlaceholderImage(type: "post" | "community" | "profile", id?: string): string {
+  // Default fallback
+  const fallback = "/images/community/placeholder.svg";
+
+  if (!id) return fallback;
+
+  // Generate a consistent color based on the ID
+  const colorIndex = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % 6;
+  const colors = ["blue", "green", "red", "purple", "orange", "teal"];
+  const color = colors[colorIndex];
+
+  // Return a placeholder based on the type
+  switch (type) {
+    case "post":
+      return `/images/community/post-placeholder-${color}.svg`;
+    case "community":
+      return `/images/community/community-placeholder-${color}.svg`;
+    case "profile":
+      return `/images/community/profile-placeholder-${color}.svg`;
+    default:
+      return fallback;
+  }
+}
+
+/**
+ * Get a CSS class string for card background based on environment
+ * @param isDarkMode Whether the environment is in dark mode
+ * @returns CSS class string
+ */
+export function getCardBackgroundClass(isDarkMode: boolean): string {
+  return isDarkMode ? "bg-black/25 hover:bg-black/35" : "bg-white/95 hover:bg-white";
 }

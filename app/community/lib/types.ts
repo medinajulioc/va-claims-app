@@ -2,17 +2,20 @@ export interface Community {
   id: string;
   name: string;
   description: string;
-  members: number;
+  members: User[];
   imageUrl?: string;
+  bannerUrl?: string;
   createdAt: Date;
   tags?: string[];
+  rules?: string[];
 }
 
 export interface Post {
   id: string;
   communityId: string;
   title: string;
-  content: string;
+  content: string | object;
+  author: User;
   userId: string;
   username: string;
   createdAt: Date;
@@ -21,6 +24,8 @@ export interface Post {
   imageUrl?: string;
   commentCount: number;
   tags?: string[];
+  likes?: number;
+  comments?: Comment[];
 }
 
 export interface Comment {
@@ -32,14 +37,20 @@ export interface Comment {
   createdAt: Date;
   updatedAt?: Date;
   voteStatus: number;
+  author?: User;
 }
 
 export interface User {
   id: string;
   username: string;
+  name: string;
   email: string;
   imageUrl?: string;
+  avatarUrl?: string;
   joinedCommunities?: string[];
+  bio?: string;
+  role?: string;
+  joinedAt?: Date;
 }
 
 export interface Vote {
@@ -47,7 +58,7 @@ export interface Vote {
   postId?: string;
   commentId?: string;
   userId: string;
-  value: number; // 1 for upvote, -1 for downvote
+  value: number;
 }
 
 export type CommunityVisibility = "public" | "restricted" | "private";

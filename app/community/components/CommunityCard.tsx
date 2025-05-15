@@ -1,68 +1,112 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import { Community } from "../lib/types";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users } from "lucide-react";
+import { Users, MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Community } from "../lib/types";
 
 interface CommunityCardProps {
   community: Community;
+  className?: string;
 }
 
-export default function CommunityCard({ community }: CommunityCardProps) {
+export function CommunityCard({ community, className }: CommunityCardProps) {
+  // Format member count
+  const memberCount = Array.isArray(community.members)
+    ? community.members.length
+    : community.members;
+
+  // Format date
+  const formattedDate = new Date(community.createdAt).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short"
+  });
+
   return (
-    <Link href={`/community/${community.id}`}>
-      <Card className="h-full overflow-hidden transition-all hover:shadow-md">
-        {community.bannerUrl && (
-          <div
-            className="h-32 w-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${community.bannerUrl})` }}
-            aria-label={`${community.name} banner image`}
-          />
-        )}
-
-        <div className="p-4">
-          <div className="flex items-center gap-3">
-            {community.imageUrl ? (
-              <div
-                className="h-12 w-12 rounded-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${community.imageUrl})` }}
-                aria-label={`${community.name} community image`}
-              />
-            ) : (
-              <div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-full text-lg">
-                {community.name.substring(0, 2).toUpperCase()}
-              </div>
-            )}
-
-            <div>
-              <h3 className="font-semibold">{community.name}</h3>
-              <div className="text-muted-foreground flex items-center text-xs">
-                <Users className="mr-1 h-3 w-3" />
-                <span>{community.members} members</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-muted-foreground mt-3 line-clamp-2 text-sm">{community.description}</p>
-
-          {community.tags && community.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1">
-              {community.tags.slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-              {community.tags.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{community.tags.length - 3} more
-                </Badge>
-              )}
+    <div
+      className={cn(
+        "group bg-card overflow-hidden rounded-lg border shadow-sm transition-all hover:shadow-md",
+        className
+      )}>
+      <Link href={`/community/${community.id}`} className="block">
+        <div
+          className="from-primary/80 to-secondary/80 h-32 w-full bg-gradient-to-r bg-cover bg-center"
+          style={community.bannerUrl ? { backgroundImage: `url(${community.bannerUrl})` } : {}}>
+          {!community.bannerUrl && (
+            <div className="flex h-full items-center justify-center">
+              <span className="text-xl font-bold text-white/90">{community.name}</span>
             </div>
           )}
         </div>
-      </Card>
-    </Link>
+      </Link>
+
+      <div className="p-4">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            {community.imageUrl ? (
+              <div
+                className="border-background mr-3 h-12 w-12 rounded-full border-4 bg-cover bg-center"
+                style={{ backgroundImage: `url(${community.imageUrl})` }}
+              />
+            ) : (
+              <div className="bg-primary text-primary-foreground border-background mr-3 flex h-12 w-12 items-center justify-center rounded-full border-4 text-lg font-bold">
+                {community.name.substring(0, 2).toUpperCase()}
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+            <Link href={`/community/${community.id}`}>
+              <h2 className="hover:text-primary truncate text-lg font-semibold transition-colors">
+                {community.name}
+              </h2>
+            </Link>
+
+            <div className="text-muted-foreground flex flex-wrap items-center text-xs">
+              <div className="mr-3 flex items-center">
+                <Users className="mr-1 h-3.5 w-3.5" />
+                <span>{memberCount} members</span>
+              </div>
+              <div className="flex items-center">
+                <MessageSquare className="mr-1 h-3.5 w-3.5" />
+                <span>Active since {formattedDate}</span>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground mt-2 line-clamp-2 text-xs">
+              {community.description}
+            </p>
+          </div>
+        </div>
+
+        {community.tags && community.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1">
+            {community.tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs font-normal">
+                {tag}
+              </Badge>
+            ))}
+            {community.tags.length > 3 && (
+              <Badge variant="outline" className="text-xs font-normal">
+                +{community.tags.length - 3} more
+              </Badge>
+            )}
+          </div>
+        )}
+
+        <div className="mt-3 flex justify-end">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="hover:bg-primary hover:text-primary-foreground w-full text-xs transition-colors duration-200">
+            <Link href={`/community/${community.id}`}>View Community</Link>
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

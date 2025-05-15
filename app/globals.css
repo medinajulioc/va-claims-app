@@ -157,6 +157,15 @@
     @apply bg-background text-foreground;
   }
 
+  /* Global link hover styles using OCP theme colors */
+  a {
+    transition: color 0.2s ease-in-out;
+  }
+
+  a:hover {
+    color: var(--primary);
+  }
+
   [data-slot="button"],
   [data-slot="dropdown-menu-item"],
   [data-slot="command-item"],

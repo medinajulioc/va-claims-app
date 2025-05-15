@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { communitiesState, postsState, currentUserState } from "../lib/recoilAtoms";
-import { useRecoilValueCompat, useSetRecoilStateCompat } from "../lib/recoil-compat";
+import { RecoilRootCompat } from "../lib/recoil-compat";
 import type { Community, Post, User } from "../lib/types";
 import { MinimalTiptapEditor } from "@/components/ui/custom/minimal-tiptap";
 import type { Content } from "@tiptap/react";
 import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
 import useFileManagerStore from "@/store/useFileManagerStore";
 import { Button } from "@/components/ui/button";
-import { Image } from "lucide-react";
+import { Paperclip } from "lucide-react";
+import { useCommunities, useCurrentUser, usePosts, useCreatePost } from "../lib/mock-data-adapter";
+import { MessageLengthIndicator } from "@/components/ui/custom/prompt/message-length-indicator";
 
-export default function NewPostPage() {
+function NewPostContent() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState<Content>("");
@@ -22,55 +24,21 @@ export default function NewPostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const maxTitleLength = 100;
+
+  // Use direct mock data adapter hooks instead of recoil
+  const { data: communities, isLoading: communitiesLoading } = useCommunities();
+  const { user: currentUser, isLoading: userLoading } = useCurrentUser();
+  const { createPost } = useCreatePost();
 
   // Get the most recent uploaded file to use as post image
   const { files } = useFileManagerStore();
 
-  // Use our compatibility hook with proper error handling
-  let communities: Community[] = [];
-  let posts: Post[] = [];
-  let currentUser: User | null = null;
-  let setPosts: (newPosts: Post[]) => void = () => {};
-
-  try {
-    communities = useRecoilValueCompat<Community[]>(communitiesState);
-    posts = useRecoilValueCompat<Post[]>(postsState);
-    currentUser = useRecoilValueCompat<User | null>(currentUserState);
-    setPosts = useSetRecoilStateCompat(postsState);
-
-    // Reset error state if successful
-    if (error) setError(null);
-  } catch (err) {
-    console.error("Failed to load data:", err);
-    setError("Unable to load community data. Please try refreshing the page.");
-  }
-
-  if (error) {
-    return (
-      <div className="p-4">
-        <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-          <p>{error}</p>
-        </div>
-        <button
-          onClick={() => router.push("/community")}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-          Back to Communities
-        </button>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="mx-auto max-w-2xl rounded-lg border p-6 text-center dark:border-gray-700">
-        <h2 className="mb-2 text-xl font-bold">Login Required</h2>
-        <p className="mb-4">You need to be logged in to create a post.</p>
-      </div>
-    );
-  }
+  // Loading state
+  const isLoading = communitiesLoading || userLoading;
 
   // Update imageUrl when a new file is uploaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (files.length > 0) {
       // Get the most recently added file with an image type
       const latestImageFile = [...files]
@@ -101,15 +69,9 @@ export default function NewPostPage() {
       const contentString = typeof content === "string" ? content : JSON.stringify(content);
 
       const newPost = {
-        id: `post-${Date.now()}`,
         communityId: selectedCommunity,
         title: title.trim(),
         content: contentString,
-        userId: currentUser.id,
-        username: currentUser.username,
-        createdAt: new Date(),
-        voteStatus: 0,
-        commentCount: 0,
         imageUrl: imageUrl || undefined,
         tags: tags
           .split(",")
@@ -117,7 +79,8 @@ export default function NewPostPage() {
           .filter((tag) => tag.length > 0)
       };
 
-      setPosts([...posts, newPost]);
+      // Use the createPost function from the hook
+      createPost(newPost);
       router.push(`/community/${selectedCommunity}`);
     } catch (err) {
       console.error("Error creating post:", err);
@@ -125,6 +88,38 @@ export default function NewPostPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-4">
+        <div className="border-t-primary h-8 w-8 animate-spin rounded-full border-4 border-gray-300"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+          <p>{error}</p>
+        </div>
+        <button
+          onClick={() => router.push("/community")}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+          Back to Communities
+        </button>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="mx-auto max-w-2xl rounded-lg border p-6 text-center dark:border-gray-700">
+        <h2 className="mb-2 text-xl font-bold">Login Required</h2>
+        <p className="mb-4">You need to be logged in to create a post.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -159,14 +154,21 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label htmlFor="title" className="mb-2 block font-medium">
-            Title
-          </label>
+          <div className="mb-2 flex justify-between">
+            <label htmlFor="title" className="font-medium">
+              Title
+            </label>
+            <MessageLengthIndicator currentLength={title.length} maxLength={maxTitleLength} />
+          </div>
           <input
             id="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= maxTitleLength) {
+                setTitle(e.target.value);
+              }
+            }}
             required
             className="w-full rounded-lg border bg-white p-2 dark:border-gray-600 dark:bg-gray-700"
             placeholder="Enter a descriptive title"
@@ -204,9 +206,9 @@ export default function NewPostPage() {
           <div className="space-y-4">
             <FileUploadDialog
               customTrigger={
-                <Button type="button" variant="outline" className="w-full">
-                  <Image className="mr-2 h-4 w-4" />
-                  {imageUrl ? "Change Image" : "Add Image"}
+                <Button type="button" variant="outline" className="w-full rounded-full">
+                  <Paperclip className="mr-2 h-4 w-4" />
+                  {imageUrl ? "Change File" : "Attach File"}
                 </Button>
               }
             />
@@ -253,11 +255,20 @@ export default function NewPostPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-blue-400">
+            className="bg-primary rounded-lg px-4 py-2 text-white hover:opacity-90 disabled:opacity-50">
             {isSubmitting ? "Posting..." : "Create Post"}
           </button>
         </div>
       </form>
     </div>
+  );
+}
+
+// Wrapper component that provides the RecoilRootCompat context
+export default function NewPostPage() {
+  return (
+    <RecoilRootCompat>
+      <NewPostContent />
+    </RecoilRootCompat>
   );
 }

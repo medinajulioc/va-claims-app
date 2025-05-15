@@ -9,16 +9,45 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Share2, Bookmark, ChevronUp, ChevronDown } from "lucide-react";
+import PlaceholderImage from "./shared/PlaceholderImage";
+import "./shared/CommunityLinks.css";
 
 interface PostCardProps {
   post: Post;
   communityName?: string; // Optional community name for display
 }
 
+// Function to determine a consistent placeholder variant based on post ID
+function getPlaceholderVariant(
+  postId: string
+): "default" | "blue" | "green" | "amber" | "red" | "purple" {
+  // Use the last character of the post ID to determine variant
+  const lastChar = postId.slice(-1);
+  const charCode = lastChar.charCodeAt(0);
+
+  switch (charCode % 6) {
+    case 0:
+      return "default";
+    case 1:
+      return "blue";
+    case 2:
+      return "green";
+    case 3:
+      return "amber";
+    case 4:
+      return "red";
+    case 5:
+      return "purple";
+    default:
+      return "default";
+  }
+}
+
 export default function PostCard({ post, communityName }: PostCardProps) {
   const [error, setError] = useState<string | null>(null);
   const [voteStatus, setVoteStatus] = useState(post.voteStatus);
   const { votePost } = useVotePost();
+  const placeholderVariant = getPlaceholderVariant(post.id);
 
   const handleVote = (value: number) => {
     try {
@@ -40,10 +69,10 @@ export default function PostCard({ post, communityName }: PostCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden border shadow-sm">
+    <Card className="overflow-hidden border bg-white/90 shadow-sm dark:bg-black/30">
       <div className="flex">
         {/* Vote buttons */}
-        <div className="bg-muted/50 flex w-12 flex-col items-center border-r py-3">
+        <div className="bg-muted/30 flex w-12 flex-col items-center border-r py-3">
           <Button
             onClick={() => handleVote(1)}
             size="sm"
@@ -69,7 +98,7 @@ export default function PostCard({ post, communityName }: PostCardProps) {
         <CardContent className="flex-1 p-4">
           <div className="text-muted-foreground mb-2 flex flex-wrap items-center gap-2 text-xs">
             {communityName && (
-              <Link href={`/community/${post.communityId}`}>
+              <Link href={`/community/${post.communityId}`} className="community-link">
                 <Badge variant="outline" className="hover:bg-secondary">
                   {communityName}
                 </Badge>
@@ -80,20 +109,23 @@ export default function PostCard({ post, communityName }: PostCardProps) {
             <span>{formatRelativeTime(post.createdAt)}</span>
           </div>
 
-          <Link href={`/community/${post.communityId}/posts/${post.id}`}>
-            <h2 className="mb-2 text-xl font-semibold hover:text-blue-600 dark:hover:text-blue-400">
-              {post.title}
-            </h2>
+          <Link
+            href={`/community/${post.communityId}/posts/${post.id}`}
+            className="post-title-link block">
+            <h2 className="mb-2 text-xl font-semibold">{post.title}</h2>
           </Link>
 
           <div className="mb-3 line-clamp-3">{post.content}</div>
 
           {post.imageUrl && (
             <div className="mb-3">
-              <img
+              <PlaceholderImage
                 src={post.imageUrl}
                 alt={post.title}
-                className="max-h-60 w-full rounded-md object-cover"
+                type="post"
+                variant={placeholderVariant}
+                width={1280}
+                height={720}
               />
             </div>
           )}
@@ -111,7 +143,7 @@ export default function PostCard({ post, communityName }: PostCardProps) {
           <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-sm">
             <Link
               href={`/community/${post.communityId}/posts/${post.id}`}
-              className="hover:text-foreground hover:bg-muted flex items-center gap-1.5 rounded-md px-2 py-1">
+              className="action-link flex items-center gap-1.5 rounded-md px-2 py-1">
               <MessageSquare className="h-4 w-4" />
               <span>{formatNumber(post.commentCount)} comments</span>
             </Link>

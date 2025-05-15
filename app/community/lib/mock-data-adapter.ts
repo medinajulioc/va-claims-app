@@ -13,19 +13,87 @@ import { useEffect } from "react";
 /**
  * Hook to access all posts with mock data
  */
-export function usePosts() {
+export function usePosts(communityId?: string) {
   // MOCK: Using Recoil for mock data
   const posts = useRecoilValueCompat<Post[]>(postsState);
 
+  // Filter posts by communityId if provided
+  const filteredPosts = communityId
+    ? posts.filter((post) => post.communityId === communityId)
+    : posts;
+
+  // Ensure every post has an author field
+  const postsWithAuthors = filteredPosts.map((post) => {
+    if (!post.author) {
+      // Create a mock author from userId/username
+      const mockAuthor: User = {
+        id: post.userId,
+        username: post.username,
+        name: post.username, // Use username as name if not available
+        email: `${post.username}@example.com`
+      };
+
+      return { ...post, author: mockAuthor };
+    }
+    return post;
+  });
+
   return {
-    data: posts || [],
+    data: postsWithAuthors || [],
     isLoading: false,
     error: null
   };
 
   // FUTURE IMPLEMENTATION:
-  // const { data, isLoading, error } = useQuery(['posts'], fetchPosts);
+  // const { data, isLoading, error } = useQuery(['posts', communityId], () => fetchPosts(communityId));
   // return { data: data || [], isLoading, error };
+}
+
+/**
+ * Hook to access a single community with mock data
+ */
+export function useCommunity(communityId: string) {
+  // MOCK: Using Recoil for mock data
+  const communities = useRecoilValueCompat<Community[]>(communitiesState);
+  const users = useRecoilValueCompat<User | null>(currentUserState);
+
+  // Find the community by id
+  const community = communities.find((c) => c.id === communityId);
+
+  // If community is found, ensure it has appropriate members
+  let enhancedCommunity = community;
+  if (community) {
+    // If members is a number, convert it to an array of mock users
+    if (typeof community.members === "number") {
+      const mockMembers: User[] = Array.from(
+        { length: community.members as unknown as number },
+        (_, i) => ({
+          id: `user-${i + 1}`,
+          username: `user${i + 1}`,
+          name: `User ${i + 1}`,
+          email: `user${i + 1}@example.com`,
+          avatarUrl: i % 3 === 0 ? `/avatars/0${(i % 5) + 1}.png` : undefined,
+          role: i === 0 ? "moderator" : undefined,
+          joinedAt: new Date(Date.now() - Math.random() * 10000000000)
+        })
+      );
+
+      enhancedCommunity = {
+        ...community,
+        members: mockMembers
+      };
+    }
+  }
+
+  return {
+    data: enhancedCommunity || null,
+    isLoading: false,
+    error: community ? null : "Community not found"
+  };
+
+  // FUTURE IMPLEMENTATION:
+  // const { data, isLoading, error } = useQuery(['community', communityId], () => fetchCommunity(communityId));
+  // return { data: data || null, isLoading, error };
 }
 
 /**
@@ -61,8 +129,10 @@ export function useCurrentUser() {
       setCurrentUser({
         id: "mock-user-1",
         username: "DeveloperUser",
+        name: "Developer User",
         email: "dev@example.com",
-        imageUrl: `${process.env.ASSETS_URL}/avatars/01.png`,
+        imageUrl: `/avatars/01.png`,
+        avatarUrl: `/avatars/01.png`,
         joinedCommunities: ["1", "2", "3", "4", "5"]
       });
     }
@@ -113,7 +183,7 @@ export function useCreatePost() {
     createPost: (
       newPost: Omit<
         Post,
-        "id" | "createdAt" | "voteStatus" | "commentCount" | "userId" | "username"
+        "id" | "createdAt" | "voteStatus" | "commentCount" | "userId" | "username" | "author"
       >
     ) => {
       if (!currentUser) throw new Error("User must be logged in to create a post");
@@ -123,6 +193,13 @@ export function useCreatePost() {
         id: `post-${uuidv4()}`,
         userId: currentUser.id,
         username: currentUser.username,
+        author: {
+          id: currentUser.id,
+          username: currentUser.username,
+          name: currentUser.name || currentUser.username,
+          email: currentUser.email,
+          avatarUrl: currentUser.avatarUrl || currentUser.imageUrl
+        },
         createdAt: new Date(),
         voteStatus: 0,
         commentCount: 0
@@ -163,7 +240,14 @@ export function useCreateComment() {
         username: currentUser.username,
         content,
         createdAt: new Date(),
-        voteStatus: 0
+        voteStatus: 0,
+        author: {
+          id: currentUser.id,
+          username: currentUser.username,
+          name: currentUser.name || currentUser.username,
+          email: currentUser.email,
+          avatarUrl: currentUser.avatarUrl || currentUser.imageUrl
+        }
       };
 
       setComments([...comments, newComment]);

@@ -1,0 +1,37 @@
+/* Community links styling */
+
+/* Base link style - applies to all links in the community section */
+.community-link {
+  transition: color 0.2s ease-in-out;
+}
+
+/* Hover effect using OCP colors from the theme */
+.community-link:hover {
+  color: var(--primary); /* Uses the theme's primary color */
+}
+
+/* Accent variant - for links that need stronger emphasis */
+.community-link-accent:hover {
+  color: var(--accent); /* Uses the theme's accent color */
+}
+
+/* Specific style for post titles */
+.post-title-link {
+  transition: color 0.2s ease-in-out;
+}
+
+.post-title-link:hover {
+  color: var(--primary); /* Uses the theme's primary color */
+}
+
+/* Style for action links (comments, share, etc) */
+.action-link {
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
+}
+
+.action-link:hover {
+  color: var(--accent-foreground);
+  background-color: var(--accent);
+}

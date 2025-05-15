@@ -1,0 +1,7 @@
+<svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="600" height="400" fill="#F5F5F5" />
+  <rect x="150" y="100" width="300" height="200" rx="8" stroke="#6B7280" stroke-width="4" stroke-dasharray="8 8" />
+  <path d="M300 170C313.807 170 325 158.807 325 145C325 131.193 313.807 120 300 120C286.193 120 275 131.193 275 145C275 158.807 286.193 170 300 170Z" stroke="#6B7280" stroke-width="4" />
+  <path d="M250 270C250 245.147 270.147 225 295 225H305C329.853 225 350 245.147 350 270V275H250V270Z" stroke="#6B7280" stroke-width="4" />
+  <text x="300" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="16" text-anchor="middle" fill="#6B7280">Image not available</text>
+</svg> 
