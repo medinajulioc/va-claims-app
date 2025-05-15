@@ -37,6 +37,12 @@ export const page_routes: PageRoutesType[] = [
         title: "Statement Generator",
         href: "/dashboard/statement-generator",
         icon: "FileText",
+        isNew: false
+      },
+      {
+        title: "Condition Logger",
+        href: "/dashboard/condition-logger",
+        icon: "ClipboardList",
         isNew: true
       },
       {
