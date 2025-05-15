@@ -7,12 +7,15 @@ import { CommunityCard } from "./components/CommunityCard";
 import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Paperclip, Send } from "lucide-react";
+import { Search, Plus, Paperclip, Send, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import useFileManagerStore from "@/store/useFileManagerStore";
 import { MessageLengthIndicator } from "@/components/ui/custom/prompt/message-length-indicator";
 import type { Content } from "@tiptap/react";
 import { MinimalTiptapEditor } from "@/components/ui/custom/minimal-tiptap/minimal-tiptap";
+import { useCreatePostModal } from "./components/CreatePostProvider";
+import { useCreatePost } from "./lib/mock-data-adapter";
+import { useRouter } from "next/navigation";
 
 function CommunityQuickPost() {
   const [title, setTitle] = useState("");
@@ -20,7 +23,12 @@ function CommunityQuickPost() {
   const [selectedCommunity, setSelectedCommunity] = useState("");
   const { data: communities } = useCommunities();
   const { user } = useCurrentUser();
+  const { createPost } = useCreatePost();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const maxTitleLength = 100;
+  const { openCreatePostModal } = useCreatePostModal();
+  const router = useRouter();
 
   if (!user) {
     return (
@@ -34,6 +42,42 @@ function CommunityQuickPost() {
       </Card>
     );
   }
+
+  const handleQuickPost = () => {
+    if (!title.trim() || !content || !selectedCommunity) return;
+
+    setIsSubmitting(true);
+    setActionError(null);
+
+    try {
+      // Convert TipTap content to a string if it's not already
+      const contentString = typeof content === "string" ? content : JSON.stringify(content);
+
+      const newPost = {
+        communityId: selectedCommunity,
+        title: title.trim(),
+        content: contentString,
+        imageUrl: undefined,
+        tags: []
+      };
+
+      // Use the createPost function from the hook
+      createPost(newPost);
+      
+      // Reset form
+      setTitle("");
+      setContent("");
+      setSelectedCommunity("");
+      
+      // Navigate to the community page
+      router.push(`/community/${selectedCommunity}`);
+    } catch (err) {
+      console.error("Error creating post:", err);
+      setActionError("Failed to create post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="mt-2 mb-6 w-full">
@@ -81,6 +125,12 @@ function CommunityQuickPost() {
           />
         </div>
 
+        {actionError && (
+          <div className="mb-3 text-sm text-destructive">
+            {actionError}
+          </div>
+        )}
+
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileUploadDialog
@@ -93,15 +143,27 @@ function CommunityQuickPost() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild className="text-xs font-normal">
-              <Link href="/community/new">Advanced Options</Link>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs font-normal"
+              onClick={() => openCreatePostModal(selectedCommunity || undefined)}
+            >
+              Advanced Options
             </Button>
             <Button
               type="button"
-              disabled={!title.trim() || !content || !selectedCommunity}
+              onClick={handleQuickPost}
+              disabled={isSubmitting || !title.trim() || !content || !selectedCommunity}
               className="gap-1 rounded-full">
-              <Send className="h-4 w-4" />
-              <span>Post</span>
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Send className="h-4 w-4" />
+                  <span>Post</span>
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -113,6 +175,7 @@ function CommunityQuickPost() {
 export default function CommunityPage() {
   const { data: communities, isLoading, error } = useCommunities();
   const [searchTerm, setSearchTerm] = useState("");
+  const { openCreatePostModal } = useCreatePostModal();
 
   // Filter communities based on search term
   const filteredCommunities = communities.filter(
@@ -163,11 +226,12 @@ export default function CommunityPage() {
             className="pl-9"
           />
         </div>
-        <Button className="flex-shrink-0 gap-1" asChild>
-          <Link href="/community/new">
-            <Plus className="h-4 w-4" />
-            Create Community
-          </Link>
+        <Button 
+          className="flex-shrink-0 gap-1" 
+          onClick={() => openCreatePostModal()}
+        >
+          <Plus className="h-4 w-4" />
+          Create Post
         </Button>
       </div>
 

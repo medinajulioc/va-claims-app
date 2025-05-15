@@ -9,6 +9,7 @@ import { PlusIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import PlaceholderImage from "./PlaceholderImage";
 import "./CommunityLinks.css";
+import { useCreatePostModal } from "../CreatePostProvider";
 
 interface CommunitySidebarProps {
   className?: string;
@@ -34,6 +35,7 @@ function getPlaceholderVariant(id: string): "default" | "blue" | "green" {
 export default function CommunitySidebar({ className = "" }: CommunitySidebarProps) {
   const [filter, setFilter] = useState("");
   const { data: communities, isLoading } = useCommunities();
+  const { openCreatePostModal } = useCreatePostModal();
 
   // Filter communities based on search input
   const filteredCommunities = communities.filter(
@@ -52,12 +54,10 @@ export default function CommunitySidebar({ className = "" }: CommunitySidebarPro
       <div className="border-b p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Communities</h2>
-          <Link href="/community/new" className="community-link">
-            <Button size="sm" className="h-8 gap-1 px-3">
-              <PlusIcon className="h-4 w-4" />
-              Create
-            </Button>
-          </Link>
+          <Button size="sm" className="h-8 gap-1 px-3" onClick={() => openCreatePostModal()}>
+            <PlusIcon className="h-4 w-4" />
+            Create
+          </Button>
         </div>
 
         <div className="relative">

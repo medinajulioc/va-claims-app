@@ -7,11 +7,16 @@ import CommunityHeader from "@/app/community/components/CommunityHeader";
 import PostCard from "@/app/community/components/PostCard";
 import { useRecoilValueCompat } from "@/app/community/lib/recoil-compat";
 import type { Community, Post } from "@/app/community/lib/types";
+import { useCreatePostModal } from "@/app/community/components/CreatePostProvider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, PlusCircle } from "lucide-react";
 
 export default function CommunityDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const { openCreatePostModal } = useCreatePostModal();
 
   // Use our compatibility hook with proper error handling
   let communities: Community[] = [];
@@ -79,34 +84,22 @@ export default function CommunityDetailPage({ params }: { params: { id: string }
         <h2 className="text-2xl font-bold">Posts</h2>
         <div className="flex gap-4">
           <div className="relative">
-            <input
+            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+            <Input
               type="text"
               placeholder="Search posts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border bg-white p-2 pl-8 dark:border-gray-700 dark:bg-gray-800"
+              className="pl-9"
             />
-            <span className="absolute top-2.5 left-2 text-gray-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </span>
           </div>
-          <button
-            onClick={() => router.push(`/community/${params.id}/posts/new`)}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+          <Button 
+            onClick={() => openCreatePostModal(params.id)}
+            className="gap-1"
+          >
+            <PlusCircle className="h-4 w-4" />
             New Post
-          </button>
+          </Button>
         </div>
       </div>
 

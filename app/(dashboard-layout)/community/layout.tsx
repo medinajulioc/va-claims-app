@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { RecoilRootCompat } from "@/app/community/lib/recoil-compat";
+import { CreatePostProvider } from "@/app/community/components/CreatePostProvider";
 
 interface CommunityLayoutProps {
   children: ReactNode;
@@ -29,5 +30,11 @@ export default function CommunityLayout({ children }: CommunityLayoutProps) {
   }
 
   // Once mounted (client-side), render with RecoilRootCompat
-  return <RecoilRootCompat>{children}</RecoilRootCompat>;
+  return (
+    <RecoilRootCompat>
+      <CreatePostProvider>
+        {children}
+      </CreatePostProvider>
+    </RecoilRootCompat>
+  );
 }
