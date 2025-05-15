@@ -308,7 +308,7 @@ export const conditions: Condition[] = [
   {
     id: "ptsd-symptoms",
     name: "PTSD Symptoms",
-    icon: "AlertCircle",
+    icon: "TriangleAlert",
     color: "#8E24AA",
     description: "Track post-traumatic stress disorder symptoms",
     fields: [
