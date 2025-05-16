@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo, useCallback, useMemo } from "react";
 import { Condition, ConditionField } from "@/lib/conditions";
 import { templates } from "@/lib/templates";
 import { Button } from "@/components/ui/button";
@@ -144,8 +144,31 @@ export const DynamicForm = ({
   const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
+  // Create and maintain stable refs for all select handlers
+  const fieldSelectHandlersCache = useRef<Record<string, (value: string) => void>>({});
+  const hasInitializedHandlers = useRef(false);
+
   // Find the selected condition object
   const condition = selectedCondition ? conditions.find((c) => c.id === selectedCondition) : null;
+
+  // Memoize handleChange to prevent recreation on each render
+  const handleChange = useCallback((name: string, value: any) => {
+    setFormData((prev) => {
+      // Only update if the value has actually changed
+      if (prev[name] === value) return prev;
+      return { ...prev, [name]: value };
+    });
+  }, []);
+
+  // Memoize the condition selection handler
+  const handleConditionSelect = useCallback(
+    (value: string) => {
+      if (value !== selectedCondition) {
+        onConditionChange(value || null);
+      }
+    },
+    [selectedCondition, onConditionChange]
+  );
 
   // Initialize form with default values (date field defaults to today)
   useEffect(() => {
@@ -163,6 +186,29 @@ export const DynamicForm = ({
     });
     setFormData(initialData);
   }, [condition, initialValues]);
+
+  // Initialize select handlers - but only do this once per condition change
+  useEffect(() => {
+    // Create condition handler if it doesn't exist
+    if (!fieldSelectHandlersCache.current["conditionSelector"]) {
+      fieldSelectHandlersCache.current["conditionSelector"] = (value: string) => {
+        if (value !== selectedCondition) {
+          handleConditionSelect(value);
+        }
+      };
+    }
+
+    // Only create handlers for existing fields
+    if (condition) {
+      condition.fields.forEach((field) => {
+        if (field.type === "select" && !fieldSelectHandlersCache.current[field.name]) {
+          fieldSelectHandlersCache.current[field.name] = (value: string) => {
+            handleChange(field.name, value);
+          };
+        }
+      });
+    }
+  }, [condition, handleChange, handleConditionSelect, selectedCondition]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -278,25 +324,29 @@ export const DynamicForm = ({
     }
   };
 
-  const handleChange = (name: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  // Memoize handleSubmit function
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      onSubmit(formData);
+    },
+    [formData, onSubmit]
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  // Memoize handleQuickLog function
+  const handleQuickLog = useCallback(
+    (templateType: string) => {
+      if (!condition) return;
 
-  const handleQuickLog = (templateType: string) => {
-    if (!condition) return;
-
-    const conditionName = condition.name as keyof typeof templates;
-    if (templates[conditionName] && templates[conditionName][templateType]) {
-      const templateData = templates[conditionName][templateType];
-      setFormData((prev) => ({ ...prev, ...templateData }));
-      setActiveTemplate(templateType);
-    }
-  };
+      const conditionName = condition.name as keyof typeof templates;
+      if (templates[conditionName] && templates[conditionName][templateType]) {
+        const templateData = templates[conditionName][templateType];
+        setFormData((prev) => ({ ...prev, ...templateData }));
+        setActiveTemplate(templateType);
+      }
+    },
+    [condition, templates]
+  );
 
   // Group condition fields by category
   const getFieldsByGroup = (groupName: string) => {
@@ -305,193 +355,201 @@ export const DynamicForm = ({
     return condition.fields.filter((field) => groupFieldNames.includes(field.name));
   };
 
-  const renderField = (field: ConditionField) => {
-    const fieldId = `field-${field.name}`;
-    const descriptionId = `${fieldId}-description`;
-    const isCritical = criticalVAFields.includes(field.name);
+  const renderField = useCallback(
+    (field: ConditionField) => {
+      const fieldId = `field-${field.name}`;
+      const descriptionId = `${fieldId}-description`;
+      const isCritical = criticalVAFields.includes(field.name);
 
-    switch (field.type) {
-      case "text":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Input
-              id={fieldId}
-              name={field.name}
-              value={formData[field.name] || ""}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              placeholder={field.placeholder}
-              required={field.required}
-              className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
-                isCritical ? "border-amber-300" : ""
-              }`}
-              aria-describedby={descriptionId}
-              aria-required={field.required}
-            />
-          </motion.div>
-        );
-      case "number":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Input
-              id={fieldId}
-              name={field.name}
-              type="number"
-              value={formData[field.name] || ""}
-              onChange={(e) => handleChange(field.name, parseInt(e.target.value, 10) || "")}
-              min={field.min}
-              max={field.max}
-              required={field.required}
-              className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
-                isCritical ? "border-amber-300" : ""
-              }`}
-              aria-describedby={descriptionId}
-              aria-required={field.required}
-              aria-valuemin={field.min}
-              aria-valuemax={field.max}
-            />
-          </motion.div>
-        );
-      case "date":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Input
-              id={fieldId}
-              name={field.name}
-              type="date"
-              value={formData[field.name] || ""}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              required={field.required}
-              className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
-                isCritical ? "border-amber-300" : ""
-              }`}
-              aria-describedby={descriptionId}
-              aria-required={field.required}
-            />
-          </motion.div>
-        );
-      case "time":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Input
-              id={fieldId}
-              name={field.name}
-              type="time"
-              value={formData[field.name] || ""}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              required={field.required}
-              className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
-                isCritical ? "border-amber-300" : ""
-              }`}
-              aria-describedby={descriptionId}
-              aria-required={field.required}
-            />
-          </motion.div>
-        );
-      case "select":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Select
-              value={formData[field.name] || ""}
-              onValueChange={(value) => {
-                if (value !== formData[field.name]) {
-                  handleChange(field.name, value);
-                }
-              }}
-              name={field.name}>
-              <SelectTrigger
+      switch (field.type) {
+        case "text":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Input
+                id={fieldId}
+                name={field.name}
+                value={formData[field.name] || ""}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                placeholder={field.placeholder}
+                required={field.required}
                 className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
                   isCritical ? "border-amber-300" : ""
                 }`}
-                id={fieldId}
                 aria-describedby={descriptionId}
-                aria-required={field.required}>
-                <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
-              </SelectTrigger>
-              <SelectContent>
-                {field.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
+                aria-required={field.required}
+              />
+            </motion.div>
+          );
+        case "number":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Input
+                id={fieldId}
+                name={field.name}
+                type="number"
+                value={formData[field.name] || ""}
+                onChange={(e) => handleChange(field.name, parseInt(e.target.value, 10) || "")}
+                min={field.min}
+                max={field.max}
+                required={field.required}
+                className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
+                  isCritical ? "border-amber-300" : ""
+                }`}
+                aria-describedby={descriptionId}
+                aria-required={field.required}
+                aria-valuemin={field.min}
+                aria-valuemax={field.max}
+              />
+            </motion.div>
+          );
+        case "date":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Input
+                id={fieldId}
+                name={field.name}
+                type="date"
+                value={formData[field.name] || ""}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                required={field.required}
+                className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
+                  isCritical ? "border-amber-300" : ""
+                }`}
+                aria-describedby={descriptionId}
+                aria-required={field.required}
+              />
+            </motion.div>
+          );
+        case "time":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Input
+                id={fieldId}
+                name={field.name}
+                type="time"
+                value={formData[field.name] || ""}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                required={field.required}
+                className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
+                  isCritical ? "border-amber-300" : ""
+                }`}
+                aria-describedby={descriptionId}
+                aria-required={field.required}
+              />
+            </motion.div>
+          );
+        case "select":
+          // Memoize the value to prevent unnecessary re-renders
+          const selectValue = useMemo(() => formData[field.name] || "", [formData[field.name]]);
+
+          // Ensure we have a handler for this field
+          if (!fieldSelectHandlersCache.current[field.name]) {
+            fieldSelectHandlersCache.current[field.name] = (value: string) =>
+              handleChange(field.name, value);
+          }
+
+          // Get the cached handler
+          const cachedHandler = fieldSelectHandlersCache.current[field.name];
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Select value={selectValue} onValueChange={cachedHandler} name={field.name}>
+                <SelectTrigger
+                  className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
+                    isCritical ? "border-amber-300" : ""
+                  }`}
+                  id={fieldId}
+                  aria-describedby={descriptionId}
+                  aria-required={field.required}>
+                  <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  {field.options?.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </motion.div>
+          );
+        case "textarea":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
+              <Textarea
+                id={fieldId}
+                name={field.name}
+                value={formData[field.name] || ""}
+                onChange={(e) => handleChange(field.name, e.target.value)}
+                placeholder={field.placeholder}
+                required={field.required}
+                className={`focus:ring-primary/20 min-h-[100px] w-full transition-all duration-200 focus:ring-2 ${
+                  isCritical ? "border-amber-300" : ""
+                }`}
+                aria-describedby={descriptionId}
+                aria-required={field.required}
+              />
+            </motion.div>
+          );
+        case "checkbox":
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-wrap gap-2">
+              {field.options?.map((option) => {
+                const isChecked = Array.isArray(formData[field.name])
+                  ? formData[field.name]?.includes(option)
+                  : false;
+                return (
+                  <Button
+                    key={option}
+                    type="button"
+                    variant={isChecked ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const currentValues = Array.isArray(formData[field.name])
+                        ? [...formData[field.name]]
+                        : [];
+                      const newValues = isChecked
+                        ? currentValues.filter((v) => v !== option)
+                        : [...currentValues, option];
+                      handleChange(field.name, newValues);
+                    }}
+                    className={`transition-all duration-200 ${
+                      isChecked ? "" : "hover:bg-primary/5"
+                    } ${isCritical ? (isChecked ? "" : "border-amber-300") : ""}`}>
                     {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </motion.div>
-        );
-      case "textarea":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}>
-            <Textarea
-              id={fieldId}
-              name={field.name}
-              value={formData[field.name] || ""}
-              onChange={(e) => handleChange(field.name, e.target.value)}
-              placeholder={field.placeholder}
-              required={field.required}
-              className={`focus:ring-primary/20 min-h-[100px] w-full transition-all duration-200 focus:ring-2 ${
-                isCritical ? "border-amber-300" : ""
-              }`}
-              aria-describedby={descriptionId}
-              aria-required={field.required}
-            />
-          </motion.div>
-        );
-      case "checkbox":
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-wrap gap-2">
-            {field.options?.map((option) => {
-              const isChecked = Array.isArray(formData[field.name])
-                ? formData[field.name]?.includes(option)
-                : false;
-              return (
-                <Button
-                  key={option}
-                  type="button"
-                  variant={isChecked ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    const currentValues = Array.isArray(formData[field.name])
-                      ? [...formData[field.name]]
-                      : [];
-                    const newValues = isChecked
-                      ? currentValues.filter((v) => v !== option)
-                      : [...currentValues, option];
-                    handleChange(field.name, newValues);
-                  }}
-                  className={`transition-all duration-200 ${
-                    isChecked ? "" : "hover:bg-primary/5"
-                  } ${isCritical ? (isChecked ? "" : "border-amber-300") : ""}`}>
-                  {option}
-                </Button>
-              );
-            })}
-          </motion.div>
-        );
-      default:
-        return null;
-    }
-  };
+                  </Button>
+                );
+              })}
+            </motion.div>
+          );
+        default:
+          return null;
+      }
+    },
+    [formData, handleChange]
+  );
 
   const renderFieldGroup = (groupName: string, title: string, icon: React.ReactNode) => {
     if (!condition) return null;
@@ -564,24 +622,30 @@ export const DynamicForm = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Select
-              value={selectedCondition || ""}
-              onValueChange={(value) => {
-                if (value !== selectedCondition) {
-                  onConditionChange(value || null);
-                }
-              }}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a condition to log" />
-              </SelectTrigger>
-              <SelectContent>
-                {conditions.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {(() => {
+              if (!fieldSelectHandlersCache.current["conditionSelector"]) {
+                fieldSelectHandlersCache.current["conditionSelector"] = handleConditionSelect;
+              }
+              const cachedConditionHandler = fieldSelectHandlersCache.current["conditionSelector"];
+
+              return (
+                <Select
+                  value={selectedCondition || ""}
+                  onValueChange={cachedConditionHandler}
+                  name="conditionSelector">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a condition to log" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {conditions.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            })()}
           </CardContent>
         </Card>
       )}

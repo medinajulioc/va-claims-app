@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { conditions } from "@/lib/conditions";
 import { mockLogs } from "@/lib/mock/mockLogs";
@@ -66,6 +66,11 @@ export default function ConditionLoggerPage() {
   const [activeTab, setActiveTab] = useState(viewParam);
   const [timeframe, setTimeframe] = useState<"week" | "month" | "90days" | "year">("month");
 
+  // Stable callback refs
+  const stableCallbacksRef = useRef({
+    initialized: false
+  });
+
   // Load logs from localStorage on mount
   useEffect(() => {
     const storedLogs = localStorage.getItem("conditionLogs");
@@ -111,116 +116,225 @@ export default function ConditionLoggerPage() {
     }
   }, [conditionParam, viewParam, logIdParam, logs]);
 
-  // Update URL when tab changes
-  const updateUrl = (view: string, condition: string | null = null) => {
-    const params = new URLSearchParams();
-    params.set("view", view);
-    if (condition) {
-      params.set("condition", condition);
+  // Initialize stable callbacks once
+  useEffect(() => {
+    if (!stableCallbacksRef.current.initialized) {
+      stableCallbacksRef.current.initialized = true;
     }
-    router.push(`/dashboard/condition-logger?${params.toString()}`);
-  };
+  }, []);
 
-  // Handle tab change
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    updateUrl(value, selectedCondition);
-  };
+  // Update URL when tab changes - memoize this function
+  const updateUrl = useCallback(
+    (view: string, condition: string | null = null) => {
+      const params = new URLSearchParams();
+      params.set("view", view);
+      if (condition) {
+        params.set("condition", condition);
+      }
+      router.push(`/dashboard/condition-logger?${params.toString()}`);
+    },
+    [router]
+  );
 
-  // Handle condition selection
-  const handleConditionSelect = (conditionId: string) => {
+  // Memoize handlers to prevent re-renders
+  const handleConditionChange = useCallback(
+    (value: string | null) => {
+      if (value !== selectedCondition) {
+        setSelectedCondition(value);
+      }
+    },
+    [selectedCondition]
+  );
+
+  // Handle tab change - memoize this function
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value);
+      updateUrl(value, selectedCondition);
+    },
+    [updateUrl, selectedCondition]
+  );
+
+  // Handle condition selection - memoize this function
+  const handleConditionSelect = useCallback((conditionId: string) => {
     setSelectedCondition(conditionId);
     setIsLoggingOpen(true);
-  };
+  }, []);
 
-  // Handle log submission
-  const handleLogSubmit = (data: any) => {
-    if (isEditingLog && selectedLog) {
-      // Update existing log
-      const updatedLogs = logs.map((log) =>
-        log.id === selectedLog.id ? { ...selectedLog, data } : log
-      );
-      setLogs(updatedLogs);
-      localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
-      toast.success("Log updated successfully");
-    } else {
-      // Create new log
-      const newLog = {
-        id: uuidv4(),
-        condition: selectedCondition,
-        data,
-        timestamp: new Date().toISOString()
-      };
-      const updatedLogs = [...logs, newLog];
-      setLogs(updatedLogs);
-      localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
-      toast.success("Symptom logged successfully");
-    }
+  // Memoize handleLogSubmit function with comprehensive dependency array
+  const handleLogSubmit = useCallback(
+    (data: any) => {
+      if (isEditingLog && selectedLog) {
+        // Update existing log
+        setLogs((prevLogs) => {
+          const updatedLogs = prevLogs.map((log) =>
+            log.id === selectedLog.id ? { ...selectedLog, data } : log
+          );
+          localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
+          return updatedLogs;
+        });
+        toast.success("Log updated successfully");
+      } else {
+        // Create new log
+        const newLog = {
+          id: uuidv4(),
+          condition: selectedCondition,
+          data,
+          timestamp: new Date().toISOString()
+        };
+        setLogs((prevLogs) => {
+          const updatedLogs = [...prevLogs, newLog];
+          localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
+          return updatedLogs;
+        });
+        toast.success("Symptom logged successfully");
+      }
 
-    setIsLoggingOpen(false);
-    setIsEditingLog(false);
-    setSelectedLog(null);
-  };
+      setIsLoggingOpen(false);
+      setIsEditingLog(false);
+      setSelectedLog(null);
+    },
+    [isEditingLog, selectedLog, selectedCondition]
+  );
 
-  // Handle log editing
-  const handleEditLog = (log: any) => {
+  // Handle log editing - memoize this function
+  const handleEditLog = useCallback((log: any) => {
     setSelectedLog(log);
     setSelectedCondition(log.condition);
     setIsEditingLog(true);
     setIsLoggingOpen(true);
-  };
+  }, []);
 
-  // Handle log deletion
-  const handleDeleteLog = (log: any) => {
+  // Handle log deletion - memoize this function
+  const handleDeleteLog = useCallback((log: any) => {
     setLogToDelete(log);
     setIsDeleteDialogOpen(true);
-  };
+  }, []);
 
-  // Confirm log deletion
-  const confirmDeleteLog = () => {
+  // Confirm log deletion - memoize this function
+  const confirmDeleteLog = useCallback(() => {
     if (!logToDelete) return;
 
-    const updatedLogs = logs.filter((log) => log.id !== logToDelete.id);
-    setLogs(updatedLogs);
-    localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
+    setLogs((prevLogs) => {
+      const updatedLogs = prevLogs.filter((log) => log.id !== logToDelete.id);
+      localStorage.setItem("conditionLogs", JSON.stringify(updatedLogs));
+      return updatedLogs;
+    });
 
     setIsDeleteDialogOpen(false);
     setLogToDelete(null);
     toast.success("Log deleted successfully");
-  };
+  }, [logToDelete]);
 
-  // Export logs as JSON
-  const handleExportLogs = (logsToExport = logs) => {
-    const dataStr = JSON.stringify(logsToExport, null, 2);
-    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
+  // Export logs as JSON - memoize this function
+  const handleExportLogs = useCallback(
+    (logsToExport = logs) => {
+      const dataStr = JSON.stringify(logsToExport, null, 2);
+      const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
 
-    const exportFileDefaultName = `condition-logs-${new Date().toISOString().split("T")[0]}.json`;
+      const exportFileDefaultName = `condition-logs-${new Date().toISOString().split("T")[0]}.json`;
 
-    const linkElement = document.createElement("a");
-    linkElement.setAttribute("href", dataUri);
-    linkElement.setAttribute("download", exportFileDefaultName);
-    linkElement.click();
-  };
+      const linkElement = document.createElement("a");
+      linkElement.setAttribute("href", dataUri);
+      linkElement.setAttribute("download", exportFileDefaultName);
+      linkElement.click();
+    },
+    [logs]
+  );
 
-  // Filter conditions by search term
-  const filteredConditions = conditions.filter(
-    (condition) =>
-      condition.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      condition.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Memoize derived data to avoid recalculation on every render
+  const filteredConditions = useMemo(
+    () =>
+      conditions.filter(
+        (condition) =>
+          condition.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          condition.description.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
   );
 
   // Get condition logs
-  const conditionLogs = selectedCondition
-    ? logs.filter((log) => log.condition === selectedCondition)
-    : logs;
+  const conditionLogs = useMemo(
+    () => (selectedCondition ? logs.filter((log) => log.condition === selectedCondition) : logs),
+    [selectedCondition, logs]
+  );
 
   // Find selected condition object
-  const selectedConditionObj = conditions.find((c) => c.id === selectedCondition);
+  const selectedConditionObj = useMemo(
+    () => conditions.find((c) => c.id === selectedCondition),
+    [selectedCondition]
+  );
 
   // Get condition field templates
-  const conditionTemplates = selectedCondition
-    ? templates[selectedCondition as keyof typeof templates] || []
-    : [];
+  const conditionTemplates = useMemo(
+    () => (selectedCondition ? templates[selectedCondition as keyof typeof templates] || {} : {}),
+    [selectedCondition]
+  );
+
+  // Memoize handler functions to ensure they're stable
+  const memoizedHandleConditionChange = useCallback(
+    (value: string | null) => {
+      if (value !== selectedCondition) {
+        handleConditionChange(value);
+      }
+    },
+    [handleConditionChange, selectedCondition]
+  );
+
+  const memoizedHandleLogSubmit = useCallback(
+    (data: any) => {
+      handleLogSubmit(data);
+    },
+    [handleLogSubmit]
+  );
+
+  // Memoize the dialog content to prevent recreation on each render
+  const dialogContent = useMemo(() => {
+    return (
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle>
+              {isEditingLog
+                ? "Edit Log"
+                : selectedCondition
+                  ? `Log ${conditions.find((c) => c.id === selectedCondition)?.name} Symptoms`
+                  : "Log Symptoms"}
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setIsLoggingOpen(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <DialogDescription>
+            {isEditingLog
+              ? "Update your symptom information below"
+              : "Record your symptoms to build evidence for your VA claim"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <DynamicForm
+          conditions={conditions}
+          selectedCondition={selectedCondition}
+          onConditionChange={memoizedHandleConditionChange}
+          onSubmit={memoizedHandleLogSubmit}
+          initialValues={selectedLog?.data}
+          templates={conditionTemplates}
+        />
+      </DialogContent>
+    );
+  }, [
+    selectedCondition,
+    isEditingLog,
+    selectedLog?.data,
+    conditionTemplates,
+    conditions,
+    memoizedHandleConditionChange,
+    memoizedHandleLogSubmit
+  ]);
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
@@ -348,40 +462,7 @@ export default function ConditionLoggerPage() {
 
       {/* Logging Dialog */}
       <Dialog open={isLoggingOpen} onOpenChange={setIsLoggingOpen}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle>
-                {isEditingLog
-                  ? "Edit Log"
-                  : selectedCondition
-                    ? `Log ${conditions.find((c) => c.id === selectedCondition)?.name} Symptoms`
-                    : "Log Symptoms"}
-              </DialogTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setIsLoggingOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <DialogDescription>
-              {isEditingLog
-                ? "Update your symptom information below"
-                : "Record your symptoms to build evidence for your VA claim"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <DynamicForm
-            conditions={conditions}
-            selectedCondition={selectedCondition}
-            onConditionChange={setSelectedCondition}
-            onSubmit={handleLogSubmit}
-            initialValues={selectedLog?.data}
-            templates={conditionTemplates}
-          />
-        </DialogContent>
+        {dialogContent}
       </Dialog>
 
       {/* Delete Confirmation Dialog */}

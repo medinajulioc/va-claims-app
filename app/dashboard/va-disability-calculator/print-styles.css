@@ -1,0 +1,176 @@
+@media print {
+  /* General page setup */
+  @page {
+    margin: 1cm;
+  }
+
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Hide non-essential elements */
+  header,
+  footer,
+  nav,
+  aside,
+  button,
+  .print:hidden {
+    display: none !important;
+  }
+
+  /* Container adjustments */
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Card styling for print */
+  .card {
+    border: 1px solid #ddd;
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 1cm;
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: 18pt;
+    margin-top: 0;
+    margin-bottom: 12pt;
+  }
+
+  h2 {
+    font-size: 16pt;
+    margin-top: 12pt;
+    margin-bottom: 8pt;
+  }
+
+  h3 {
+    font-size: 14pt;
+    margin-top: 10pt;
+    margin-bottom: 6pt;
+  }
+
+  p {
+    margin-bottom: 6pt;
+  }
+
+  /* Links */
+  a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    font-style: italic;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12pt;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 6pt;
+    text-align: left;
+  }
+
+  /* Form elements */
+  input,
+  select,
+  textarea {
+    border: 1px solid #ddd;
+    padding: 4pt;
+  }
+
+  /* Specific calculator elements */
+  .calculation-summary {
+    border: 2px solid #000;
+    padding: 12pt;
+    margin-bottom: 12pt;
+  }
+
+  .rating-circle {
+    border: 4pt solid #000;
+    display: inline-block;
+    width: 60pt;
+    height: 60pt;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 60pt;
+    font-size: 20pt;
+    font-weight: bold;
+  }
+
+  .progress-bar {
+    height: 12pt;
+    background-color: #eee;
+    margin-bottom: 4pt;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background-color: #000;
+  }
+
+  /* Footer with timestamp */
+  .print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 9pt;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    padding-top: 4pt;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Avoid page breaks inside these elements */
+  .disability-item,
+  .calculation-result,
+  .faq-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Print header with VA logo and title */
+  .print-header {
+    display: flex !important;
+    align-items: center;
+    border-bottom: 2pt solid #000;
+    margin-bottom: 12pt;
+    padding-bottom: 8pt;
+  }
+
+  .print-header-title {
+    font-size: 16pt;
+    font-weight: bold;
+  }
+
+  .print-date {
+    font-style: italic;
+    margin-bottom: 12pt;
+  }
+}

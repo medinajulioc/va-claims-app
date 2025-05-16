@@ -1,17 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { Calculator } from "lucide-react";
+import { Calculator, Copy, Save, Printer, HelpCircle, PieChart } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 import DisabilityInput from "./DisabilityInput";
 import DependentsInput from "./DependentsInput";
 import SMCInput from "./SMCInput";
 import CalculationSummary from "./CalculationSummary";
 import Button from "./Button";
 import FAQAccordion from "./FAQAccordion";
+import VisualRatingBreakdown from "./VisualRatingBreakdown";
 
 // Official 2025 VA Base Rates (subset for brevity)
 const baseRates: { [key: number]: { [key: string]: number } } = {
@@ -172,33 +176,54 @@ const smcRates: { [key: string]: number } = {
 };
 
 type FormData = {
-  disabilities: { percentage: number; area: string }[];
+  disabilities: { percentage: number; area: string; description: string }[];
   spouse: string;
+  spouseAid: boolean;
   childrenUnder18: number;
   childrenOver18: number;
   dependentParents: string;
   smcLevel: string;
+  scenario: string;
 };
 
 export default function VADisabilityCalculator() {
+  const { toast } = useToast();
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const [savedCalculations, setSavedCalculations] = useState<
+    {
+      name: string;
+      data: FormData;
+      result: { combinedRating: number; compensation: number };
+    }[]
+  >([]);
+
   const form = useForm<FormData>({
     defaultValues: {
-      disabilities: [{ percentage: 0, area: "Other" }],
+      disabilities: [{ percentage: 0, area: "Other", description: "" }],
       spouse: "No",
+      spouseAid: false,
       childrenUnder18: 0,
       childrenOver18: 0,
       dependentParents: "0",
-      smcLevel: "none"
+      smcLevel: "none",
+      scenario: "Current"
     }
   });
 
-  const [result, setResult] = React.useState<{
+  const [result, setResult] = useState<{
     combinedRating: number;
     compensation: number;
+    breakdown: { baseRate: number; dependentsAmount: number; smcAmount: number };
   } | null>(null);
+
+  const watchSpouse = form.watch("spouse");
+  const watchDisabilities = form.watch("disabilities");
 
   // VA "Whole Person Theory" Formula
   const calculateCombinedRating = (percentages: number[]): number => {
+    if (percentages.length === 0 || percentages.every((p) => p === 0)) return 0;
+
     const sorted = [...percentages].sort((a, b) => b - a);
     let combined = 0;
     let remainingEfficiency = 100;
@@ -213,8 +238,18 @@ export default function VADisabilityCalculator() {
     return Math.min(combinedRating, 100); // Cap at 100%
   };
 
-  const calculateCompensation = (data: FormData, combinedRating: number): number => {
-    if (combinedRating === 0) return 0;
+  const calculateCompensation = (
+    data: FormData,
+    combinedRating: number
+  ): {
+    total: number;
+    breakdown: { baseRate: number; dependentsAmount: number; smcAmount: number };
+  } => {
+    if (combinedRating === 0)
+      return {
+        total: 0,
+        breakdown: { baseRate: 0, dependentsAmount: 0, smcAmount: 0 }
+      };
 
     // Find the closest rating tier (10, 20, 30, etc.)
     const ratingTiers = Object.keys(baseRates)
@@ -242,125 +277,409 @@ export default function VADisabilityCalculator() {
       baseKey = "with_one_child";
     }
 
-    let compensation = rates[baseKey] || rates["alone"];
+    const baseRate = rates[baseKey] || rates["alone"];
+    let dependentsAmount = 0;
 
     // Additional dependents
     const totalChildren =
       parseInt(data.childrenUnder18.toString()) + parseInt(data.childrenOver18.toString());
     if (totalChildren > 1) {
-      compensation += (totalChildren - 1) * addRates["additional_child"];
+      dependentsAmount += (totalChildren - 1) * addRates["additional_child"];
     }
 
-    // Add SMC if applicable
-    compensation += smcRates[data.smcLevel];
+    // Add spouse aid if applicable
+    if (data.spouse === "Yes" && data.spouseAid) {
+      dependentsAmount += addRates["spouse_aid"] || 0;
+    }
 
-    return compensation;
+    // Add SMC
+    const smcAmount = smcRates[data.smcLevel];
+
+    return {
+      total: baseRate + dependentsAmount + smcAmount,
+      breakdown: { baseRate, dependentsAmount, smcAmount }
+    };
   };
 
-  const onSubmit = (data: FormData) => {
-    const percentages = data.disabilities.map((d) =>
-      Math.min(parseInt(d.percentage.toString()), 100)
-    );
-    const combinedRating = calculateCombinedRating(percentages);
-    const compensation = calculateCompensation(data, combinedRating);
-    setResult({ combinedRating, compensation });
+  const onSubmit = async (data: FormData) => {
+    try {
+      setIsCalculating(true);
+
+      // Simulate calculation delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
+      const percentages = data.disabilities.map((d) =>
+        Math.min(parseInt(d.percentage.toString()), 100)
+      );
+
+      const combinedRating = calculateCombinedRating(percentages);
+      const { total: compensation, breakdown } = calculateCompensation(data, combinedRating);
+
+      setResult({ combinedRating, compensation, breakdown });
+
+      toast({
+        title: "Calculation Complete",
+        description: `Your combined rating is ${combinedRating}% with monthly compensation of $${compensation.toFixed(2)}`
+      });
+    } catch (error) {
+      toast({
+        title: "Calculation Error",
+        description: "There was a problem calculating your disability benefits. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
   const handleReset = () => {
     form.reset({
-      disabilities: [{ percentage: 0, area: "Other" }],
+      disabilities: [{ percentage: 0, area: "Other", description: "" }],
       spouse: "No",
+      spouseAid: false,
       childrenUnder18: 0,
       childrenOver18: 0,
       dependentParents: "0",
-      smcLevel: "none"
+      smcLevel: "none",
+      scenario: "Current"
     });
     setResult(null);
+    setShowAdvancedOptions(false);
+  };
+
+  const handleCopyResults = () => {
+    if (!result) return;
+
+    const resultText = `
+VA Disability Calculation Results:
+Combined Rating: ${result.combinedRating}%
+Monthly Compensation: $${result.compensation.toFixed(2)}
+
+Breakdown:
+- Base Rate: $${result.breakdown.baseRate.toFixed(2)}
+- Dependents: $${result.breakdown.dependentsAmount.toFixed(2)}
+- SMC: $${result.breakdown.smcAmount.toFixed(2)}
+    `.trim();
+
+    navigator.clipboard.writeText(resultText);
+    toast({
+      title: "Results Copied",
+      description: "Calculation results have been copied to clipboard"
+    });
+  };
+
+  const handleSaveCalculation = () => {
+    if (!result) return;
+
+    const name = form.getValues("scenario") || `Calculation ${savedCalculations.length + 1}`;
+
+    setSavedCalculations([
+      ...savedCalculations,
+      {
+        name,
+        data: form.getValues(),
+        result: {
+          combinedRating: result.combinedRating,
+          compensation: result.compensation
+        }
+      }
+    ]);
+
+    toast({
+      title: "Calculation Saved",
+      description: `"${name}" has been saved for future reference`
+    });
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const loadSavedCalculation = (index: number) => {
+    const saved = savedCalculations[index];
+    if (saved) {
+      form.reset(saved.data);
+      setResult({
+        combinedRating: saved.result.combinedRating,
+        compensation: saved.result.compensation,
+        breakdown: { baseRate: 0, dependentsAmount: 0, smcAmount: 0 } // Placeholder
+      });
+    }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 print:space-y-2">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight lg:text-2xl">VA Disability Calculator</h1>
+        <h1 className="text-xl font-bold tracking-tight lg:text-3xl">VA Disability Calculator</h1>
         <div className="flex items-center space-x-2">
-          <Calculator className="text-muted-foreground size-5" />
+          <Calculator className="text-primary size-5" />
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}>
-            <div className="mb-6">
-              <h2 className="text-lg font-medium">2025 VA Disability Compensation Calculator</h2>
-              <p className="text-muted-foreground">
-                Calculate your combined VA disability rating and monthly compensation based on the
-                official 2025 rates.
-              </p>
-            </div>
+      <Tabs defaultValue="calculator" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="calculator">Calculator</TabsTrigger>
+          <TabsTrigger value="saved">Saved Calculations</TabsTrigger>
+          <TabsTrigger value="info">Information</TabsTrigger>
+        </TabsList>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <DisabilityInput control={form.control} />
-                <DependentsInput control={form.control} />
-                <SMCInput control={form.control} />
-                <div className="flex w-full gap-4">
-                  <Button type="submit" className="flex-1">
-                    Calculate
-                  </Button>
-                  <Button
-                    type="button"
-                    className="bg-secondary hover:bg-secondary/90 flex-1"
-                    onClick={handleReset}>
-                    Reset
-                  </Button>
+        <TabsContent value="calculator" className="mt-4 space-y-4">
+          <Card className="print:shadow-none">
+            <CardContent className="p-6">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}>
+                <div className="mb-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-medium">
+                      2025 VA Disability Compensation Calculator
+                    </h2>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            className="bg-secondary hover:bg-secondary/90 h-8 w-8 p-0"
+                            onClick={() =>
+                              window.open(
+                                "https://www.va.gov/disability/compensation-rates/",
+                                "_blank"
+                              )
+                            }
+                            aria-label="Official VA rates information">
+                            <HelpCircle className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>View official VA rates</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Calculate your combined VA disability rating and monthly compensation based on
+                    the official 2025 rates.
+                  </p>
                 </div>
-              </form>
-            </Form>
 
-            {result && (
-              <CalculationSummary
-                combinedRating={result.combinedRating}
-                compensation={result.compensation}
-              />
-            )}
-          </motion.div>
-        </CardContent>
-      </Card>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="rounded-md border p-4">
+                      <DisabilityInput control={form.control} />
+                    </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="mb-4 text-lg font-medium">About VA Disability Calculations</h3>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium">Combined Rating</h4>
-              <p className="text-muted-foreground">
-                VA uses the "whole person theory" to calculate combined ratings. This is not a
-                simple addition of percentages. Each disability affects your remaining capacity.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium">Compensation Rates</h4>
-              <p className="text-muted-foreground">
-                Monthly payments are based on your combined rating percentage, number of dependents,
-                and any Special Monthly Compensation entitlements.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium">Disclaimer</h4>
-              <p className="text-muted-foreground text-sm">
-                This calculator provides estimates based on the 2025 VA compensation rates. Always
-                verify official amounts with the VA for your specific situation.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                    <div className="rounded-md border p-4">
+                      <DependentsInput
+                        control={form.control}
+                        showSpouseAid={watchSpouse === "Yes"}
+                      />
+                    </div>
 
-      {/* FAQ Accordion Section */}
-      <FAQAccordion />
+                    <div className="mb-2 flex items-center justify-between">
+                      <h3 className="text-lg font-medium">Advanced Options</h3>
+                      <Button
+                        type="button"
+                        onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                        className="bg-secondary hover:bg-secondary/90 h-8">
+                        {showAdvancedOptions ? "Hide" : "Show"}
+                      </Button>
+                    </div>
+
+                    <AnimatePresence>
+                      {showAdvancedOptions && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="overflow-hidden rounded-md border p-4">
+                          <div className="space-y-4">
+                            <SMCInput control={form.control} />
+                            <div>
+                              <Input
+                                label="Scenario Name (optional)"
+                                type="text"
+                                name="scenario"
+                                control={form.control}
+                                placeholder="e.g., Current Rating, After Appeal, etc."
+                                helpText="Name this calculation to save it for comparison"
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="flex w-full flex-col gap-4 sm:flex-row">
+                      <Button type="submit" className="flex-1" disabled={isCalculating}>
+                        {isCalculating ? "Calculating..." : "Calculate"}
+                      </Button>
+                      <Button
+                        type="button"
+                        className="bg-secondary hover:bg-secondary/90 flex-1"
+                        onClick={handleReset}>
+                        Reset
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+
+                <AnimatePresence>
+                  {result && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5 }}
+                      className="mt-8">
+                      <CalculationSummary
+                        combinedRating={result.combinedRating}
+                        compensation={result.compensation}
+                        breakdown={result.breakdown}
+                      />
+
+                      {watchDisabilities.length > 1 && result.combinedRating > 0 && (
+                        <div className="mt-6">
+                          <VisualRatingBreakdown
+                            disabilities={watchDisabilities}
+                            combinedRating={result.combinedRating}
+                          />
+                        </div>
+                      )}
+
+                      <div className="mt-6 flex flex-wrap gap-2 print:hidden">
+                        <Button
+                          type="button"
+                          className="bg-secondary hover:bg-secondary/90"
+                          onClick={handleCopyResults}>
+                          <Copy className="mr-2 size-4" />
+                          Copy Results
+                        </Button>
+                        <Button
+                          type="button"
+                          className="bg-secondary hover:bg-secondary/90"
+                          onClick={handleSaveCalculation}>
+                          <Save className="mr-2 size-4" />
+                          Save Calculation
+                        </Button>
+                        <Button
+                          type="button"
+                          className="bg-secondary hover:bg-secondary/90"
+                          onClick={handlePrint}>
+                          <Printer className="mr-2 size-4" />
+                          Print
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="saved" className="mt-4">
+          <Card>
+            <CardContent className="p-6">
+              {savedCalculations.length > 0 ? (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Saved Calculations</h3>
+                  <div className="divide-y">
+                    {savedCalculations.map((calc, index) => (
+                      <div key={index} className="flex items-center justify-between py-4">
+                        <div>
+                          <p className="font-medium">{calc.name}</p>
+                          <p className="text-muted-foreground text-sm">
+                            Rating: {calc.result.combinedRating}% | Compensation: $
+                            {calc.result.compensation.toFixed(2)}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => loadSavedCalculation(index)}
+                          className="bg-secondary hover:bg-secondary/90">
+                          Load
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8 text-center">
+                  <p className="text-muted-foreground">No saved calculations yet.</p>
+                  <p className="mt-2 text-sm">
+                    Use the "Save Calculation" button after calculating to save your results.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="info" className="mt-4 space-y-4">
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="mb-4 text-lg font-medium">About VA Disability Calculations</h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium">Combined Rating</h4>
+                  <p className="text-muted-foreground">
+                    VA uses the "whole person theory" to calculate combined ratings. This is not a
+                    simple addition of percentages. Each disability affects your remaining capacity.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium">Compensation Rates</h4>
+                  <p className="text-muted-foreground">
+                    Monthly payments are based on your combined rating percentage, number of
+                    dependents, and any Special Monthly Compensation entitlements.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-medium">Official Resources</h4>
+                  <ul className="text-muted-foreground list-disc pl-5">
+                    <li>
+                      <a
+                        href="https://www.va.gov/disability/compensation-rates/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline">
+                        Official VA Compensation Rates
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.va.gov/disability/about-disability-ratings/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline">
+                        About VA Disability Ratings
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.va.gov/disability/eligibility/special-claims/special-monthly-compensation/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline">
+                        Special Monthly Compensation
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium">Disclaimer</h4>
+                  <p className="text-muted-foreground text-sm">
+                    This calculator provides estimates based on the 2025 VA compensation rates.
+                    Always verify official amounts with the VA for your specific situation.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* FAQ Accordion Section */}
+          <FAQAccordion />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

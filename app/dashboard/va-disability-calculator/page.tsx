@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import VADisabilityCalculator from "./components/VADisabilityCalculator";
 import { generateVACalculatorStructuredData } from "./structured-data";
+import "./print-styles.css";
 
 export const metadata: Metadata = {
   title: "VA Disability Calculator | 2025 Compensation Rates",
