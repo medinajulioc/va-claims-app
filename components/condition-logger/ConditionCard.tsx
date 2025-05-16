@@ -19,6 +19,7 @@ import {
   Calendar,
   Activity,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   ArrowRight,
   FileText
@@ -165,68 +166,68 @@ export function ConditionCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={(e) => {
-        if (!totalLogs) {
-          e.stopPropagation();
-          onLogClick();
-        }
+        // Make the entire card trigger the log action
+        e.stopPropagation();
+        onLogClick();
       }}>
-      {/* Background pattern for visual interest */}
+      {/* Simplified gradient background with no dots pattern */}
       <div
-        className="from-primary/5 absolute inset-0 z-0 bg-gradient-to-br to-transparent opacity-50"
+        className={cn(
+          "absolute inset-0 z-0 opacity-10 transition-opacity duration-300",
+          isHovered && "opacity-20"
+        )}
         style={{
-          backgroundImage: `radial-gradient(circle at 25px 25px, ${condition.color || "#888"} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${condition.color || "#888"} 1%, transparent 0%)`,
-          backgroundSize: "100px 100px"
+          background: `linear-gradient(135deg, ${condition.color || "#888"} 0%, transparent 80%)`
         }}
       />
 
       {/* Card content */}
       <div className="relative z-10">
-        <CardHeader className="pb-2">
+        <CardHeader className="pt-3 pb-1">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-semibold">{condition.name}</CardTitle>
-              <CardDescription>{condition.description}</CardDescription>
+            <div className="flex-1 pr-3">
+              <CardTitle className="line-clamp-1 text-lg font-semibold">{condition.name}</CardTitle>
+              <CardDescription className="mt-0.5 line-clamp-2 text-xs">
+                {condition.description}
+              </CardDescription>
             </div>
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-full"
-              style={{ backgroundColor: `${condition.color}20` }}>
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: `${condition.color}15`, color: condition.color }}>
               {condition.icon ? (
-                <Icon
-                  name={condition.icon}
-                  className="h-6 w-6"
-                  style={{ color: condition.color }}
-                />
+                <Icon name={condition.icon} className="h-5 w-5" />
               ) : (
-                <Activity className="h-6 w-6" style={{ color: condition.color }} />
+                <Activity className="h-5 w-5" />
               )}
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="pb-2">
+        <CardContent className="pt-0 pb-1">
           {totalLogs > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Stats grid */}
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-card rounded-lg border p-2">
+                <div className="bg-muted/30 rounded-md p-1.5">
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground text-xs">Total Logs</div>
-                    <FileText className="text-muted-foreground h-3 w-3" />
+                    <FileText className="text-muted-foreground ml-1 h-3 w-3 flex-shrink-0" />
                   </div>
-                  <div className="mt-1 text-xl font-semibold">{totalLogs}</div>
+                  <div className="mt-0.5 text-lg font-semibold">{totalLogs}</div>
                 </div>
 
-                <div className="bg-card rounded-lg border p-2">
+                <div className="bg-muted/30 rounded-md p-1.5">
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground text-xs">Last Log</div>
-                    <Calendar className="text-muted-foreground h-3 w-3" />
+                    <Calendar className="text-muted-foreground ml-1 h-3 w-3 flex-shrink-0" />
                   </div>
-                  <div className="mt-1 flex items-center">
-                    <span className="text-sm font-medium">
+                  <div className="mt-0.5 flex items-center">
+                    <span className="truncate text-xs font-medium">
                       {mostRecentLog ? formatDate(mostRecentLog.timestamp) : "N/A"}
                     </span>
                     {daysSinceLastLog !== null && (
-                      <span className={`ml-1 text-xs ${getDaysSinceColor(daysSinceLastLog)}`}>
+                      <span
+                        className={`ml-1 text-xs ${getDaysSinceColor(daysSinceLastLog)} whitespace-nowrap`}>
                         ({daysSinceLastLog}d ago)
                       </span>
                     )}
@@ -236,36 +237,36 @@ export function ConditionCard({
 
               {/* VA Rating and Severity */}
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-card rounded-lg border p-2">
+                <div className="bg-muted/30 rounded-md p-1.5">
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground text-xs">Avg Severity</div>
-                    <AlertCircle className="text-muted-foreground h-3 w-3" />
+                    <AlertCircle className="text-muted-foreground ml-1 h-3 w-3 flex-shrink-0" />
                   </div>
-                  <div className={`mt-1 text-xl font-semibold ${getSeverityColor(avgSeverity)}`}>
+                  <div className={`mt-0.5 text-lg font-semibold ${getSeverityColor(avgSeverity)}`}>
                     {avgSeverity}
                   </div>
                 </div>
 
-                <div className="bg-card rounded-lg border p-2">
+                <div className="bg-muted/30 rounded-md p-1.5">
                   <div className="flex items-center justify-between">
                     <div className="text-muted-foreground text-xs">VA Rating</div>
-                    <CheckCircle2 className="text-muted-foreground h-3 w-3" />
+                    <CheckCircle2 className="text-muted-foreground ml-1 h-3 w-3 flex-shrink-0" />
                   </div>
-                  <div className={`mt-1 text-xl font-semibold ${getVARatingColor(vaRating)}`}>
+                  <div className={`mt-0.5 text-lg font-semibold ${getVARatingColor(vaRating)}`}>
                     {vaRating}
                   </div>
                 </div>
               </div>
 
-              {/* Prostrating stats */}
-              <div className="bg-card rounded-lg border p-2">
+              {/* Prostrating stats - simplified */}
+              <div className="bg-muted/30 rounded-md p-1.5">
                 <div className="flex items-center justify-between">
                   <div className="text-muted-foreground text-xs">Prostrating Attacks</div>
-                  <span className="text-sm font-medium">
+                  <span className="ml-1 text-xs font-medium whitespace-nowrap">
                     {prostratingCount} ({prostratingPercentage}%)
                   </span>
                 </div>
-                <div className="bg-muted mt-2 h-2 w-full overflow-hidden rounded-full">
+                <div className="bg-muted mt-1.5 h-1.5 w-full overflow-hidden rounded-full">
                   <div
                     className="bg-primary h-full rounded-full"
                     style={{ width: `${prostratingPercentage}%` }}
@@ -273,30 +274,21 @@ export function ConditionCard({
                 </div>
               </div>
 
-              {mostRecentLog && (
-                <div className="bg-card rounded-lg border p-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-muted-foreground text-xs">Last Severity</div>
-                    <span
-                      className={`font-medium ${getSeverityColor(mostRecentLog.data.severity || 0)}`}>
-                      {mostRecentLog.data.severity || "N/A"}
-                    </span>
-                  </div>
-                  {mostRecentLog.data.notes && (
-                    <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
-                      {mostRecentLog.data.notes}
-                    </p>
-                  )}
-                </div>
-              )}
+              {/* Log button centered at bottom of stats */}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onLogClick();
+                }}
+                variant="secondary"
+                size="sm"
+                className="w-full transition-all duration-300">
+                Log {condition.name}
+              </Button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-6 text-center">
-              <div className="bg-muted mb-3 rounded-full p-3">
-                <PlusCircle className="text-muted-foreground h-6 w-6" />
-              </div>
-              <p className="text-muted-foreground mb-1">No logs recorded yet</p>
-              <p className="text-muted-foreground mb-4 text-sm">
+            <div className="flex flex-col items-center justify-center py-4 text-center">
+              <p className="text-muted-foreground mb-3 max-w-[90%] text-xs">
                 Track your {condition.name.toLowerCase()} symptoms to build your VA claim evidence
               </p>
               <Button
@@ -304,30 +296,32 @@ export function ConditionCard({
                   e.stopPropagation();
                   onLogClick();
                 }}
-                className="mt-2">
+                size="sm"
+                className="w-full max-w-[90%]">
                 Log {condition.name}
               </Button>
             </div>
           )}
         </CardContent>
 
-        <CardFooter className="flex justify-between pt-2">
+        <CardFooter className="flex justify-between pt-1 pb-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     onViewHistory();
                   }}
-                  disabled={totalLogs === 0}>
-                  <FileText className="mr-1 h-4 w-4" />
+                  disabled={totalLogs === 0}
+                  className="h-8 flex-1">
+                  <FileText className="mr-1 h-3.5 w-3.5" />
                   History
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
+              <TooltipContent side="bottom" className="text-xs">
                 {totalLogs > 0 ? `View ${totalLogs} log entries` : "No logs to view yet"}
               </TooltipContent>
             </Tooltip>
@@ -337,36 +331,25 @@ export function ConditionCard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     onViewTrends();
                   }}
-                  disabled={totalLogs < 2}>
-                  <BarChart2 className="mr-1 h-4 w-4" />
+                  disabled={totalLogs < 2}
+                  className="ml-1 h-8 flex-1">
+                  <BarChart2 className="mr-1 h-3.5 w-3.5" />
                   Trends
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
+              <TooltipContent side="bottom" className="text-xs">
                 {totalLogs >= 2 ? "View patterns and analytics" : "Need at least 2 logs for trends"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onLogClick();
-            }}
-            className="transition-all duration-300">
-            <PlusCircle className="mr-1 h-4 w-4" />
-            Log Now
-          </Button>
         </CardFooter>
       </div>
-
-      {/* Removed overlay that was causing confusion */}
     </Card>
   );
 }

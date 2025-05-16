@@ -407,7 +407,11 @@ export const DynamicForm = ({
             transition={{ duration: 0.3 }}>
             <Select
               value={formData[field.name] || ""}
-              onValueChange={(value) => handleChange(field.name, value)}
+              onValueChange={(value) => {
+                if (value !== formData[field.name]) {
+                  handleChange(field.name, value);
+                }
+              }}
               name={field.name}>
               <SelectTrigger
                 className={`focus:ring-primary/20 w-full transition-all duration-200 focus:ring-2 ${
@@ -562,7 +566,11 @@ export const DynamicForm = ({
           <CardContent>
             <Select
               value={selectedCondition || ""}
-              onValueChange={(value) => onConditionChange(value || null)}>
+              onValueChange={(value) => {
+                if (value !== selectedCondition) {
+                  onConditionChange(value || null);
+                }
+              }}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a condition to log" />
               </SelectTrigger>
