@@ -7,8 +7,8 @@ import { useCreatePostModal } from "../CreatePostProvider";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Paperclip, PlusIcon } from "lucide-react";
-import Link from "next/link";
+import { Paperclip, PlusIcon, Image, Link2, MessageSquare } from "lucide-react";
+import NextLink from "next/link";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -18,6 +18,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { FileUploadDialog } from "@/app/dashboard/(auth)/file-manager/components/file-upload-dialog";
+import { cn } from "@/lib/utils";
 
 interface CreatePostCardProps {
   communityId?: string; // Optional pre-selected community
@@ -37,6 +38,7 @@ export default function CreatePostCard({
   const [selectedCommunity, setSelectedCommunity] = useState(communityId || "");
   const [isDevelopment, setIsDevelopment] = useState(false);
   const [postText, setPostText] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const textRef = useRef<HTMLInputElement>(null);
 
   // Check if we're in development mode
@@ -65,9 +67,9 @@ export default function CreatePostCard({
       <Card className={`border shadow-sm ${className}`}>
         <div className="flex flex-col items-center gap-3 p-6">
           <p className="text-muted-foreground text-center">Sign in to create posts</p>
-          <Link href="/dashboard/login/v1">
+          <NextLink href="/dashboard/login/v1">
             <Button size="sm">Sign In</Button>
-          </Link>
+          </NextLink>
         </div>
       </Card>
     );
@@ -87,7 +89,8 @@ export default function CreatePostCard({
 
   // In development mode or when user is logged in, show post creation UI
   return (
-    <Card className={`border bg-white/95 shadow-sm dark:bg-black/25 ${className}`}>
+    <Card
+      className={`border bg-white/95 shadow-sm transition-all duration-200 dark:bg-black/25 ${isFocused ? "ring-primary/20 ring-2" : ""} ${className}`}>
       <div className="p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10 border">
@@ -103,11 +106,19 @@ export default function CreatePostCard({
               value={postText}
               onChange={handleTextChange}
               onClick={handleCreatePost}
-              className="bg-muted/50 text-foreground hover:bg-muted cursor-pointer rounded-full border px-4 py-2.5 pr-16 transition-colors focus:shadow-sm focus-visible:ring-1"
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              className={cn(
+                "bg-muted/50 text-foreground hover:bg-muted cursor-pointer rounded-full border px-4 py-2.5 pr-16 transition-all",
+                "focus:shadow-md focus-visible:ring-1",
+                isFocused && "bg-muted"
+              )}
             />
-            <div className={`absolute top-2.5 right-3 text-xs ${characterCountClass}`}>
-              {postText.length}/{maxPostLength}
-            </div>
+            {postText.length > 0 && (
+              <div className={`absolute top-2.5 right-3 text-xs ${characterCountClass}`}>
+                {postText.length}/{maxPostLength}
+              </div>
+            )}
           </div>
         </div>
 
@@ -126,10 +137,42 @@ export default function CreatePostCard({
             </select>
           )}
 
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-primary/10 rounded-full transition-colors"
+              onClick={handleCreatePost}>
+              <Image className="text-primary/80 h-4 w-4" />
+              <span className="sr-only">Add Image</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-primary/10 rounded-full transition-colors"
+              onClick={handleCreatePost}>
+              <Link2 className="text-primary/80 h-4 w-4" />
+              <span className="sr-only">Add Link</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-primary/10 rounded-full transition-colors"
+              onClick={handleCreatePost}>
+              <MessageSquare className="text-primary/80 h-4 w-4" />
+              <span className="sr-only">Format Text</span>
+            </Button>
+          </div>
+
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Paperclip className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-primary/10 rounded-full transition-colors">
+                <Paperclip className="text-primary/80 h-4 w-4" />
                 <span className="sr-only">Attach File</span>
               </Button>
             </DialogTrigger>
@@ -141,7 +184,10 @@ export default function CreatePostCard({
             </DialogContent>
           </Dialog>
 
-          <Button onClick={handleCreatePost} size="sm" className="ml-auto gap-1.5 rounded-full">
+          <Button
+            onClick={handleCreatePost}
+            size="sm"
+            className="bg-primary/90 hover:bg-primary ml-auto gap-1.5 rounded-full transition-colors">
             <PlusIcon className="h-4 w-4" />
             Create Post
           </Button>
