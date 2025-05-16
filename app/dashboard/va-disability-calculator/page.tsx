@@ -53,6 +53,15 @@ export default function Page() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://va-claims-app.vercel.app";
   const pageUrl = `${baseUrl}/dashboard/va-disability-calculator`;
 
+  // Format current date for print
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
   return (
     <>
       <script
@@ -61,7 +70,9 @@ export default function Page() {
           __html: JSON.stringify(generateVACalculatorStructuredData(pageUrl))
         }}
       />
-      <VADisabilityCalculator />
+      <div data-print-date={currentDate}>
+        <VADisabilityCalculator />
+      </div>
     </>
   );
 }

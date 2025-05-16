@@ -42,21 +42,20 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ control }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="mb-6">
+      transition={{ duration: 0.5 }}>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Disabilities</h2>
+        <h2 className="text-primary text-xl font-semibold">Service-Connected Disabilities</h2>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                className="bg-primary/20 hover:bg-primary/30 h-10 w-10 rounded-full p-0"
+                className="bg-primary/10 hover:bg-primary/20 h-10 w-10 rounded-full p-0"
                 aria-label="Disability rating information">
                 <HelpCircle className="text-primary size-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p>
+            <TooltipContent className="max-w-xs p-4">
+              <p className="text-sm">
                 Enter each service-connected disability with its VA-assigned percentage. The
                 calculator uses the VA combined ratings table, not simple addition.
               </p>
@@ -66,7 +65,9 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ control }) => {
       </div>
 
       {fields.length === 0 && (
-        <Alert className="mb-6">
+        <Alert
+          variant="default"
+          className="mb-6 border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
           <AlertCircle className="size-4" />
           <AlertDescription>
             Add at least one disability to calculate your VA compensation.
@@ -82,14 +83,14 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ control }) => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-card mb-6 rounded-md border p-6">
-            <div className="mb-4 flex items-center justify-between">
+            className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
+            <div className="mb-5 flex items-center justify-between border-b pb-4">
               <h3 className="text-lg font-medium">Disability {index + 1}</h3>
               <Button
                 onClick={() => remove(index)}
-                className="bg-destructive hover:bg-destructive/90 h-10 w-10 rounded-full p-0"
+                className="bg-destructive/90 hover:bg-destructive h-9 w-9 rounded-full p-0"
                 aria-label={`Remove disability ${index + 1}`}>
-                <Trash2 className="size-5" />
+                <Trash2 className="size-4" />
               </Button>
             </div>
 
@@ -130,16 +131,16 @@ const DisabilityInput: React.FC<DisabilityInputProps> = ({ control }) => {
         ))}
       </AnimatePresence>
 
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <Button
           onClick={() => append({ percentage: 0, area: "Other", description: "" })}
-          className="bg-primary hover:bg-primary/90 h-12 px-6">
+          className="bg-primary hover:bg-primary/90 mb-4 h-12 w-full px-6 sm:mb-0 sm:w-auto">
           <PlusCircle className="mr-2 size-5" />
           Add Disability
         </Button>
 
         {fields.length > 0 && (
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm font-medium">
             {fields.length} {fields.length === 1 ? "disability" : "disabilities"} added
           </p>
         )}

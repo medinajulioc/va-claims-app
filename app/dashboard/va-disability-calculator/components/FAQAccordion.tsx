@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, ChevronDown, ChevronUp } from "lucide-react";
 
 const faqItems = [
   {
@@ -106,27 +106,37 @@ export default function FAQAccordion() {
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-          <CardTitle className="text-lg font-medium">
-            Frequently Asked Questions About VA Disability Compensation
+    <Card className="shadow-md">
+      <CardHeader className="border-b pb-5">
+        <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          <CardTitle className="text-primary text-xl font-semibold">
+            Frequently Asked Questions
           </CardTitle>
-          <button onClick={handleExpandAll} className="text-primary text-sm hover:underline">
-            {expandedItems.length === filteredFAQs.length ? "Collapse All" : "Expand All"}
+          <button
+            onClick={handleExpandAll}
+            className="bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors">
+            {expandedItems.length === filteredFAQs.length ? (
+              <>
+                <ChevronUp className="size-4" /> Collapse All
+              </>
+            ) : (
+              <>
+                <ChevronDown className="size-4" /> Expand All
+              </>
+            )}
           </button>
         </div>
-        <div className="relative mt-2">
-          <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
+        <div className="relative mt-4">
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Search FAQs..."
+            placeholder="Search FAQs by keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
+            className="h-10 pl-10"
           />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         {filteredFAQs.length > 0 ? (
           <Accordion
             type="multiple"
@@ -134,19 +144,22 @@ export default function FAQAccordion() {
             onValueChange={setExpandedItems}
             className="w-full">
             {filteredFAQs.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger className="text-left font-medium">
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border-b py-2 last:border-0">
+                <AccordionTrigger className="py-3 text-left text-base font-medium hover:no-underline">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="text-muted-foreground pt-2 pb-4">
                   <div className="space-y-4">
-                    <p>{item.answer}</p>
+                    <p className="leading-relaxed">{item.answer}</p>
                     <div className="flex flex-wrap gap-2">
                       {item.tags.map((tag, tagIndex) => (
                         <Badge
                           key={tagIndex}
                           variant="outline"
-                          className="cursor-pointer"
+                          className="bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSearchQuery(tag);
@@ -161,12 +174,15 @@ export default function FAQAccordion() {
             ))}
           </Accordion>
         ) : (
-          <div className="py-8 text-center">
-            <p className="text-muted-foreground">No FAQs found matching your search.</p>
+          <div className="py-12 text-center">
+            <div className="bg-muted/30 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+              <Search className="text-muted-foreground size-8" />
+            </div>
+            <p className="text-muted-foreground text-lg">No FAQs found matching "{searchQuery}"</p>
             <button
               onClick={() => setSearchQuery("")}
-              className="text-primary mt-2 text-sm hover:underline">
-              Clear search
+              className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 rounded-md px-4 py-2 text-sm font-medium transition-colors">
+              Clear Search
             </button>
           </div>
         )}

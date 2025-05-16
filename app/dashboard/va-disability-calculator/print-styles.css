@@ -1,7 +1,12 @@
 @media print {
   /* General page setup */
   @page {
-    margin: 1cm;
+    margin: 1.5cm;
+    size: letter portrait;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 
   body {
@@ -10,9 +15,11 @@
       -apple-system,
       sans-serif;
     font-size: 12pt;
-    line-height: 1.5;
+    line-height: 1.6;
     color: #000;
     background: #fff;
+    margin: 0;
+    padding: 0;
   }
 
   /* Hide non-essential elements */
@@ -21,7 +28,9 @@
   nav,
   aside,
   button,
-  .print:hidden {
+  .print\:hidden,
+  [role="tablist"],
+  [data-state="inactive"] {
     display: none !important;
   }
 
@@ -36,33 +45,41 @@
   /* Card styling for print */
   .card {
     border: 1px solid #ddd;
-    box-shadow: none;
+    box-shadow: none !important;
     break-inside: avoid;
     page-break-inside: avoid;
-    margin-bottom: 1cm;
+    margin-bottom: 1.5cm;
+    border-radius: 0;
   }
 
   /* Typography adjustments */
   h1 {
-    font-size: 18pt;
+    font-size: 20pt;
     margin-top: 0;
-    margin-bottom: 12pt;
+    margin-bottom: 16pt;
+    color: #000;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 8pt;
   }
 
   h2 {
     font-size: 16pt;
-    margin-top: 12pt;
-    margin-bottom: 8pt;
+    margin-top: 16pt;
+    margin-bottom: 10pt;
+    color: #000;
   }
 
   h3 {
     font-size: 14pt;
-    margin-top: 10pt;
-    margin-bottom: 6pt;
+    margin-top: 14pt;
+    margin-bottom: 8pt;
+    color: #000;
   }
 
   p {
-    margin-bottom: 6pt;
+    margin-bottom: 8pt;
+    orphans: 3;
+    widows: 3;
   }
 
   /* Links */
@@ -75,20 +92,26 @@
     content: " (" attr(href) ")";
     font-size: 10pt;
     font-style: italic;
+    color: #555;
   }
 
   /* Tables */
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 12pt;
+    margin-bottom: 16pt;
   }
 
   th,
   td {
     border: 1px solid #ddd;
-    padding: 6pt;
+    padding: 8pt;
     text-align: left;
+  }
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: bold;
   }
 
   /* Form elements */
@@ -97,51 +120,145 @@
   textarea {
     border: 1px solid #ddd;
     padding: 4pt;
+    background: white;
   }
 
   /* Specific calculator elements */
   .calculation-summary {
     border: 2px solid #000;
-    padding: 12pt;
-    margin-bottom: 12pt;
+    padding: 16pt;
+    margin-bottom: 16pt;
+    background-color: #f9f9f9;
   }
 
   .rating-circle {
     border: 4pt solid #000;
     display: inline-block;
-    width: 60pt;
-    height: 60pt;
+    width: 70pt;
+    height: 70pt;
     border-radius: 50%;
     text-align: center;
-    line-height: 60pt;
-    font-size: 20pt;
+    line-height: 70pt;
+    font-size: 24pt;
     font-weight: bold;
   }
 
   .progress-bar {
     height: 12pt;
     background-color: #eee;
-    margin-bottom: 4pt;
+    margin-bottom: 6pt;
+    border-radius: 6pt;
+    overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background-color: #000;
+    background-color: #333;
   }
 
-  /* Footer with timestamp */
-  .print-footer {
-    display: block !important;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    font-size: 9pt;
+  /* Print header with VA logo and title */
+  .print-header {
+    display: flex !important;
+    align-items: center;
+    border-bottom: 2pt solid #000;
+    margin-bottom: 16pt;
+    padding-bottom: 10pt;
+  }
+
+  .print-header-title {
+    font-size: 18pt;
+    font-weight: bold;
+  }
+
+  .print-date {
+    font-style: italic;
+    margin-bottom: 16pt;
+    text-align: right;
+    font-size: 10pt;
+    color: #555;
+  }
+
+  /* Add print-only header with current date */
+  body::before {
+    content: "VA Disability Calculator Results";
+    display: block;
+    font-size: 20pt;
+    font-weight: bold;
     text-align: center;
-    border-top: 1px solid #ddd;
-    padding-top: 4pt;
+    margin-bottom: 8pt;
+    border-bottom: 1pt solid #000;
+    padding-bottom: 8pt;
   }
 
-  /* Page breaks */
+  body::after {
+    content: "Generated on " attr(data-print-date);
+    display: block;
+    font-size: 10pt;
+    text-align: center;
+    margin-top: 16pt;
+    font-style: italic;
+    color: #555;
+  }
+
+  /* Custom styles for specific components */
+  [data-state="active"] {
+    display: block !important;
+  }
+
+  /* Ensure calculation results are visible */
+  .calculation-results {
+    display: block !important;
+    page-break-inside: avoid;
+  }
+
+  /* Visual breakdown styling */
+  .visual-breakdown {
+    page-break-before: always;
+  }
+
+  /* Footer with timestamp and page numbers */
+  @page {
+    @bottom-center {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9pt;
+    }
+  }
+
+  /* Disclaimer section */
+  .disclaimer {
+    border-top: 1pt solid #ddd;
+    margin-top: 16pt;
+    padding-top: 8pt;
+    font-size: 9pt;
+    color: #555;
+  }
+
+  /* Remove shadows and backgrounds */
+  * {
+    box-shadow: none !important;
+  }
+
+  .bg-muted,
+  .bg-card,
+  .bg-primary,
+  .bg-secondary {
+    background-color: transparent !important;
+  }
+
+  /* Ensure proper spacing */
+  .space-y-4,
+  .space-y-6,
+  .space-y-8 {
+    display: block;
+  }
+
+  .space-y-4 > * + *,
+  .space-y-6 > * + *,
+  .space-y-8 > * + * {
+    margin-top: 12pt;
+  }
+
+  /* Ensure proper page breaks */
   .page-break {
     page-break-after: always;
     break-after: page;
@@ -153,24 +270,5 @@
   .faq-item {
     page-break-inside: avoid;
     break-inside: avoid;
-  }
-
-  /* Print header with VA logo and title */
-  .print-header {
-    display: flex !important;
-    align-items: center;
-    border-bottom: 2pt solid #000;
-    margin-bottom: 12pt;
-    padding-bottom: 8pt;
-  }
-
-  .print-header-title {
-    font-size: 16pt;
-    font-weight: bold;
-  }
-
-  .print-date {
-    font-style: italic;
-    margin-bottom: 12pt;
   }
 }

@@ -408,38 +408,38 @@ Breakdown:
   };
 
   return (
-    <div className="space-y-6 print:space-y-2">
-      <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-bold tracking-tight lg:text-3xl">VA Disability Calculator</h1>
+    <div className="container mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6 lg:px-8 print:space-y-2">
+      <div className="flex flex-row items-center justify-between border-b pb-4">
+        <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">VA Disability Calculator</h1>
         <div className="flex items-center space-x-2">
-          <Calculator className="text-primary size-5" />
+          <Calculator className="text-primary size-6" />
         </div>
       </div>
 
       <Tabs defaultValue="calculator" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="mb-6 grid w-full grid-cols-3">
           <TabsTrigger value="calculator">Calculator</TabsTrigger>
           <TabsTrigger value="saved">Saved Calculations</TabsTrigger>
           <TabsTrigger value="info">Information</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="calculator" className="mt-4 space-y-4">
-          <Card className="print:shadow-none">
-            <CardContent className="p-6">
+        <TabsContent value="calculator" className="mt-4 space-y-6">
+          <Card className="shadow-md print:shadow-none">
+            <CardContent className="p-6 sm:p-8">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}>
-                <div className="mb-6">
+                <div className="mb-8">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-medium">
+                    <h2 className="text-primary text-2xl font-semibold">
                       2025 VA Disability Compensation Calculator
                     </h2>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            className="bg-secondary hover:bg-secondary/90 h-8 w-8 p-0"
+                            className="bg-secondary hover:bg-secondary/90 h-9 w-9 p-0"
                             onClick={() =>
                               window.open(
                                 "https://www.va.gov/disability/compensation-rates/",
@@ -447,7 +447,7 @@ Breakdown:
                               )
                             }
                             aria-label="Official VA rates information">
-                            <HelpCircle className="size-4" />
+                            <HelpCircle className="size-5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -456,32 +456,32 @@ Breakdown:
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mt-2">
                     Calculate your combined VA disability rating and monthly compensation based on
                     the official 2025 rates.
                   </p>
                 </div>
 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="rounded-md border p-4">
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <div className="bg-card/50 rounded-lg border p-6 shadow-sm">
                       <DisabilityInput control={form.control} />
                     </div>
 
-                    <div className="rounded-md border p-4">
+                    <div className="bg-card/50 rounded-lg border p-6 shadow-sm">
                       <DependentsInput
                         control={form.control}
                         showSpouseAid={watchSpouse === "Yes"}
                       />
                     </div>
 
-                    <div className="mb-2 flex items-center justify-between">
+                    <div className="mb-4 flex items-center justify-between">
                       <h3 className="text-lg font-medium">Advanced Options</h3>
                       <Button
                         type="button"
                         onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-                        className="bg-secondary hover:bg-secondary/90 h-8">
-                        {showAdvancedOptions ? "Hide" : "Show"}
+                        className="bg-secondary hover:bg-secondary/90 h-9 px-4">
+                        {showAdvancedOptions ? "Hide Options" : "Show Options"}
                       </Button>
                     </div>
 
@@ -491,8 +491,8 @@ Breakdown:
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="overflow-hidden rounded-md border p-4">
-                          <div className="space-y-4">
+                          className="bg-card/50 overflow-hidden rounded-lg border p-6 shadow-sm">
+                          <div className="space-y-6">
                             <SMCInput control={form.control} />
                             <div>
                               <Input
@@ -510,14 +510,17 @@ Breakdown:
                     </AnimatePresence>
 
                     <div className="flex w-full flex-col gap-4 sm:flex-row">
-                      <Button type="submit" className="flex-1" disabled={isCalculating}>
-                        {isCalculating ? "Calculating..." : "Calculate"}
+                      <Button
+                        type="submit"
+                        className="h-12 flex-1 text-base font-medium"
+                        disabled={isCalculating}>
+                        {isCalculating ? "Calculating..." : "Calculate Benefits"}
                       </Button>
                       <Button
                         type="button"
-                        className="bg-secondary hover:bg-secondary/90 flex-1"
+                        className="bg-secondary hover:bg-secondary/90 h-12 flex-1 text-base font-medium"
                         onClick={handleReset}>
-                        Reset
+                        Reset Form
                       </Button>
                     </div>
                   </form>
@@ -530,7 +533,7 @@ Breakdown:
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.5 }}
-                      className="mt-8">
+                      className="mt-10">
                       <CalculationSummary
                         combinedRating={result.combinedRating}
                         compensation={result.compensation}
@@ -538,7 +541,7 @@ Breakdown:
                       />
 
                       {watchDisabilities.length > 1 && result.combinedRating > 0 && (
-                        <div className="mt-6">
+                        <div className="mt-8">
                           <VisualRatingBreakdown
                             disabilities={watchDisabilities}
                             combinedRating={result.combinedRating}
@@ -546,27 +549,27 @@ Breakdown:
                         </div>
                       )}
 
-                      <div className="mt-6 flex flex-wrap gap-2 print:hidden">
+                      <div className="mt-8 flex flex-wrap gap-3 print:hidden">
                         <Button
                           type="button"
-                          className="bg-secondary hover:bg-secondary/90"
+                          className="bg-secondary hover:bg-secondary/90 h-10"
                           onClick={handleCopyResults}>
                           <Copy className="mr-2 size-4" />
                           Copy Results
                         </Button>
                         <Button
                           type="button"
-                          className="bg-secondary hover:bg-secondary/90"
+                          className="bg-secondary hover:bg-secondary/90 h-10"
                           onClick={handleSaveCalculation}>
                           <Save className="mr-2 size-4" />
                           Save Calculation
                         </Button>
                         <Button
                           type="button"
-                          className="bg-secondary hover:bg-secondary/90"
+                          className="bg-secondary hover:bg-secondary/90 h-10"
                           onClick={handlePrint}>
                           <Printer className="mr-2 size-4" />
-                          Print
+                          Print Results
                         </Button>
                       </div>
                     </motion.div>
@@ -578,35 +581,43 @@ Breakdown:
         </TabsContent>
 
         <TabsContent value="saved" className="mt-4">
-          <Card>
-            <CardContent className="p-6">
+          <Card className="shadow-md">
+            <CardContent className="p-6 sm:p-8">
               {savedCalculations.length > 0 ? (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Saved Calculations</h3>
-                  <div className="divide-y">
+                <div className="space-y-6">
+                  <h3 className="text-xl font-medium">Saved Calculations</h3>
+                  <div className="divide-y rounded-lg border">
                     {savedCalculations.map((calc, index) => (
-                      <div key={index} className="flex items-center justify-between py-4">
+                      <div key={index} className="flex items-center justify-between p-4 sm:p-6">
                         <div>
-                          <p className="font-medium">{calc.name}</p>
-                          <p className="text-muted-foreground text-sm">
-                            Rating: {calc.result.combinedRating}% | Compensation: $
-                            {calc.result.compensation.toFixed(2)}
+                          <p className="text-lg font-medium">{calc.name}</p>
+                          <p className="text-muted-foreground mt-1">
+                            Rating:{" "}
+                            <span className="font-semibold">{calc.result.combinedRating}%</span> |
+                            Compensation:{" "}
+                            <span className="font-semibold">
+                              ${calc.result.compensation.toFixed(2)}
+                            </span>
                           </p>
                         </div>
                         <Button
                           onClick={() => loadSavedCalculation(index)}
-                          className="bg-secondary hover:bg-secondary/90">
-                          Load
+                          className="bg-primary hover:bg-primary/90">
+                          Load Calculation
                         </Button>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="py-8 text-center">
-                  <p className="text-muted-foreground">No saved calculations yet.</p>
-                  <p className="mt-2 text-sm">
-                    Use the "Save Calculation" button after calculating to save your results.
+                <div className="py-12 text-center">
+                  <div className="bg-muted/30 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+                    <Save className="text-muted-foreground size-8" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-medium">No Saved Calculations</h3>
+                  <p className="text-muted-foreground mx-auto max-w-md">
+                    Use the "Save Calculation" button after calculating your benefits to save your
+                    results for future reference.
                   </p>
                 </div>
               )}
@@ -614,34 +625,36 @@ Breakdown:
           </Card>
         </TabsContent>
 
-        <TabsContent value="info" className="mt-4 space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-lg font-medium">About VA Disability Calculations</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium">Combined Rating</h4>
+        <TabsContent value="info" className="mt-4 space-y-6">
+          <Card className="shadow-md">
+            <CardContent className="p-6 sm:p-8">
+              <h3 className="text-primary mb-6 text-xl font-semibold">
+                About VA Disability Calculations
+              </h3>
+              <div className="space-y-6">
+                <div className="bg-muted/20 rounded-lg p-4">
+                  <h4 className="mb-2 text-lg font-medium">Combined Rating</h4>
                   <p className="text-muted-foreground">
                     VA uses the "whole person theory" to calculate combined ratings. This is not a
                     simple addition of percentages. Each disability affects your remaining capacity.
                   </p>
                 </div>
-                <div>
-                  <h4 className="font-medium">Compensation Rates</h4>
+                <div className="bg-muted/20 rounded-lg p-4">
+                  <h4 className="mb-2 text-lg font-medium">Compensation Rates</h4>
                   <p className="text-muted-foreground">
                     Monthly payments are based on your combined rating percentage, number of
                     dependents, and any Special Monthly Compensation entitlements.
                   </p>
                 </div>
-                <div>
-                  <h4 className="font-medium">Official Resources</h4>
-                  <ul className="text-muted-foreground list-disc pl-5">
+                <div className="bg-muted/20 rounded-lg p-4">
+                  <h4 className="mb-2 text-lg font-medium">Official Resources</h4>
+                  <ul className="text-muted-foreground list-disc space-y-2 pl-5">
                     <li>
                       <a
                         href="https://www.va.gov/disability/compensation-rates/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline">
+                        className="text-primary hover:underline">
                         Official VA Compensation Rates
                       </a>
                     </li>
@@ -650,7 +663,7 @@ Breakdown:
                         href="https://www.va.gov/disability/about-disability-ratings/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline">
+                        className="text-primary hover:underline">
                         About VA Disability Ratings
                       </a>
                     </li>
@@ -659,14 +672,14 @@ Breakdown:
                         href="https://www.va.gov/disability/eligibility/special-claims/special-monthly-compensation/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline">
+                        className="text-primary hover:underline">
                         Special Monthly Compensation
                       </a>
                     </li>
                   </ul>
                 </div>
-                <div>
-                  <h4 className="font-medium">Disclaimer</h4>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+                  <h4 className="mb-2 text-lg font-medium">Disclaimer</h4>
                   <p className="text-muted-foreground text-sm">
                     This calculator provides estimates based on the 2025 VA compensation rates.
                     Always verify official amounts with the VA for your specific situation.

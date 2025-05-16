@@ -59,21 +59,23 @@ const VisualRatingBreakdown: React.FC<VisualRatingBreakdownProps> = ({
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className="shadow-md">
+      <CardHeader className="border-b pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-medium">How Your Rating Is Calculated</CardTitle>
+          <CardTitle className="text-primary text-xl font-semibold">
+            How Your Rating Is Calculated
+          </CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className="bg-secondary hover:bg-secondary/90 h-8 w-8 p-0"
+                  className="bg-secondary hover:bg-secondary/90 h-9 w-9 p-0"
                   aria-label="Rating calculation information">
-                  <HelpCircle className="size-4" />
+                  <HelpCircle className="size-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>
+              <TooltipContent className="max-w-xs p-4">
+                <p className="text-sm">
                   The VA uses the "whole person theory" to calculate combined ratings. Each
                   disability affects your remaining capacity, not your total capacity.
                 </p>
@@ -82,26 +84,28 @@ const VisualRatingBreakdown: React.FC<VisualRatingBreakdownProps> = ({
           </TooltipProvider>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="text-muted-foreground text-sm">
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          <div className="text-muted-foreground">
             <p>Your disabilities are combined in order from highest to lowest percentage:</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-5">
             {efficiencySteps.map((step, index) => (
-              <div key={index} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">
+              <div key={index} className="bg-muted/10 space-y-2 rounded-lg p-4">
+                <div className="flex flex-col text-sm sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mb-1 flex items-center gap-2 sm:mb-0">
+                    <span className="text-base font-medium">
                       {step.percentage}% {step.area}
                       {step.description ? ` (${step.description})` : ""}
                     </span>
                     {index === 0 && (
-                      <span className="bg-muted rounded px-2 py-0.5 text-xs">Starting point</span>
+                      <span className="bg-primary/10 text-primary rounded-full px-3 py-0.5 text-xs font-medium">
+                        Starting point
+                      </span>
                     )}
                   </div>
-                  <span>
+                  <span className="font-semibold">
                     {index > 0 ? `${efficiencySteps[index - 1].cumulativeRating}% → ` : ""}
                     {step.cumulativeRating}%
                   </span>
@@ -109,23 +113,24 @@ const VisualRatingBreakdown: React.FC<VisualRatingBreakdownProps> = ({
                 <div className="flex items-center gap-2">
                   <Progress
                     value={step.cumulativeRating}
-                    className="h-2"
+                    className="h-3"
                     aria-label={`Combined rating after disability ${index + 1}: ${step.cumulativeRating}%`}
                   />
                 </div>
                 {index < efficiencySteps.length - 1 && (
                   <div className="text-muted-foreground pl-4 text-xs">
-                    Remaining efficiency: {step.remainingEfficiency.toFixed(1)}%
+                    <span className="font-medium">Remaining efficiency:</span>{" "}
+                    {step.remainingEfficiency.toFixed(1)}%
                   </div>
                 )}
               </div>
             ))}
           </div>
 
-          <div className="border-t pt-2 text-sm">
+          <div className="bg-primary/5 border-primary/10 mt-2 rounded-lg border p-4">
             <div className="flex justify-between font-medium">
-              <span>Final Combined Rating (rounded to nearest 10%):</span>
-              <span>{combinedRating}%</span>
+              <span className="text-base">Final Combined Rating (rounded to nearest 10%):</span>
+              <span className="text-primary text-xl font-bold">{combinedRating}%</span>
             </div>
           </div>
         </div>
