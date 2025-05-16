@@ -70,3 +70,5 @@ tasks/
 
 # API keys and sensitive files
 .cursor/mcp.json 
+# Roo specific files
+.roo/
